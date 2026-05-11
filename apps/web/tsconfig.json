@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/app/*": ["src/app/*"],
+      "@/features/*": ["src/features/*"],
+      "@/lib/*": ["src/lib/*"],
+      "@evefrontier/dapp-kit": ["src/lib/evefrontier-stub.ts"]
+    }
+  },
+  "include": ["src", "vitest.config.ts"],
+  "exclude": [
+    "node_modules",
+    "../../node_modules/.pnpm/@evefrontier+dapp-kit@*/node_modules/@evefrontier/dapp-kit",
+    "src/features/frontier/dappKit/dappKitSmoke.test.ts",
+    "src/features/frontier/dappKit/EveFrontierProviderBoundary.tsx",
+    "src/features/frontier/dappKit/useSmartObjectContextAdapter.ts",
+    "src/features/frontier/character/useFrontierCharacterAdapter.ts",
+    "src/features/frontier/character/useFrontierCharacterAdapter.test.tsx"
+  ]
+}

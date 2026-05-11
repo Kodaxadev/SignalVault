@@ -1,0 +1,15 @@
+export { parseObjectContext, hasObjectContext } from './parseObjectContext';
+export type { ObjectContext, EntityType, ResolutionConfidence } from './entityTypes';
+export { EntityResolutionBadge } from './EntityResolutionBadge';
+export { buildEntityKey } from './buildEntityKey';
+export { resolveEntity } from './resolveEntity';
+export { EntityResolutionProvider, useEntityResolution } from './EntityResolutionProvider';
+export type { EntityClassificationClaim, EntityResolutionSource } from './entityClassificationTypes';
+export type { ResolvedEntity } from './entityResolutionTypes';
+export { ManualClassificationPanel } from './components/ManualClassificationPanel';
+export { ClassificationSourceList } from './components/ClassificationSourceList';
+export { resolveFromDappKitContext } from './resolutionSources/resolveFromDappKitContext';
+export { smartObjectToEntityClaim } from './resolutionSources/smartObjectToEntityClaim';
+export { resolveFromWorldApi } from './resolutionSources/resolveFromWorldApi';
+export type { WorldApiEntityContext } from './resolutionSources/worldApiEntityClaimTypes';
+export { ClassificationConflictBanner } from './components/ClassificationConflictBanner';

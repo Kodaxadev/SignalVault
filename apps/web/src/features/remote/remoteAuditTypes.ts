@@ -1,0 +1,33 @@
+export type AuditEventType =
+  | 'signal_created'
+  | 'signal_updated'
+  | 'signal_deleted'
+  | 'signal_exported'
+  | 'visibility_changed';
+
+export type AuditOutcome = 'success' | 'denied';
+
+export interface AuditEvent {
+  id: string;
+  eventType: AuditEventType;
+  actorCharacterId?: string;
+  actorWalletAddress: string;
+  actorTribeId?: string;
+  actorRoleSnapshot: Record<string, unknown>;
+  targetSignalId: string;
+  oldVisibility?: string;
+  newVisibility?: string;
+  outcome: AuditOutcome;
+  denialReason?: string;
+  requestId: string;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+}
+
+export function createAuditEvent(event: Omit<AuditEvent, 'id' | 'createdAt'>): AuditEvent {
+  return {
+    ...event,
+    id: crypto.randomUUID(),
+    createdAt: new Date().toISOString(),
+  };
+}

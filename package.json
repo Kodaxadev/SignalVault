@@ -1,0 +1,26 @@
+{
+  "name": "signal-vault",
+  "private": true,
+  "version": "0.0.0",
+  "description": "In-game-first intelligence and field-memory dApp for EVE Frontier",
+  "scripts": {
+    "dev": "pnpm --filter web dev",
+    "dev:api": "pnpm --filter api dev",
+    "build": "pnpm --filter web build",
+    "typecheck": "pnpm --filter web typecheck",
+    "typecheck:api": "pnpm --filter api typecheck",
+    "lint": "pnpm --filter web lint",
+    "test": "pnpm --filter web test",
+    "test:run": "pnpm --filter web test:run",
+    "test:api": "pnpm --filter api test:run",
+    "check:lines": "node apps/web/scripts/check-line-limits.mjs",
+    "check:prod-auth": "node scripts/assert-no-prod-dev-auth.mjs",
+    "check:bundle-clean": "node scripts/assert-main-bundle-clean.mjs",
+    "check:docs": "node scripts/assert-alpha-docs-current.mjs",
+    "check:release": "pnpm check:prod-auth && pnpm check:bundle-clean && pnpm check:docs && pnpm check:lines",
+    "demo:status": "node scripts/print-alpha-demo-status.mjs"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  }
+}
