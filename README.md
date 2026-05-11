@@ -66,7 +66,7 @@ Signal Vault
 
 | Layer | Tech |
 |---|---|
-| Frontend | React 18, Vite, React Router, TanStack Query, Tailwind CSS |
+| Frontend | React 19, Vite, React Router, TanStack Query, Tailwind CSS |
 | Local storage | Dexie (IndexedDB) |
 | Validation | Zod |
 | Backend | Hono, Postgres, `@supabase/supabase-js` |
