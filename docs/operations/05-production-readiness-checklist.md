@@ -57,8 +57,8 @@
 - [ ] **Validate in-game and external-browser entry paths separately.**  
   EVE docs describe both in-game Assembly navigation and external browser navigation with `tenant` / `itemId` params. Production acceptance requires browser tests for `/ingame/object/:objectId`, external query-param context, missing EVE Vault, locked EVE Vault, and unsupported wallet states. Evidence: Atlas [`2e8138ad`](https://atlas.kodaxa.dev/api/records/2e8138ad08ab87b2e8e727aa272e0c863554a28bf1d1823acccabdc672b20632), [`9c722c40`](https://atlas.kodaxa.dev/api/records/9c722c40b26aadc0648721354af2d61a542397b0978ed04f8047307dbb72d048).
 
-- [ ] **Define environment separation for Stillness and Utopia.**  
-  Atlas labels Stillness World API as current live-shard/testnet and Utopia as sandbox. Production acceptance requires env docs and release checks that prevent deploying Utopia endpoints to a Stillness production build except for explicit sandbox builds. Evidence: Atlas World API records [`355b0230`](https://atlas.kodaxa.dev/api/records/355b023063e34dc3063180a2ca5e9dfad205ebd30a343416f7c1afdd2c6f9e40), [`35af8953`](https://atlas.kodaxa.dev/api/records/35af895334439bbecf2142fe998ab512a637ff607e30f5fec1fd2791d2a6b362).
+- [x] **Define environment separation for Stillness and Utopia.**  
+  [`assert-world-api-env.mjs`](../../scripts/assert-world-api-env.mjs) now runs in `pnpm check:release`. `SIGNAL_VAULT_RELEASE_ENV=stillness` requires `VITE_WORLD_API_ENV=stillness`, `VITE_DEFAULT_TENANT=stillness`, and the confirmed Stillness World API host; Utopia remains allowed only as the default or explicit sandbox release. Evidence: Atlas World API records [`355b0230`](https://atlas.kodaxa.dev/api/records/355b023063e34dc3063180a2ca5e9dfad205ebd30a343416f7c1afdd2c6f9e40), [`35af8953`](https://atlas.kodaxa.dev/api/records/35af895334439bbecf2142fe998ab512a637ff607e30f5fec1fd2791d2a6b362).
 
 - [ ] **Complete operational health, readiness, and migration checks.**  
   `/health` now reports database configuration, required migration status, auth mode, and remote-write gate status without exposing raw secrets. Migration readiness uses PostgreSQL `information_schema.tables` and `information_schema.columns`, matching the stable SQL metadata interface documented by PostgreSQL. Remaining production acceptance work: add World API base/environment reporting, decide whether stale migrations should fail a dedicated readiness endpoint, and verify behavior against the deployed DB role. Evidence: [PostgreSQL information schema](https://www.postgresql.org/docs/current/information-schema.html), [columns view](https://www.postgresql.org/docs/current/infoschema-columns.html), and Atlas record [`62bb91fb`](https://atlas.kodaxa.dev/api/records/62bb91fb8c83a31d36deb280386ecb7eeb9598d62fd1b4784f037b91b94c4c10).
@@ -91,7 +91,7 @@
 
 ## Current Green Gates
 
-- [x] `pnpm check:release` runs web/API typecheck, web/API tests, web build, prod-auth, fresh bundle isolation, docs, and line-limit checks.
+- [x] `pnpm check:release` runs web/API typecheck, web/API/script tests, web build, prod-auth, World API env guard, fresh bundle isolation, docs, and line-limit checks.
 - [x] Main bundle guard checks dApp Kit leakage specifically, while allowing legitimate World API hostnames.
 - [x] `AUTH_DEV_MODE=true` and `VITE_REMOTE_DEV_AUTH=true` are blocked by `pnpm check:prod-auth`.
 - [x] World API enrichment remains optional and is not used to infer Smart Assembly identity; dApp Kit remains the Smart Assembly authority. Evidence: Atlas [`679dd42f`](https://atlas.kodaxa.dev/api/records/679dd42f9b9014cf029d13bdde24af37eb5ec2402a384d385c1dec79dc92f0e1), Stillness World API records above.

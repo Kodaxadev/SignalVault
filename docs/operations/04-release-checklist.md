@@ -3,6 +3,7 @@
 ## Build
 
 - [ ] `pnpm check:release`
+- [ ] For Stillness production, run `SIGNAL_VAULT_RELEASE_ENV=stillness pnpm check:world-env`
 - [ ] `pnpm typecheck`
 - [ ] `pnpm typecheck:api`
 - [ ] `pnpm test:run`

@@ -169,5 +169,6 @@ Remote push requires `db: "connected"` and `writesEnabled: true`. Check `identit
 | `pnpm check:bundle-clean` | After `pnpm build` | Main chunk has 0 dApp Kit refs |
 | `pnpm check:docs` | Before any demo or release | Alpha docs have no stale phrases, required phrases present |
 | `pnpm check:lines` | Any time | All source files under 400 lines |
-| `pnpm check:release` | Full pre-release gate | Web/API typecheck, web/API tests, web build, then release guardrails |
+| `pnpm check:release` | Full pre-release gate | Web/API typecheck, web/API/script tests, web build, then release guardrails |
+| `pnpm check:world-env` | Before Stillness production release | Set `SIGNAL_VAULT_RELEASE_ENV=stillness`; requires Stillness tenant, World API env, and confirmed Stillness World API host |
 | `node scripts/print-alpha-demo-status.mjs` | Before a demo | Current environment summary and demo path recommendation |
