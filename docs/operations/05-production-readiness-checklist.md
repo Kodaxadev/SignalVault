@@ -1,0 +1,91 @@
+# Signal Vault Production Readiness Checklist
+
+**Status date:** 2026-05-12  
+**Purpose:** Track every known broken, unresolved, or under-verified production concern for Signal Vault. This is stricter than alpha readiness: local-first demo safety is not the same as production remote sync.
+
+## Evidence Baseline
+
+| Evidence | Authority | Why it matters |
+|---|---|---|
+| Atlas record [`679dd42f`](https://atlas.kodaxa.dev/api/records/679dd42f9b9014cf029d13bdde24af37eb5ec2402a384d385c1dec79dc92f0e1) | official_docs | `@evefrontier/dapp-kit` is the official React SDK surface for EVE Vault wallet connection, Smart Object data, sponsored transactions, auto-polling, and peer dependency alignment. |
+| Atlas record [`30360997`](https://atlas.kodaxa.dev/api/records/30360997cd3ca52909c2579511618c0c77b2ce55ca7d39f7fc74ccfc3b8ef795) | official_docs | EVE Vault is the wallet and identity surface for EVE Frontier Sui assets and dApp ecosystem connection. |
+| Atlas record [`9c755810`](https://atlas.kodaxa.dev/api/records/9c7558104aa193a8445150eecc796004103ec5ecb97dba013b7a918e78eae025) | official_tooling | EVE Vault has wallet signing context code with localnet/zklogin modes and chain-aware signing helpers. |
+| Atlas record [`e731cc6e`](https://atlas.kodaxa.dev/api/records/e731cc6ebafd01f8413c7808acf7807ebfaa75baebe1e043e10519662b09213a) | official_tooling | EVE Vault includes a SignPersonalMessage UI path. |
+| Atlas record [`0309227c`](https://atlas.kodaxa.dev/api/records/0309227c87d12448b180eb715f3030aaf7c8dbd07c76bca2b61a4579bb48e58f) | official_tooling | EVE Vault implements the Sui Wallet Standard adapter surface including personal message signing types. |
+| Atlas record [`cb0c66e`](https://atlas.kodaxa.dev/api/records/cb0c66e05d6e3a2886211f1047c663a86379f1995bf2a39e3b077fa6b826d5c8) | authoritative_source | EVE world-contract scripts include Sui personal-message signature verification tooling. |
+| Atlas record [`2e8138ad`](https://atlas.kodaxa.dev/api/records/2e8138ad08ab87b2e8e727aa272e0c863554a28bf1d1823acccabdc672b20632) | official_docs | In-game dApps open from an Assembly interaction and owners can submit on-chain sponsored transactions from the base dApp. |
+| Atlas record [`9c722c40`](https://atlas.kodaxa.dev/api/records/9c722c40b26aadc0648721354af2d61a542397b0978ed04f8047307dbb72d048) | official_docs | External dApps use Sui Wallet Standard, currently with EVE Vault, and select assembly context from `tenant` and `itemId` query params. |
+| Atlas World API records [`355b0230`](https://atlas.kodaxa.dev/api/records/355b023063e34dc3063180a2ca5e9dfad205ebd30a343416f7c1afdd2c6f9e40), [`35af8953`](https://atlas.kodaxa.dev/api/records/35af895334439bbecf2142fe998ab512a637ff607e30f5fec1fd2791d2a6b362), [`0d7d9751`](https://atlas.kodaxa.dev/api/records/0d7d9751c27fddbccffea46971aeda164cbec239cced11141f2fc9c913b71172) | official_api_docs | Stillness World API is current live-shard/testnet evidence for solar systems, game types, and POD verification. |
+| Sui TypeScript SDK docs | external_foundation_docs | `verifyPersonalMessageSignature` verifies personal messages and can verify against an expected Sui address; zkLogin verification may require a Sui GraphQL client on testnet. See [Mysten SDK keypairs docs](https://sdk.mystenlabs.com/sui/cryptography/keypairs). |
+| Hono CORS docs | framework_docs | Hono supports explicit origins, methods, headers, credentials, and environment-dependent CORS middleware. See [Hono CORS middleware](https://hono.dev/docs/middleware/builtin/cors). |
+| GitHub advisories | security_advisory | Current audit follow-ups are the esbuild dev-server CORS advisory [GHSA-67mh-4wv8-2f99](https://github.com/evanw/esbuild/security/advisories/GHSA-67mh-4wv8-2f99) and Vite `.map` path traversal advisory [GHSA-4w7w-66w2-5vf9](https://github.com/advisories/GHSA-4w7w-66w2-5vf9). |
+
+## P0 Release Blockers
+
+- [ ] **Implement production wallet signature verification.**  
+  Current backend production mode fails closed in [`verifyWalletSignature.ts`](../../apps/api/src/auth/verifyWalletSignature.ts), while EVE Vault and Sui docs support personal-message signing and verification paths. Production acceptance requires using the EVE Vault signature envelope with Sui `verifyPersonalMessageSignature`, expected-address verification, and zkLogin testnet GraphQL support where applicable. Evidence: Atlas [`9c755810`](https://atlas.kodaxa.dev/api/records/9c7558104aa193a8445150eecc796004103ec5ecb97dba013b7a918e78eae025), [`e731cc6e`](https://atlas.kodaxa.dev/api/records/e731cc6ebafd01f8413c7808acf7807ebfaa75baebe1e043e10519662b09213a), [`0309227c`](https://atlas.kodaxa.dev/api/records/0309227c87d12448b180eb715f3030aaf7c8dbd07c76bca2b61a4579bb48e58f), [`cb0c66e`](https://atlas.kodaxa.dev/api/records/cb0c66e05d6e3a2886211f1047c663a86379f1995bf2a39e3b077fa6b826d5c8), and [Sui SDK docs](https://sdk.mystenlabs.com/sui/cryptography/keypairs).
+
+- [ ] **Remove dev JWT from the signed push path.**  
+  The web client still blocks non-dev signing unless `VITE_REMOTE_DEV_CHARACTER_JWT` exists, then sends it through `buildSignedAuthHeaders` in [`RemoteSyncButton.tsx`](../../apps/web/src/features/remote/components/RemoteSyncButton.tsx). That contradicts the Sui identity production goal documented in [`18-production-identity-mode.md`](../backend/18-production-identity-mode.md). Production acceptance requires wallet signature plus server-side Sui character resolution, with no dev Bearer token requirement.
+
+- [ ] **Persist challenges outside process memory.**  
+  [`challengeStore.ts`](../../apps/api/src/auth/challengeStore.ts) uses an in-memory `Map`; restarts lose issued challenges and multiple API instances will not share state. Production acceptance requires a durable, TTL-backed, single-use challenge store such as Postgres or Redis, with replay tests across process boundaries.
+
+- [ ] **Install explicit API CORS policy before cross-origin deployment.**  
+  [`server.ts`](../../apps/api/src/server.ts) has no CORS middleware. Remote push sends JSON plus authorization and wallet headers, so browser cross-origin deployments need explicit allowed origins, methods, and headers. Evidence: [Hono CORS options](https://hono.dev/docs/middleware/builtin/cors). Same-origin deployment can defer this, but cross-origin production cannot.
+
+- [ ] **Add write/read rate limits and abuse controls.**  
+  The API contract already names `rate_limited`, and the security checklist calls out write rate limiting, but there is no rate-limit middleware in [`server.ts`](../../apps/api/src/server.ts) or [`signalRoutes.ts`](../../apps/api/src/signals/signalRoutes.ts). Production acceptance requires per-wallet/per-IP limits on challenge creation and signal writes, plus audit events for denied abuse paths.
+
+- [ ] **Wire real remote reads or explicitly remove production read claims.**  
+  `GET /api/v1/signals` returns an empty list and `GET /api/v1/signals/:id` always returns 404 in [`signalRoutes.ts`](../../apps/api/src/signals/signalRoutes.ts). If production remote storage is marketed as shared retrieval, these endpoints must apply auth, policy, pagination, and RLS-aligned filtering.
+
+- [ ] **Verify Postgres RLS under the actual application role.**  
+  Migration [`001_initial_schema.sql`](../../apps/api/migrations/001_initial_schema.sql) enables RLS and uses `current_setting('app.current_tribe_id', true)` / `current_setting('app.current_character_id', true)`, but repository queries in [`signalRepository.ts`](../../apps/api/src/db/signalRepository.ts) do not set those session variables. Production acceptance requires integration tests proving cross-tribe reads/writes are denied with the deployed DB role and pool behavior.
+
+## P1 Hardening Before Public Production
+
+- [ ] **Resolve dependency advisories instead of documenting them forever.**  
+  `pnpm audit --audit-level moderate` reports the known esbuild and Vite dev-tool advisories. Production acceptance requires a dependency maintenance pass, full `pnpm check:release`, and dApp Kit bundle isolation verification. Evidence: [esbuild advisory](https://github.com/evanw/esbuild/security/advisories/GHSA-67mh-4wv8-2f99), [Vite advisory](https://github.com/advisories/GHSA-4w7w-66w2-5vf9).
+
+- [ ] **Add real lint/static-analysis tooling or stop exposing `pnpm lint`.**  
+  `pnpm lint` is currently non-authoritative. Production acceptance requires configured lint rules for TypeScript, React hooks, accessibility where applicable, and CI enforcement, or removal of the script from developer-facing claims.
+
+- [ ] **Pin and audit EVE dApp Kit peer dependency compatibility.**  
+  The official dApp Kit docs require React, `@mysten/dapp-kit-react`, and `@mysten/sui` versions to stay in sync with the package ranges. Production acceptance requires a dependency upgrade note that records the installed package versions, peer ranges, and a successful build/browser smoke test. Evidence: Atlas [`679dd42f`](https://atlas.kodaxa.dev/api/records/679dd42f9b9014cf029d13bdde24af37eb5ec2402a384d385c1dec79dc92f0e1).
+
+- [ ] **Validate in-game and external-browser entry paths separately.**  
+  EVE docs describe both in-game Assembly navigation and external browser navigation with `tenant` / `itemId` params. Production acceptance requires browser tests for `/ingame/object/:objectId`, external query-param context, missing EVE Vault, locked EVE Vault, and unsupported wallet states. Evidence: Atlas [`2e8138ad`](https://atlas.kodaxa.dev/api/records/2e8138ad08ab87b2e8e727aa272e0c863554a28bf1d1823acccabdc672b20632), [`9c722c40`](https://atlas.kodaxa.dev/api/records/9c722c40b26aadc0648721354af2d61a542397b0978ed04f8047307dbb72d048).
+
+- [ ] **Define environment separation for Stillness and Utopia.**  
+  Atlas labels Stillness World API as current live-shard/testnet and Utopia as sandbox. Production acceptance requires env docs and release checks that prevent deploying Utopia endpoints to a Stillness production build except for explicit sandbox builds. Evidence: Atlas World API records [`355b0230`](https://atlas.kodaxa.dev/api/records/355b023063e34dc3063180a2ca5e9dfad205ebd30a343416f7c1afdd2c6f9e40), [`35af8953`](https://atlas.kodaxa.dev/api/records/35af895334439bbecf2142fe998ab512a637ff607e30f5fec1fd2791d2a6b362).
+
+- [ ] **Add operational health, readiness, and migration checks.**  
+  `/health` exists, but production readiness should include database connectivity, migration level, auth mode, World API base, and remote-write gate status without leaking secrets. World API itself exposes `/health` according to Atlas record [`62bb91fb`](https://atlas.kodaxa.dev/api/records/62bb91fb8c83a31d36deb280386ecb7eeb9598d62fd1b4784f037b91b94c4c10).
+
+- [ ] **Harden audit persistence and retention.**  
+  Audit insert exists, but production acceptance requires retention policy enforcement, denial-path persistence tests with DB enabled, and a read policy that does not expose all audit rows to every app role. Local evidence: [`auditRepository.ts`](../../apps/api/src/db/auditRepository.ts), [`001_initial_schema.sql`](../../apps/api/migrations/001_initial_schema.sql).
+
+- [ ] **Add secret and environment validation at boot.**  
+  Current env reads are mostly optional and import-time. Production acceptance requires fail-fast validation for required production env vars, forbidden dev flags, allowed origins, database URL, Sui GraphQL URL, World API URL, and remote-write gate. Local evidence: [`authEnv.ts`](../../apps/api/src/auth/authEnv.ts), [`dbEnv.ts`](../../apps/api/src/db/dbEnv.ts), [`env.ts`](../../apps/web/src/lib/env.ts).
+
+## P2 Product/Trust Gaps
+
+- [ ] **Write the privacy and data-retention contract for players.**  
+  Signal Vault stores local intel in IndexedDB and can optionally push remote signals; production needs player-facing disclosure for what leaves the device, what is public/tribe/officer scoped, and retention/deletion rules.
+
+- [ ] **Define moderation and takedown workflow for public signals.**  
+  Public remote signals need abuse handling, auditability, and admin operations before production exposure. The API currently has no real PATCH/DELETE implementation in [`signalRoutes.ts`](../../apps/api/src/signals/signalRoutes.ts).
+
+- [ ] **Create rollback and incident runbooks.**  
+  Production remote writes need rollback for bad deployments, DB migrations, compromised env vars, broken World API dependencies, and dApp Kit upgrades.
+
+- [ ] **Add observability beyond request IDs.**  
+  Production needs structured logs, metrics for auth failures, challenge failures, policy denials, World API failure rates, DB errors, and bundle-check status in CI.
+
+## Current Green Gates
+
+- [x] `pnpm check:release` runs web/API typecheck, web/API tests, web build, prod-auth, fresh bundle isolation, docs, and line-limit checks.
+- [x] Main bundle guard checks dApp Kit leakage specifically, while allowing legitimate World API hostnames.
+- [x] `AUTH_DEV_MODE=true` and `VITE_REMOTE_DEV_AUTH=true` are blocked by `pnpm check:prod-auth`.
+- [x] World API enrichment remains optional and is not used to infer Smart Assembly identity; dApp Kit remains the Smart Assembly authority. Evidence: Atlas [`679dd42f`](https://atlas.kodaxa.dev/api/records/679dd42f9b9014cf029d13bdde24af37eb5ec2402a384d385c1dec79dc92f0e1), Stillness World API records above.
