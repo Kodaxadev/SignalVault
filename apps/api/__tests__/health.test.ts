@@ -16,6 +16,18 @@ describe('GET /health', () => {
     expect(body['writesEnabled']).toBe(false);
   });
 
+  it('reports schema readiness without requiring a configured database', async () => {
+    const res = await app.request('/health');
+    const body = await res.json() as Record<string, unknown>;
+    const readiness = body['readiness'] as Record<string, unknown>;
+    const migrations = readiness['migrations'] as Record<string, unknown>;
+
+    expect(readiness['database']).toBe('not_configured');
+    expect(migrations['status']).toBe('not_configured');
+    expect(migrations['latestRequired']).toBe('004_add_identity_snapshot_fields');
+    expect(JSON.stringify(body)).not.toContain('DATABASE_URL');
+  });
+
   it('returns identity block with mode, suiEnabled, authDevMode', async () => {
     const res = await app.request('/health');
     const body = await res.json() as Record<string, unknown>;

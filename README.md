@@ -85,7 +85,7 @@ Signal Vault
 |---|---|
 | TypeScript | 0 errors |
 | Web tests | 658 passed |
-| API tests | 217 passed / 5 skipped |
+| API tests | 222 passed / 5 skipped |
 | Main bundle dApp Kit refs | 0 |
 | All files | ≤ 400 lines |
 | Dependency audit | 2 moderate dev-tool advisories tracked as follow-up |
