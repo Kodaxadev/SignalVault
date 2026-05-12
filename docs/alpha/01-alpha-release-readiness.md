@@ -135,7 +135,7 @@ Still pending CCP-issued JWT:
 |------|--------|
 | TypeScript | 0 errors |
 | Web tests | 658 passed |
-| API tests | 198 passed / 5 skipped |
+| API tests | 212 passed / 5 skipped |
 | Build | ✅ success |
 | Line limit (400 lines) | ✅ all files pass |
 | Main chunk dApp Kit refs | 0 |

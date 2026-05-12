@@ -116,7 +116,7 @@ describe('verifyAuthFromHeaders', () => {
 
 describe('verifyAuthFromHeaders — challenge path', () => {
   it('succeeds with valid challenge + matching wallet + valid JWT', async () => {
-    const challenge = createChallenge('0xwallet-1');
+    const challenge = await createChallenge('0xwallet-1');
     const jwt = await makeJwt({ sub: 'char-1' });
     const result = await verifyAuthFromHeaders({
       authorizationHeader: `Bearer ${jwt}`,
@@ -141,7 +141,7 @@ describe('verifyAuthFromHeaders — challenge path', () => {
   });
 
   it('returns wallet_signature_invalid when challenge is reused', async () => {
-    const challenge = createChallenge('0xwallet-1');
+    const challenge = await createChallenge('0xwallet-1');
     const jwt = await makeJwt();
     const inputs: AuthInputs = {
       authorizationHeader: `Bearer ${jwt}`,
@@ -156,7 +156,7 @@ describe('verifyAuthFromHeaders — challenge path', () => {
   });
 
   it('returns wallet_signature_invalid when wallet address does not match challenge', async () => {
-    const challenge = createChallenge('0xcorrect-wallet');
+    const challenge = await createChallenge('0xcorrect-wallet');
     const jwt = await makeJwt();
     const result = await verifyAuthFromHeaders({
       authorizationHeader: `Bearer ${jwt}`,
@@ -169,7 +169,7 @@ describe('verifyAuthFromHeaders — challenge path', () => {
   });
 
   it('returns wallet_signature_invalid when walletAddressHint is missing with challengeId', async () => {
-    const challenge = createChallenge('0xwallet-1');
+    const challenge = await createChallenge('0xwallet-1');
     const jwt = await makeJwt();
     const result = await verifyAuthFromHeaders({
       authorizationHeader: `Bearer ${jwt}`,

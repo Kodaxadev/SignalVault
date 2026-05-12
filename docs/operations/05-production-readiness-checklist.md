@@ -22,26 +22,26 @@
 
 ## P0 Release Blockers
 
-- [ ] **Implement production wallet signature verification.**  
-  Current backend production mode fails closed in [`verifyWalletSignature.ts`](../../apps/api/src/auth/verifyWalletSignature.ts), while EVE Vault and Sui docs support personal-message signing and verification paths. Production acceptance requires using the EVE Vault signature envelope with Sui `verifyPersonalMessageSignature`, expected-address verification, and zkLogin testnet GraphQL support where applicable. Evidence: Atlas [`9c755810`](https://atlas.kodaxa.dev/api/records/9c7558104aa193a8445150eecc796004103ec5ecb97dba013b7a918e78eae025), [`e731cc6e`](https://atlas.kodaxa.dev/api/records/e731cc6ebafd01f8413c7808acf7807ebfaa75baebe1e043e10519662b09213a), [`0309227c`](https://atlas.kodaxa.dev/api/records/0309227c87d12448b180eb715f3030aaf7c8dbd07c76bca2b61a4579bb48e58f), [`cb0c66e`](https://atlas.kodaxa.dev/api/records/cb0c66e05d6e3a2886211f1047c663a86379f1995bf2a39e3b077fa6b826d5c8), and [Sui SDK docs](https://sdk.mystenlabs.com/sui/cryptography/keypairs).
+- [x] **Implement production wallet signature verification.**
+  [`verifyWalletSignature.ts`](../../apps/api/src/auth/verifyWalletSignature.ts) now uses Sui `verifyPersonalMessageSignature` with expected-address verification and derives the Sui address from the verified public key. Covered by real Ed25519 `signPersonalMessage` tests in [`verifyWalletSignature.test.ts`](../../apps/api/__tests__/verifyWalletSignature.test.ts). Follow-up: live EVE Vault / zkLogin signature fixture validation remains required. Evidence: Atlas [`9c755810`](https://atlas.kodaxa.dev/api/records/9c7558104aa193a8445150eecc796004103ec5ecb97dba013b7a918e78eae025), [`e731cc6e`](https://atlas.kodaxa.dev/api/records/e731cc6ebafd01f8413c7808acf7807ebfaa75baebe1e043e10519662b09213a), [`0309227c`](https://atlas.kodaxa.dev/api/records/0309227c87d12448b180eb715f3030aaf7c8dbd07c76bca2b61a4579bb48e58f), [`cb0c66e`](https://atlas.kodaxa.dev/api/records/cb0c66e05d6e3a2886211f1047c663a86379f1995bf2a39e3b077fa6b826d5c8), and [Sui SDK docs](https://sdk.mystenlabs.com/sui/cryptography/keypairs).
 
-- [ ] **Remove dev JWT from the signed push path.**  
-  The web client still blocks non-dev signing unless `VITE_REMOTE_DEV_CHARACTER_JWT` exists, then sends it through `buildSignedAuthHeaders` in [`RemoteSyncButton.tsx`](../../apps/web/src/features/remote/components/RemoteSyncButton.tsx). That contradicts the Sui identity production goal documented in [`18-production-identity-mode.md`](../backend/18-production-identity-mode.md). Production acceptance requires wallet signature plus server-side Sui character resolution, with no dev Bearer token requirement.
+- [x] **Remove dev JWT from the signed push path.**
+  The signed wallet path no longer requires or sends `VITE_REMOTE_DEV_CHARACTER_JWT`; [`buildSignedAuthHeaders`](../../apps/web/src/features/remote/remoteSignedAuthHeaders.ts) emits wallet challenge headers only. Dev JWT remains isolated to the explicit dev-auth path.
 
-- [ ] **Persist challenges outside process memory.**  
-  [`challengeStore.ts`](../../apps/api/src/auth/challengeStore.ts) uses an in-memory `Map`; restarts lose issued challenges and multiple API instances will not share state. Production acceptance requires a durable, TTL-backed, single-use challenge store such as Postgres or Redis, with replay tests across process boundaries.
+- [x] **Persist challenges outside process memory.**
+  [`challengeStore.ts`](../../apps/api/src/auth/challengeStore.ts) now persists issued challenges through [`challengeRepository.ts`](../../apps/api/src/db/challengeRepository.ts), backed by migration [`003_add_auth_challenges.sql`](../../apps/api/migrations/003_add_auth_challenges.sql). The in-memory map remains a local fallback when the DB is unavailable.
 
-- [ ] **Install explicit API CORS policy before cross-origin deployment.**  
-  [`server.ts`](../../apps/api/src/server.ts) has no CORS middleware. Remote push sends JSON plus authorization and wallet headers, so browser cross-origin deployments need explicit allowed origins, methods, and headers. Evidence: [Hono CORS options](https://hono.dev/docs/middleware/builtin/cors). Same-origin deployment can defer this, but cross-origin production cannot.
+- [x] **Install explicit API CORS policy before cross-origin deployment.**
+  [`server.ts`](../../apps/api/src/server.ts) now installs [`apiCors.ts`](../../apps/api/src/middleware/apiCors.ts) before API routes. `API_CORS_ORIGINS` controls allowed origins and signed auth headers are included in preflight. Evidence: [Hono CORS options](https://hono.dev/docs/middleware/builtin/cors).
 
-- [ ] **Add write/read rate limits and abuse controls.**  
-  The API contract already names `rate_limited`, and the security checklist calls out write rate limiting, but there is no rate-limit middleware in [`server.ts`](../../apps/api/src/server.ts) or [`signalRoutes.ts`](../../apps/api/src/signals/signalRoutes.ts). Production acceptance requires per-wallet/per-IP limits on challenge creation and signal writes, plus audit events for denied abuse paths.
+- [x] **Add baseline read/write rate limits.**
+  [`server.ts`](../../apps/api/src/server.ts) now installs [`rateLimit.ts`](../../apps/api/src/middleware/rateLimit.ts) for `/api/*`; `API_RATE_LIMIT_MAX` and `API_RATE_LIMIT_WINDOW_MS` control the per-IP budget and return `429 rate_limited`. Follow-up: distributed/per-wallet limits and audit events for denied abuse paths remain P1 hardening.
 
-- [ ] **Wire real remote reads or explicitly remove production read claims.**  
-  `GET /api/v1/signals` returns an empty list and `GET /api/v1/signals/:id` always returns 404 in [`signalRoutes.ts`](../../apps/api/src/signals/signalRoutes.ts). If production remote storage is marketed as shared retrieval, these endpoints must apply auth, policy, pagination, and RLS-aligned filtering.
+- [x] **Wire real remote reads.**
+  `GET /api/v1/signals` and `GET /api/v1/signals/:id` now call [`signalRepository.ts`](../../apps/api/src/db/signalRepository.ts), serialize DB rows, optionally authenticate supplied read credentials, and rely on Postgres RLS filtering through the repository session context. Follow-up: pagination/filter query params are still not implemented.
 
 - [ ] **Verify Postgres RLS under the actual application role.**  
-  Migration [`001_initial_schema.sql`](../../apps/api/migrations/001_initial_schema.sql) enables RLS and uses `current_setting('app.current_tribe_id', true)` / `current_setting('app.current_character_id', true)`, but repository queries in [`signalRepository.ts`](../../apps/api/src/db/signalRepository.ts) do not set those session variables. Production acceptance requires integration tests proving cross-tribe reads/writes are denied with the deployed DB role and pool behavior.
+  Migration [`001_initial_schema.sql`](../../apps/api/migrations/001_initial_schema.sql) enables RLS and uses `current_setting('app.current_tribe_id', true)` / `current_setting('app.current_character_id', true)`. Repository calls now set those session variables in a transaction before list/find/insert queries, but production acceptance still requires integration tests proving cross-tribe reads/writes are denied with the deployed DB role and pool behavior.
 
 ## P1 Hardening Before Public Production
 
@@ -68,6 +68,9 @@
 
 - [ ] **Add secret and environment validation at boot.**  
   Current env reads are mostly optional and import-time. Production acceptance requires fail-fast validation for required production env vars, forbidden dev flags, allowed origins, database URL, Sui GraphQL URL, World API URL, and remote-write gate. Local evidence: [`authEnv.ts`](../../apps/api/src/auth/authEnv.ts), [`dbEnv.ts`](../../apps/api/src/db/dbEnv.ts), [`env.ts`](../../apps/web/src/lib/env.ts).
+
+- [ ] **Replace in-memory rate limiting with a shared limiter before horizontal scale.**
+  The new API limiter is intentionally small and process-local. Production deployments with more than one API instance need a Redis/Postgres-backed limiter keyed by IP plus verified wallet address, with audit events for denied abuse paths.
 
 ## P2 Product/Trust Gaps
 

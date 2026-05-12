@@ -28,7 +28,7 @@ challengeRoutes.post('/', async (c) => {
     );
   }
 
-  const challenge = createChallenge(parsed.data.walletAddress);
+  const challenge = await createChallenge(parsed.data.walletAddress);
 
   const response: ChallengeResponse = {
     challengeId: challenge.challengeId,

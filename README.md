@@ -79,13 +79,13 @@ Signal Vault
 
 ## Status
 
-**Internal alpha.** Local-first features are complete. Remote sync is functional under Sui identity mode (dev-validated) and dev-auth mode. Production wallet signature verification is pending EVE dApp Kit signing scheme confirmation.
+**Internal alpha.** Local-first features are complete. Remote sync is functional under Sui identity mode (dev-validated) and dev-auth mode. Production wallet signature verification is unit-tested for Sui personal messages; live EVE Vault / zkLogin fixture validation remains before public production.
 
 | Gate | Result |
 |---|---|
 | TypeScript | 0 errors |
 | Web tests | 658 passed |
-| API tests | 198 passed / 5 skipped |
+| API tests | 212 passed / 5 skipped |
 | Main bundle dApp Kit refs | 0 |
 | All files | ≤ 400 lines |
 | Dependency audit | 2 moderate dev-tool advisories tracked as follow-up |

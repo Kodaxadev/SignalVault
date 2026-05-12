@@ -25,7 +25,7 @@ export async function verifyAuthFromHeaders(inputs: AuthInputs): Promise<AuthRes
       return { ok: false, reason: 'wallet_signature_invalid' };
     }
 
-    const consumeResult = consumeChallenge(challengeId, walletAddressHint);
+    const consumeResult = await consumeChallenge(challengeId, walletAddressHint);
     if (!consumeResult.ok) {
       return { ok: false, reason: 'wallet_signature_invalid' };
     }

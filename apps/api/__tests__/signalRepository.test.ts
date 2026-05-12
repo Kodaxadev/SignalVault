@@ -1,6 +1,12 @@
-import { describe, it, expect } from 'vitest';
-import { buildInsertSignalValues } from '../src/db/signalRepository';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { buildInsertSignalValues, findSignalById, insertSignal, listSignals } from '../src/db/signalRepository';
 import type { DbInsertSignalInput } from '../src/db/signalRepository';
+
+vi.mock('../src/db/dbClient', () => ({ getPool: vi.fn() }));
+
+import { getPool } from '../src/db/dbClient';
+
+const mockGetPool = vi.mocked(getPool);
 
 const base: DbInsertSignalInput = {
   authorCharacterId: 'char-123',
@@ -14,6 +20,26 @@ const base: DbInsertSignalInput = {
   linkedEntities: [],
   createdAt: '2026-05-10T12:00:00.000Z',
 };
+
+function makeClient(rows: unknown[] = []) {
+  return {
+    query: vi.fn()
+      .mockResolvedValueOnce({ rows: [] })
+      .mockResolvedValueOnce({ rows: [] })
+      .mockResolvedValueOnce({ rows }),
+    release: vi.fn(),
+  };
+}
+
+function makePool(client: ReturnType<typeof makeClient>) {
+  return {
+    connect: vi.fn().mockResolvedValue(client),
+  };
+}
+
+beforeEach(() => {
+  mockGetPool.mockReset();
+});
 
 describe('buildInsertSignalValues', () => {
   it('returns exactly 11 values (matching INSERT_SIGNAL_SQL placeholders)', () => {
@@ -80,5 +106,63 @@ describe('buildInsertSignalValues', () => {
   it('$11 is expiresAt when provided', () => {
     const vals = buildInsertSignalValues({ ...base, expiresAt: '2026-06-01T00:00:00.000Z' });
     expect(vals[10]).toBe('2026-06-01T00:00:00.000Z');
+  });
+});
+
+describe('signalRepository RLS context', () => {
+  it('sets character and tribe session context before listing signals', async () => {
+    const client = makeClient([]);
+    mockGetPool.mockReturnValue(makePool(client) as never);
+
+    await listSignals({ characterId: 'char-1', tribeId: 'tribe-1' });
+
+    expect(client.query).toHaveBeenNthCalledWith(1, 'BEGIN');
+    expect(client.query).toHaveBeenNthCalledWith(
+      2,
+      expect.stringContaining('set_config'),
+      ['char-1', 'tribe-1']
+    );
+    expect(client.query).toHaveBeenNthCalledWith(
+      3,
+      'SELECT * FROM signals ORDER BY created_at DESC LIMIT 50'
+    );
+    expect(client.query).toHaveBeenNthCalledWith(4, 'COMMIT');
+    expect(client.release).toHaveBeenCalled();
+  });
+
+  it('sets RLS session context before finding one signal', async () => {
+    const client = makeClient([]);
+    mockGetPool.mockReturnValue(makePool(client) as never);
+
+    await findSignalById('sig-1', { characterId: 'char-1', tribeId: null });
+
+    expect(client.query).toHaveBeenNthCalledWith(
+      2,
+      expect.stringContaining('set_config'),
+      ['char-1', '']
+    );
+    expect(client.query).toHaveBeenNthCalledWith(
+      3,
+      'SELECT * FROM signals WHERE id = $1',
+      ['sig-1']
+    );
+  });
+
+  it('sets RLS session context before inserting one signal', async () => {
+    const client = makeClient([{ id: 'sig-1' }]);
+    mockGetPool.mockReturnValue(makePool(client) as never);
+
+    await insertSignal(base);
+
+    expect(client.query).toHaveBeenNthCalledWith(
+      2,
+      expect.stringContaining('set_config'),
+      ['char-123', 'tribe-xyz']
+    );
+    expect(client.query).toHaveBeenNthCalledWith(
+      3,
+      expect.stringContaining('INSERT INTO signals'),
+      buildInsertSignalValues(base)
+    );
   });
 });

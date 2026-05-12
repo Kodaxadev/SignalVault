@@ -1,5 +1,10 @@
 import { getPool } from './dbClient';
 
+export interface DbViewerContext {
+  characterId: string | null;
+  tribeId: string | null;
+}
+
 export interface DbSignalRow {
   id: string;
   author_character_id: string | null;
@@ -16,21 +21,66 @@ export interface DbSignalRow {
   expires_at: string | null;
 }
 
-export async function findSignalById(id: string): Promise<DbSignalRow | null> {
+const SET_RLS_CONTEXT_SQL = `
+  SELECT
+    set_config('app.current_character_id', $1, true),
+    set_config('app.current_tribe_id', $2, true)
+`;
+
+type QueryClient = {
+  query: <R = unknown>(text: string, values?: unknown[]) => Promise<{ rows: R[] }>;
+  release: () => void;
+};
+
+async function withRlsContext<T>(
+  viewer: DbViewerContext,
+  query: (client: QueryClient) => Promise<T>
+): Promise<T> {
+  const pool = getPool();
+  if (!pool) throw new Error('No database connection');
+
+  const client = await pool.connect() as QueryClient;
+  try {
+    await client.query('BEGIN');
+    await client.query(SET_RLS_CONTEXT_SQL, [
+      viewer.characterId ?? '',
+      viewer.tribeId ?? '',
+    ]);
+    const result = await query(client);
+    await client.query('COMMIT');
+    return result;
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
+export async function findSignalById(
+  id: string,
+  viewer: DbViewerContext = { characterId: null, tribeId: null }
+): Promise<DbSignalRow | null> {
   const pool = getPool();
   if (!pool) return null;
-  const result = await pool.query<DbSignalRow>(
-    'SELECT * FROM signals WHERE id = $1',
-    [id]
+  const result = await withRlsContext(viewer, (client) =>
+    client.query<DbSignalRow>(
+      'SELECT * FROM signals WHERE id = $1',
+      [id]
+    )
   );
   return result.rows[0] ?? null;
 }
 
-export async function listSignals(): Promise<DbSignalRow[]> {
+export async function listSignals(
+  viewer: DbViewerContext = { characterId: null, tribeId: null }
+): Promise<DbSignalRow[]> {
   const pool = getPool();
   if (!pool) return [];
-  const result = await pool.query<DbSignalRow>(
-    'SELECT * FROM signals ORDER BY created_at DESC LIMIT 50'
+  const result = await withRlsContext(viewer, (client) =>
+    client.query<DbSignalRow>(
+      'SELECT * FROM signals ORDER BY created_at DESC LIMIT 50'
+    )
   );
   return result.rows;
 }
@@ -78,9 +128,15 @@ export function buildInsertSignalValues(input: DbInsertSignalInput): unknown[] {
 export async function insertSignal(input: DbInsertSignalInput): Promise<DbSignalRow> {
   const pool = getPool();
   if (!pool) throw new Error('No database connection');
-  const result = await pool.query<DbSignalRow>(
-    INSERT_SIGNAL_SQL,
-    buildInsertSignalValues(input)
+  const result = await withRlsContext(
+    {
+      characterId: input.authorCharacterId,
+      tribeId: input.authorTribeId,
+    },
+    (client) => client.query<DbSignalRow>(
+      INSERT_SIGNAL_SQL,
+      buildInsertSignalValues(input)
+    )
   );
   const row = result.rows[0];
   if (!row) throw new Error('Signal INSERT returned no rows');

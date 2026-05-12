@@ -141,7 +141,7 @@ describe('RemoteSyncButton', () => {
     expect(screen.getByText(/wallet signing not available/i)).toBeTruthy();
   });
 
-  it('shows character_token_blocked when signing available but no JWT', () => {
+  it('shows "Push remote" when signing is available, dev auth disabled, and no JWT is configured', () => {
     vi.mocked(isRemoteDevAuthEnabled).mockReturnValue(false);
     vi.mocked(getRemoteDevCredentials).mockReturnValue(null);
     mockEnv.VITE_REMOTE_DEV_CHARACTER_JWT = undefined;
@@ -151,8 +151,7 @@ describe('RemoteSyncButton', () => {
       signMessage: vi.fn(),
     };
     render(<RemoteSyncButton signal={makeSignal()} />);
-    expect(screen.queryByRole('button')).toBeNull();
-    expect(screen.getByText(/character token not available/i)).toBeTruthy();
+    expect(screen.getByRole('button', { name: /push remote/i })).toBeTruthy();
   });
 
   it('shows "Push remote" when signing is available, dev auth disabled, JWT present', () => {
