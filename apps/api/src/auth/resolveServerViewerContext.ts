@@ -17,7 +17,15 @@ export type ServerViewerKind =
 export type ServerViewerContext =
   | { kind: 'anonymous' }
   | { kind: 'wallet_verified'; walletAddress: string }
-  | { kind: 'character_resolved'; walletAddress: string; characterId: string; tribeId?: string; identitySource: ServerIdentitySource }
+  | {
+      kind: 'character_resolved';
+      walletAddress: string;
+      characterId: string;
+      characterName?: string;
+      tribeId?: string;
+      identitySource: ServerIdentitySource;
+      identityResolvedAt: string;
+    }
   | { kind: 'auth_mode_conflict'; reason: string }
   | { kind: 'identity_resolution_failed'; walletAddress: string; suiReason: string };
 
@@ -85,8 +93,10 @@ export async function resolveServerViewerContext(
         kind: 'character_resolved',
         walletAddress,
         characterId: suiResult.character.characterItemId,
+        characterName: suiResult.character.characterName,
         tribeId: String(suiResult.character.tribeId),
         identitySource: 'sui_player_profile',
+        identityResolvedAt: new Date().toISOString(),
       };
     }
     if (isProductionSuiMode) {
@@ -106,6 +116,7 @@ export async function resolveServerViewerContext(
         characterId: jwtResult.claims.sub,
         tribeId: jwtResult.claims.tribe_id,
         identitySource: 'dev_character_jwt',
+        identityResolvedAt: new Date().toISOString(),
       };
     }
   }

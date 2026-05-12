@@ -16,8 +16,10 @@ export type ServerIdentitySource =
 export interface VerifiedAuth {
   walletAddress: string;
   characterId?: string;
+  characterName?: string;
   tribeId?: string;
   identitySource?: ServerIdentitySource;
+  identityResolvedAt?: string;
 }
 
 export type AuthResult =

@@ -64,7 +64,10 @@
   `/health` exists, but production readiness should include database connectivity, migration level, auth mode, World API base, and remote-write gate status without leaking secrets. World API itself exposes `/health` according to Atlas record [`62bb91fb`](https://atlas.kodaxa.dev/api/records/62bb91fb8c83a31d36deb280386ecb7eeb9598d62fd1b4784f037b91b94c4c10).
 
 - [ ] **Harden audit persistence and retention.**  
-  Audit insert exists, but production acceptance requires retention policy enforcement, denial-path persistence tests with DB enabled, and a read policy that does not expose all audit rows to every app role. Local evidence: [`auditRepository.ts`](../../apps/api/src/db/auditRepository.ts), [`001_initial_schema.sql`](../../apps/api/migrations/001_initial_schema.sql).
+  Audit insert exists and now records request-time identity snapshots for biomassing/identity-continuity safety. Production acceptance still requires retention policy enforcement, denial-path persistence tests with DB enabled, and a read policy that does not expose all audit rows to every app role. Local evidence: [`auditRepository.ts`](../../apps/api/src/db/auditRepository.ts), [`001_initial_schema.sql`](../../apps/api/migrations/001_initial_schema.sql), [`23-biomassing-identity-continuity.md`](../backend/23-biomassing-identity-continuity.md).
+
+- [ ] **Confirm EVE Frontier character deletion/recreation semantics.**
+  EVE Online officially documents character deletion/biomassing, but EVE Frontier's exact PlayerProfile/Character lifecycle after deletion or recreation remains unconfirmed. Production acceptance requires official EVE Frontier evidence for whether `PlayerProfile.character_id`, `Character.key.item_id`, and character names can disappear, change, or be reused.
 
 - [ ] **Add secret and environment validation at boot.**  
   Current env reads are mostly optional and import-time. Production acceptance requires fail-fast validation for required production env vars, forbidden dev flags, allowed origins, database URL, Sui GraphQL URL, World API URL, and remote-write gate. Local evidence: [`authEnv.ts`](../../apps/api/src/auth/authEnv.ts), [`dbEnv.ts`](../../apps/api/src/db/dbEnv.ts), [`env.ts`](../../apps/web/src/lib/env.ts).
@@ -92,3 +95,4 @@
 - [x] Main bundle guard checks dApp Kit leakage specifically, while allowing legitimate World API hostnames.
 - [x] `AUTH_DEV_MODE=true` and `VITE_REMOTE_DEV_AUTH=true` are blocked by `pnpm check:prod-auth`.
 - [x] World API enrichment remains optional and is not used to infer Smart Assembly identity; dApp Kit remains the Smart Assembly authority. Evidence: Atlas [`679dd42f`](https://atlas.kodaxa.dev/api/records/679dd42f9b9014cf029d13bdde24af37eb5ec2402a384d385c1dec79dc92f0e1), Stillness World API records above.
+- [x] Remote signals and audit logs preserve request-time character identity snapshots (`characterId`, `characterName`, `tribeId`, `identitySource`, `identityResolvedAt`) instead of assuming a wallet maps to the same character forever.

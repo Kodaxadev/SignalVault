@@ -64,6 +64,7 @@ describe('resolveServerViewerContext', () => {
     if (ctx.kind === 'character_resolved') {
       expect(ctx.characterId).toBe('char-123');
       expect(typeof ctx.walletAddress).toBe('string');
+      expect(new Date(ctx.identityResolvedAt).toISOString()).toBe(ctx.identityResolvedAt);
     }
   });
 

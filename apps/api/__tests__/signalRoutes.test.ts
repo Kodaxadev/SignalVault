@@ -82,8 +82,10 @@ describe('GET /api/v1/signals', () => {
     mockListSignals.mockResolvedValue([{
       id: 'sig-1',
       author_character_id: 'char-1',
+      author_character_name: 'Kivik',
       author_wallet_address: '0xabc',
       author_tribe_id: null,
+      identity_resolved_at: '2026-05-12T16:00:00.000Z',
       visibility: 'public',
       signal_type: 'gate_recon',
       confidence: 'high',
@@ -101,6 +103,7 @@ describe('GET /api/v1/signals', () => {
 
     expect(res.status).toBe(200);
     expect(signals[0]?.['id']).toBe('sig-1');
+    expect(signals[0]?.['authorCharacterName']).toBe('Kivik');
     expect(signals[0]?.['signalType']).toBe('gate_recon');
   });
 });
@@ -120,8 +123,10 @@ describe('GET /api/v1/signals/:id', () => {
     mockFindSignalById.mockResolvedValue({
       id: 'sig-1',
       author_character_id: 'char-1',
+      author_character_name: 'Kivik',
       author_wallet_address: '0xabc',
       author_tribe_id: null,
+      identity_resolved_at: '2026-05-12T16:00:00.000Z',
       visibility: 'public',
       signal_type: 'gate_recon',
       confidence: 'high',
@@ -139,6 +144,7 @@ describe('GET /api/v1/signals/:id', () => {
 
     expect(res.status).toBe(200);
     expect(signal['id']).toBe('sig-1');
+    expect(signal['authorCharacterName']).toBe('Kivik');
     expect(signal['signalType']).toBe('gate_recon');
   });
 });

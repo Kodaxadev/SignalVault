@@ -63,8 +63,10 @@ describe('resolveServerViewerContext — Sui identity path', () => {
     expect(ctx.kind).toBe('character_resolved');
     if (ctx.kind === 'character_resolved') {
       expect(ctx.characterId).toBe('2112089652');
+      expect(ctx.characterName).toBe('Kivik');
       expect(ctx.tribeId).toBe('1000167');
       expect(ctx.identitySource).toBe('sui_player_profile');
+      expect(new Date(ctx.identityResolvedAt).toISOString()).toBe(ctx.identityResolvedAt);
     }
   });
 

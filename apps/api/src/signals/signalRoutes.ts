@@ -15,8 +15,10 @@ function rowToSignal(row: DbSignalRow) {
   return {
     id: row.id,
     authorCharacterId: row.author_character_id,
+    authorCharacterName: row.author_character_name,
     authorWalletAddress: row.author_wallet_address,
     authorTribeId: row.author_tribe_id,
+    identityResolvedAt: row.identity_resolved_at,
     visibility: row.visibility,
     signalType: row.signal_type,
     confidence: row.confidence,
@@ -129,6 +131,7 @@ signalRoutes.post('/', async (c) => {
       eventType: 'signal_created',
       actorWalletAddress: authResult.auth.walletAddress,
       actorCharacterId: authResult.auth.characterId,
+      actorCharacterName: authResult.auth.characterName,
       actorTribeId: authResult.auth.tribeId,
       actorRoleSnapshot: {},
       targetSignalId: 'pending-create',
@@ -138,6 +141,7 @@ signalRoutes.post('/', async (c) => {
       requestId,
       metadata: {},
       identitySource: authResult.auth.identitySource,
+      identityResolvedAt: authResult.auth.identityResolvedAt,
     });
     return c.json(
       { code: policyResult.reason, message: 'Policy check denied', requestId },
@@ -160,8 +164,10 @@ signalRoutes.post('/', async (c) => {
   try {
     inserted = await insertSignal({
       authorCharacterId: authResult.auth.characterId ?? null,
+      authorCharacterName: authResult.auth.characterName ?? null,
       authorWalletAddress: authResult.auth.walletAddress,
       authorTribeId: authResult.auth.tribeId ?? null,
+      identityResolvedAt: authResult.auth.identityResolvedAt ?? null,
       visibility: signal.visibility,
       signalType: signal.signalType,
       confidence: signal.confidence,
@@ -182,6 +188,7 @@ signalRoutes.post('/', async (c) => {
     eventType: 'signal_created',
     actorWalletAddress: authResult.auth.walletAddress,
     actorCharacterId: authResult.auth.characterId,
+    actorCharacterName: authResult.auth.characterName,
     actorTribeId: authResult.auth.tribeId,
     actorRoleSnapshot: {},
     targetSignalId: inserted.id,
@@ -190,6 +197,7 @@ signalRoutes.post('/', async (c) => {
     requestId,
     metadata: {},
     identitySource: authResult.auth.identitySource,
+    identityResolvedAt: authResult.auth.identityResolvedAt,
   });
 
   return c.json({ signalId: inserted.id, requestId }, 201);

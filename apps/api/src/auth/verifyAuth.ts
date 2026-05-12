@@ -67,8 +67,10 @@ export async function verifyAuthFromHeaders(inputs: AuthInputs): Promise<AuthRes
     auth: {
       walletAddress: context.walletAddress,
       characterId: context.characterId,
+      characterName: context.characterName,
       tribeId: context.tribeId,
       identitySource: context.identitySource,
+      identityResolvedAt: context.identityResolvedAt,
     },
   };
 }

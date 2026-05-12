@@ -8,8 +8,10 @@ export interface DbViewerContext {
 export interface DbSignalRow {
   id: string;
   author_character_id: string | null;
+  author_character_name: string | null;
   author_wallet_address: string;
   author_tribe_id: string | null;
+  identity_resolved_at: string | null;
   visibility: string;
   signal_type: string;
   confidence: string;
@@ -87,8 +89,10 @@ export async function listSignals(
 
 export interface DbInsertSignalInput {
   authorCharacterId: string | null;
+  authorCharacterName?: string | null;
   authorWalletAddress: string;
   authorTribeId: string | null;
+  identityResolvedAt?: string | null;
   visibility: string;
   signalType: string;
   confidence: string;
@@ -101,17 +105,18 @@ export interface DbInsertSignalInput {
 
 const INSERT_SIGNAL_SQL = `
   INSERT INTO signals (
-    author_character_id, author_wallet_address, author_tribe_id,
-    visibility, signal_type, confidence, title, body, linked_entities,
-    created_at, expires_at
+    author_character_id, author_character_name, author_wallet_address,
+    author_tribe_id, visibility, signal_type, confidence, title, body,
+    linked_entities, created_at, expires_at, identity_resolved_at
   )
-  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
   RETURNING *
 `;
 
 export function buildInsertSignalValues(input: DbInsertSignalInput): unknown[] {
   return [
     input.authorCharacterId ?? null,
+    input.authorCharacterName ?? null,
     input.authorWalletAddress,
     input.authorTribeId ?? null,
     input.visibility,
@@ -122,6 +127,7 @@ export function buildInsertSignalValues(input: DbInsertSignalInput): unknown[] {
     JSON.stringify(input.linkedEntities),
     input.createdAt,
     input.expiresAt ?? null,
+    input.identityResolvedAt ?? null,
   ];
 }
 
