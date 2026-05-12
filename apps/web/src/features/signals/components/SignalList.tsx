@@ -2,6 +2,7 @@ import { useSignalContext } from '@/features/signals/SignalProvider';
 import { useViewerSession } from '@/features/viewer';
 import { canReadSignal } from '@/features/permissions';
 import { SignalCard } from './SignalCard';
+import { TerminalPanel } from '@/features/ingame';
 
 export function SignalList({ entityKey }: { entityKey: string }) {
   const { getSignals } = useSignalContext();
@@ -10,18 +11,21 @@ export function SignalList({ entityKey }: { entityKey: string }) {
 
   if (signals.length === 0) {
     return (
-      <div className="rounded border border-gray-800 p-3 text-center">
-        <p className="text-xs text-gray-500">No signals yet for this object.</p>
-      </div>
+      <TerminalPanel title="Intel Memory" code="EMPTY" headingLevel={3}>
+        <p className="text-center font-mono text-xs uppercase text-zinc-500">
+          No signals yet for this object.
+        </p>
+      </TerminalPanel>
     );
   }
 
   return (
-    <div className="space-y-2">
-      <h3 className="text-xs font-semibold text-gray-400">Recent Signals</h3>
+    <TerminalPanel title="Intel Memory" code={`${signals.length} LOCAL`} headingLevel={3}>
+      <div className="space-y-2">
       {signals.map((signal) => (
         <SignalCard key={signal.id} signal={signal} />
       ))}
-    </div>
+      </div>
+    </TerminalPanel>
   );
 }

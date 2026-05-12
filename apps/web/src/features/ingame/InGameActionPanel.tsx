@@ -1,5 +1,6 @@
 import type { ViewerContext } from '@/features/viewer/viewerTypes';
 import type { CharacterResolutionUiState } from './types';
+import { TerminalButton, TerminalStatusStrip } from './TerminalFrame';
 
 interface InGameActionPanelProps {
   viewer: ViewerContext;
@@ -19,59 +20,54 @@ export function InGameActionPanel({
   return (
     <div className="space-y-3">
       {lastSignalMessage && (
-        <div className="rounded border border-emerald-800 bg-emerald-900/20 px-3 py-2">
-          <p className="text-xs text-emerald-300">Signal logged locally: {lastSignalMessage}</p>
-        </div>
+        <TerminalStatusStrip tone="success">
+          Signal logged locally: {lastSignalMessage}
+        </TerminalStatusStrip>
       )}
 
       {viewer.state === 'anonymous' && (
-        <div className="rounded border border-yellow-800 bg-yellow-900/20 p-3">
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={onConnectIdentity}
-              className="rounded bg-blue-700 px-3 py-1.5 text-xs text-white hover:bg-blue-600"
-            >
-              Connect Identity
-            </button>
-          </div>
+        <div className="space-y-3">
+          <p className="text-xs leading-relaxed text-zinc-400">
+            Object context is visible. Connect identity to attribute field intel and unlock private
+            operator scope.
+          </p>
+          <TerminalButton tone="primary" onClick={onConnectIdentity}>
+            Connect Identity
+          </TerminalButton>
         </div>
       )}
 
       {viewer.state === 'wallet_connected' && characterResolution.status === 'available' && (
-        <div className="rounded border border-blue-800 bg-blue-900/20 p-3">
-          <p className="text-xs text-blue-300">Character data available for resolution.</p>
-          <div className="mt-2 flex gap-2">
-            <button
-              type="button"
-              onClick={onResolveCharacter}
-              className="rounded bg-emerald-700 px-3 py-1.5 text-xs text-white hover:bg-emerald-600"
-            >
-              Resolve Character
-            </button>
-          </div>
+        <div className="space-y-3">
+          <p className="font-mono text-xs uppercase text-sky-300">
+            Character data available for resolution.
+          </p>
+          <p className="text-xs text-zinc-500">
+            Resolve the current Frontier character before writing character-attributed Signals.
+          </p>
+          <TerminalButton tone="success" onClick={onResolveCharacter}>
+            Resolve Character
+          </TerminalButton>
         </div>
       )}
 
       {viewer.state === 'wallet_connected' && characterResolution.status === 'unavailable' && (
-        <div className="rounded border border-gray-700 bg-gray-900 p-3">
-          <p className="text-xs text-gray-300">Wallet connected.</p>
-          <p className="mt-1 text-xs text-gray-400">
+        <div className="space-y-2">
+          <p className="font-mono text-xs uppercase text-zinc-300">Wallet connected.</p>
+          <p className="text-xs text-zinc-500">
             Character data unavailable: {characterResolution.reason}.
           </p>
         </div>
       )}
 
       {viewer.state === 'wallet_connected' && characterResolution.status === 'not_applicable' && (
-        <div className="rounded border border-gray-700 bg-gray-900 p-3">
-          <p className="text-xs text-gray-300">Wallet connected.</p>
-        </div>
+        <p className="font-mono text-xs uppercase text-zinc-300">Wallet connected.</p>
       )}
 
       {viewer.state === 'character_resolved' && (
-        <div className="rounded border border-emerald-800 bg-emerald-900/20 p-3">
-          <p className="text-xs text-emerald-300">Character resolved. All Signal features available.</p>
-        </div>
+        <TerminalStatusStrip tone="success">
+          Character resolved. All Signal features available.
+        </TerminalStatusStrip>
       )}
     </div>
   );

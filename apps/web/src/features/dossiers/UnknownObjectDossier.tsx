@@ -5,7 +5,7 @@ import { ClassificationConflictBanner } from '@/features/entities';
 import { ManualClassificationPanel } from '@/features/entities';
 import { QuickSignalButtons } from '@/features/signals/components/QuickSignalButtons';
 import { SignalList } from '@/features/signals/components/SignalList';
-import { ObjectUnresolved, ManualClassificationNote } from '@/features/ingame';
+import { ObjectUnresolved, ManualClassificationNote, TerminalPanel } from '@/features/ingame';
 import { WorldApiTypePanel } from '@/features/worldApi/components/WorldApiTypePanel';
 
 export function UnknownObjectDossier({
@@ -20,10 +20,7 @@ export function UnknownObjectDossier({
 
   return (
     <div className="space-y-4">
-      <div className="rounded border border-gray-700 bg-gray-900 p-3">
-        <h2 className="text-sm font-semibold text-gray-200">
-          {isUnknown ? 'Unknown Object' : `${resolved.label}`}
-        </h2>
+      <TerminalPanel title={isUnknown ? 'Unknown Object' : resolved.label} code={`ROOT / ${resolved.confidence}`}>
         {isUnknown && resolved.sourceClaims.length === 0 && (
           <ObjectUnresolved />
         )}
@@ -36,7 +33,7 @@ export function UnknownObjectDossier({
           </p>
         )}
         {!isUnknown && !isConflicted && (
-          <p className="mt-1 text-xs text-gray-400">
+          <p className="mt-1 text-xs text-zinc-400">
             {resolved.confidence === 'manual'
               ? 'Manually classified. Not yet verified by stronger data sources.'
               : `Classification from ${resolved.sources.join(', ')}.`}
@@ -45,27 +42,27 @@ export function UnknownObjectDossier({
         <div className="mt-2">
           <EntityResolutionBadge confidence={resolved.confidence} />
         </div>
-        <dl className="mt-3 space-y-1 text-xs text-gray-500">
+        <dl className="mt-3 grid gap-1 font-mono text-xs uppercase text-zinc-500 sm:grid-cols-[120px_minmax(0,1fr)]">
           {resolved.objectId && (
             <>
               <dt>Object ID</dt>
-              <dd className="text-gray-300 font-mono">{resolved.objectId}</dd>
+              <dd className="break-all text-zinc-300">{resolved.objectId}</dd>
             </>
           )}
           {resolved.tenant && (
             <>
               <dt>Tenant</dt>
-              <dd className="text-gray-300">{resolved.tenant}</dd>
+              <dd className="text-zinc-300">{resolved.tenant}</dd>
             </>
           )}
           {resolved.itemId && (
             <>
               <dt>Item ID</dt>
-              <dd className="text-gray-300 font-mono">{resolved.itemId}</dd>
+              <dd className="break-all text-zinc-300">{resolved.itemId}</dd>
             </>
           )}
         </dl>
-      </div>
+      </TerminalPanel>
 
       <ClassificationSourceList claims={resolved.sourceClaims} />
       <ClassificationConflictBanner conflictingClaims={[]} />

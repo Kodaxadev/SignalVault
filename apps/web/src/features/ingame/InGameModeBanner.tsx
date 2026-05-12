@@ -1,4 +1,5 @@
 import type { ViewerContext } from '@/features/viewer/viewerTypes';
+import { TerminalStatusStrip } from './TerminalFrame';
 
 const stateLabels: Record<ViewerContext['state'], string> = {
   anonymous: 'IDENTITY UNRESOLVED',
@@ -13,24 +14,24 @@ const stateSubtext: Record<ViewerContext['state'], string> = {
 };
 
 const stateColors: Record<ViewerContext['state'], string> = {
-  anonymous: 'border-yellow-800 bg-yellow-900/20',
-  wallet_connected: 'border-blue-800 bg-blue-900/20',
-  character_resolved: 'border-emerald-800 bg-emerald-900/20',
+  anonymous: 'warning',
+  wallet_connected: 'info',
+  character_resolved: 'success',
 };
 
 const labelColors: Record<ViewerContext['state'], string> = {
-  anonymous: 'text-yellow-300',
-  wallet_connected: 'text-blue-300',
+  anonymous: 'text-black',
+  wallet_connected: 'text-sky-300',
   character_resolved: 'text-emerald-300',
 };
 
 export function InGameModeBanner({ viewer }: { viewer: ViewerContext }) {
   return (
-    <div className={`rounded border px-3 py-2 ${stateColors[viewer.state]}`}>
-      <p className={`text-xs font-semibold ${labelColors[viewer.state]}`}>
-        {stateLabels[viewer.state]}
-      </p>
-      <p className="mt-0.5 text-xs text-gray-300">{stateSubtext[viewer.state]}</p>
-    </div>
+    <TerminalStatusStrip tone={stateColors[viewer.state] as 'warning' | 'info' | 'success'}>
+      <span className={labelColors[viewer.state]}>{stateLabels[viewer.state]}</span>
+      <span className={viewer.state === 'anonymous' ? 'ml-3 text-black/80' : 'ml-3 text-zinc-300'}>
+        {stateSubtext[viewer.state]}
+      </span>
+    </TerminalStatusStrip>
   );
 }
