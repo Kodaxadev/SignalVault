@@ -4,7 +4,7 @@ Start here. One command before a demo, one command before a release.
 
 ```
 pnpm demo:status       # check your environment, get Path A or Path B recommendation
-pnpm check:release     # run all release guardrails before any deployment
+pnpm check:release     # typecheck, test, build, then run release guardrails
 ```
 
 ---
@@ -28,7 +28,7 @@ Remote push is labeled "Alpha · Dev auth · Manual only" in the UI. That label 
 | [01-alpha-release-readiness.md](01-alpha-release-readiness.md) | What works, what is local-only, what is dev-auth only, what is blocked |
 | [02-demo-script.md](02-demo-script.md) | Step-by-step demo walkthrough (classify → signal → stale → export → push) |
 | [03-known-limitations.md](03-known-limitations.md) | 13 named limitations with path-to-resolution |
-| [04-risk-register.md](04-risk-register.md) | 11 risks with severity, mitigations, and action required |
+| [04-risk-register.md](04-risk-register.md) | 13 risks with severity, mitigations, and action required |
 | [05-player-facing-faq.md](05-player-facing-faq.md) | Plain-language FAQ for alpha players |
 | [06-demo-operator-checklist.md](06-demo-operator-checklist.md) | Pre/during/post demo checklists, Path A vs Path B setup, escalation table |
 | [07-demo-environment-matrix.md](07-demo-environment-matrix.md) | Every env var: safe/required/forbidden per context, feature availability matrix |
@@ -39,8 +39,9 @@ Remote push is labeled "Alpha · Dev auth · Manual only" in the UI. That label 
 
 - No background sync until a trusted EVE character token issuer exists.
 - `AUTH_DEV_MODE=true` and `VITE_REMOTE_DEV_AUTH=true` must never reach production.
-- dApp Kit must stay isolated to the InGameRoute chunk (main bundle: 0 evefrontier refs).
+- dApp Kit must stay isolated to the InGameRoute chunk (main bundle: 0 dApp Kit refs).
 - Remote push is manual, single-signal, and not a reliable backup.
 - Scout cell scope is locked. Character identity is unverified in alpha.
+- Lint and dependency-audit remediation are follow-up hardening work, not part of the alpha release gate yet.
 
 See [docs/backend/16-character-token-contract.md](../backend/16-character-token-contract.md) for the auth trust gap.

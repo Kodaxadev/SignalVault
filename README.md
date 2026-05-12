@@ -54,7 +54,7 @@ Signal Vault
 
 **Local-first by default.** Every feature works without the backend. Remote push is manual, single-signal, and labeled alpha.
 
-**Chunk isolation.** The EVE Frontier dApp Kit (`@evefrontier/dapp-kit`) loads only in the InGame route chunk. The main app bundle has zero `evefrontier` references — verified on every build.
+**Chunk isolation.** The EVE Frontier dApp Kit (`@evefrontier/dapp-kit`) loads only in the InGame route chunk. The main app bundle has zero dApp Kit references — verified on every build.
 
 **Entity resolution pipeline.** Claims from multiple sources are merged by priority: `onchain_verified` (100) › `dappkit_current_object` (80) › `world_api` (75) › `user_manual` (30) › `url_hint` (10). The winning claim sets entity type and label.
 
@@ -69,7 +69,7 @@ Signal Vault
 | Frontend | React 19, Vite, React Router, TanStack Query, Tailwind CSS |
 | Local storage | Dexie (IndexedDB) |
 | Validation | Zod |
-| Backend | Hono, Postgres, `@supabase/supabase-js` |
+| Backend | Hono, Postgres, `pg` |
 | Identity | Sui GraphQL — wallet → PlayerProfile → Character (on-chain) |
 | EVE integration | `@evefrontier/dapp-kit` (InGame only) |
 | Monorepo | pnpm workspaces |
@@ -85,15 +85,16 @@ Signal Vault
 |---|---|
 | TypeScript | 0 errors |
 | Web tests | 658 passed |
-| API tests | 193 passed |
-| Main bundle evefrontier refs | 0 |
+| API tests | 198 passed / 5 skipped |
+| Main bundle dApp Kit refs | 0 |
 | All files | ≤ 400 lines |
+| Dependency audit | 2 moderate dev-tool advisories tracked as follow-up |
 
 ---
 
 ## Getting Started
 
-**Prerequisites:** Node 20+, pnpm 9+
+**Prerequisites:** Node >=24, pnpm 9+
 
 ```bash
 # Install
@@ -113,7 +114,7 @@ pnpm typecheck:api
 pnpm test:run      # web
 pnpm test:api      # api
 
-# Release gates
+# Release gates (typecheck, tests, build, then release guardrails)
 pnpm check:release
 ```
 
@@ -160,6 +161,8 @@ These are unconditional. They do not change for demos, edge cases, or convenienc
 - **No dev-auth in production.** `AUTH_DEV_MODE=true` and `VITE_REMOTE_DEV_AUTH=true` are blocked by `pnpm check:prod-auth`.
 - **Chunk isolation.** dApp Kit must not appear in the main bundle. Enforced by `check:bundle-clean`.
 - **World API does not infer Smart Assembly identity.** Type data from the World API claims `item` only — never `smart_gate`, `smart_storage_unit`, `market`, or `smart_turret`. The dApp Kit is the authority for Smart Assembly classification.
+- **Lint is not a release gate yet.** The current lint script is a placeholder until a real lint configuration is added.
+- **Audit advisories are tracked, not hidden.** Current moderate Vite/esbuild dev-tool advisories require a separate dependency maintenance pass.
 
 ---
 

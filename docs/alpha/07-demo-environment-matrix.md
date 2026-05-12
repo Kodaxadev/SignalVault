@@ -166,8 +166,8 @@ Remote push requires `db: "connected"` and `writesEnabled: true`. Check `identit
 | Command | When to run | What it checks |
 |---------|------------|----------------|
 | `pnpm check:prod-auth` | Before any production build | `AUTH_DEV_MODE` and `VITE_REMOTE_DEV_AUTH` are unset |
-| `pnpm check:bundle-clean` | After `pnpm build` | Main chunk has 0 evefrontier refs |
+| `pnpm check:bundle-clean` | After `pnpm build` | Main chunk has 0 dApp Kit refs |
 | `pnpm check:docs` | Before any demo or release | Alpha docs have no stale phrases, required phrases present |
 | `pnpm check:lines` | Any time | All source files under 400 lines |
-| `pnpm check:release` | Full pre-release gate | All four checks in sequence |
+| `pnpm check:release` | Full pre-release gate | Web/API typecheck, web/API tests, web build, then release guardrails |
 | `node scripts/print-alpha-demo-status.mjs` | Before a demo | Current environment summary and demo path recommendation |

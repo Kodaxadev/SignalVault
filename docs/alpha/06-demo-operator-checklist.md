@@ -68,7 +68,7 @@ Run `node scripts/print-alpha-demo-status.mjs` and confirm:
 ```
 [ ] No AUTH_DEV_MODE=true in production
 [ ] No VITE_REMOTE_DEV_AUTH=true in production
-[ ] Main bundle is clean (0 evefrontier refs in index-*.js)
+[ ] Main bundle is clean (0 dApp Kit refs in index-*.js)
 [ ] Alpha docs pass consistency check
 ```
 

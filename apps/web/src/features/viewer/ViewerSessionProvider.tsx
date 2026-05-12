@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useCallback } from 'react';
-import type { ViewerContext } from '@/features/viewer';
-import { anonymousViewer } from '@/features/viewer';
+import type { ViewerContext } from './viewerTypes';
+import { anonymousViewer } from './viewerTypes';
 import type { FrontierWalletSnapshot } from '@/features/frontier/dappKit/frontierWalletTypes';
 import { connectFrontierWallet } from './connectFrontierWallet';
 import type { FrontierCharacterSnapshot } from '@/features/frontier/character/frontierCharacterTypes';

@@ -8,6 +8,7 @@ const sourceLabels: Record<EntityResolutionSource, string> = {
   maintainer_registry: 'Maintainer Registry',
   owner_claim_verified: 'Owner Verified',
   dappkit_current_object: 'dApp Kit',
+  world_api: 'World API',
   indexed: 'Indexed',
   onchain_verified: 'On-Chain Verified',
   unknown: 'Unknown',

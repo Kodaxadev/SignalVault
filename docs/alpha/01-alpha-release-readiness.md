@@ -1,6 +1,6 @@
 # Signal Vault — Alpha Release Readiness
 
-**Date:** 2026-05-11  
+**Date:** 2026-05-12  
 **Phase:** 10C.4 complete (10C.1–10C.4 World-Aware Navigation & Context; 09L.2 backend Sui identity)  
 **Status:** Internal alpha — local-first features complete; remote sync functional; Sui-based production identity implemented and dev-validated; World API cross-session cache implemented
 
@@ -26,7 +26,7 @@
 | dApp Kit wallet adapter | ✅ Ready | Wallet address extraction from EVE Frontier provider |
 | InGame surface detection | ✅ Ready | `/ingame/object/:objectId` path → ingame context |
 | Tribe/officer scope gating | ✅ Ready | Policy enforced client- and server-side |
-| Chunk isolation | ✅ Ready | Main chunk 0 evefrontier refs; dApp Kit in InGameRoute chunk only |
+| Chunk isolation | ✅ Ready | Main chunk 0 dApp Kit refs; dApp Kit in InGameRoute chunk only |
 
 ### Working under dev-auth or Sui-auth constraints (see limitations)
 
@@ -73,6 +73,8 @@ Remote push with `ENABLE_SUI_CHARACTER_RESOLUTION=true` (API) does not require a
 4. Tribe-scoped writes succeed using the Sui-derived `tribeId` — no dev JWT required.
 
 **Remaining production gaps:** Wallet crypto recovery (structural-only in dev mode) and challenge store persistence (in-memory) still need hardening before public deployment.
+
+**Current client caveat:** The web signing path still treats `VITE_REMOTE_DEV_CHARACTER_JWT` as required before attempting a signed push. Removing that dev-token dependency is follow-up hardening and is not part of the release-blocker fix.
 
 ---
 
@@ -133,10 +135,11 @@ Still pending CCP-issued JWT:
 |------|--------|
 | TypeScript | 0 errors |
 | Web tests | 658 passed |
-| API tests | 193 passed / 5 skipped |
+| API tests | 198 passed / 5 skipped |
 | Build | ✅ success |
 | Line limit (400 lines) | ✅ all files pass |
-| Main chunk evefrontier refs | 0 |
+| Main chunk dApp Kit refs | 0 |
 | No background sync | ✅ confirmed |
 | `isProductionCharacterTokenAvailable()` | `false` — JWT path still blocked |
 | Sui identity production guard | ✅ `auth_mode_conflict` on JWT-in-prod-Sui-mode |
+| Dependency audit | ⚠️ 2 moderate dev-tool advisories tracked as follow-up |

@@ -194,10 +194,10 @@ section('Build artifact');
 if (bundleStatus === 'no_build') {
   warn('No build found', 'run `pnpm build` before demo (local-only mode still works without build)');
 } else if (bundleStatus === 'clean') {
-  ok(`${mainChunkName}`, '0 evefrontier refs — chunk isolation intact');
+  ok(`${mainChunkName}`, '0 dApp Kit refs — chunk isolation intact');
 } else {
   const count = bundleStatus.split(':')[1];
-  danger(`${mainChunkName}`, `${count} evefrontier ref(s) in main bundle — isolation broken, run check:bundle-clean`);
+  danger(`${mainChunkName}`, `${count} dApp Kit ref(s) in main bundle — isolation broken, run check:bundle-clean`);
 }
 
 // ── Guardrails ────────────────────────────────────────────────────────────────

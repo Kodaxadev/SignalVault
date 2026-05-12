@@ -62,4 +62,4 @@ New API test file:
 - [x] TypeScript: 0 errors
 - [x] Build: success
 - [x] check:lines: all files under 400 lines
-- [x] Main chunk: 0 evefrontier refs
+- [x] Main chunk: 0 dApp Kit refs
