@@ -69,8 +69,8 @@
 - [ ] **Confirm EVE Frontier character deletion/recreation semantics.**
   EVE Online officially documents character deletion/biomassing, but EVE Frontier's exact PlayerProfile/Character lifecycle after deletion or recreation remains unconfirmed. Production acceptance requires official EVE Frontier evidence for whether `PlayerProfile.character_id`, `Character.key.item_id`, and character names can disappear, change, or be reused.
 
-- [ ] **Add secret and environment validation at boot.**  
-  Current env reads are mostly optional and import-time. Production acceptance requires fail-fast validation for required production env vars, forbidden dev flags, allowed origins, database URL, Sui GraphQL URL, World API URL, and remote-write gate. Local evidence: [`authEnv.ts`](../../apps/api/src/auth/authEnv.ts), [`dbEnv.ts`](../../apps/api/src/db/dbEnv.ts), [`env.ts`](../../apps/web/src/lib/env.ts).
+- [x] **Add secret and environment validation at API boot.**  
+  [`validateApiEnv.ts`](../../apps/api/src/env/validateApiEnv.ts) now fails API startup for dangerous production configurations: `AUTH_DEV_MODE=true`, remote writes without `DATABASE_URL`, missing explicit Sui character resolution, missing/invalid `SUI_GRAPHQL_URL`, missing CORS origins, or wildcard CORS origins while production remote writes are enabled. Follow-up remains for web build env validation and Stillness/Utopia environment separation. Evidence: [Hono CORS options](https://hono.dev/docs/middleware/builtin/cors).
 
 - [ ] **Replace in-memory rate limiting with a shared limiter before horizontal scale.**
   The new API limiter is intentionally small and process-local. Production deployments with more than one API instance need a Redis/Postgres-backed limiter keyed by IP plus verified wallet address, with audit events for denied abuse paths.
