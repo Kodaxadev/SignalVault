@@ -12,7 +12,7 @@ describe("getTrayActionTarget", () => {
     expect(getTrayActionTarget("quit")).toBe("app");
   });
 
-  it("keeps Open Vault disabled", () => {
-    expect(getTrayActionTarget("open_vault")).toBe("disabled");
+  it("targets Open Vault at the configured external URL", () => {
+    expect(getTrayActionTarget("open_vault")).toBe("external_url");
   });
 });

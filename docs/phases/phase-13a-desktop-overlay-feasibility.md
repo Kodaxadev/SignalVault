@@ -6,7 +6,7 @@ Prove Signal Vault can provide in-play utility through a lightweight Windows ove
 
 ## Status
 
-13A.0 through 13A.6 are implemented across `apps/desktop` and `apps/web`: the companion has a standalone Tauri shell, a compact always-on-top frameless window contract, a `Ctrl+Shift+Space` global hotkey toggle, tray controls for show/hide/toggle/quit, a read-only bridge state contract/client, a desktop-owned localhost bridge host, and local pairing-token hardening for browser publishing. The browser app still owns Signal Vault local state and publishes normalized read-only state to the companion. Future in-game/dApp browser support is deferred until EVE Frontier ships and documents a current working browser surface.
+13A.0 through 13A.7 are implemented across `apps/desktop` and `apps/web`: the companion has a standalone Tauri shell, a compact always-on-top frameless window contract, a `Ctrl+Shift+Space` global hotkey toggle, tray controls for show/hide/toggle/open/quit, a read-only bridge state contract/client, a desktop-owned localhost bridge host, local pairing-token hardening for browser publishing, and an Open Vault action that opens the configured web URL in the system browser. The browser app still owns Signal Vault local state and publishes normalized read-only state to the companion. Future in-game/dApp browser support is deferred until EVE Frontier ships and documents a current working browser surface.
 
 ## Build
 
@@ -48,7 +48,8 @@ Prove Signal Vault can provide in-play utility through a lightweight Windows ove
 - 13A.4: Read-only bridge state contract and desktop client. Complete.
 - 13A.5: Bridge host / live web state serving. Complete.
 - 13A.6: Bridge pairing token / local trust hardening. Complete.
-- 13A.7: Quick-capture write bridge.
+- 13A.7: Open Vault action. Complete.
+- 13A.8: Quick-capture write bridge.
 
 ## Authority Rule
 
@@ -75,6 +76,10 @@ The desktop companion owns the localhost listener because normal browser apps ca
 - carries no wallet data, auth secrets, remote sync tokens, dApp Kit context, game process data, or commands
 - leaves Open Vault, Quick Note, and other write flows to later slices
 
+## Open Vault
+
+The Open Vault action is intentionally lower risk than bridge write commands: it only opens a configured `http` or `https` Signal Vault URL in the system browser. The default development URL is `http://localhost:5173/app`. Production URL configuration is deferred to packaging/deployment work through environment configuration.
+
 ## Evidence
 
 - `docs/superpowers/specs/2026-05-12-desktop-overlay-companion-design.md`
@@ -87,3 +92,4 @@ The desktop companion owns the localhost listener because normal browser apps ca
 - MDN secure-context guidance treats loopback resources such as `http://127.0.0.1` as locally delivered / potentially trustworthy, which supports an HTTPS-hosted web app publishing to a loopback companion bridge: https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Secure_Contexts
 - Tauri path docs define `appConfigDir()` as the app-specific config directory derived from the bundle identifier, matching where the desktop pairing token belongs: https://v2.tauri.app/reference/javascript/api/namespacepath/
 - MDN localStorage documents origin-local browser storage that persists across sessions, matching the web-side copy of the bridge token: https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage
+- Tauri Opener plugin is the current v2 API for opening URLs in the default application, matching the Open Vault action without introducing shell command execution: https://v2.tauri.app/plugin/opener/

@@ -13,6 +13,7 @@
 - MDN secure-context guidance treats loopback resources such as `http://127.0.0.1` as locally delivered / potentially trustworthy, which supports the Render-hosted web app publishing to a local desktop companion without making localhost a wallet authority: https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Secure_Contexts
 - Tauri path docs define the app config directory used for per-app configuration, which is where the desktop companion persists its pairing token: https://v2.tauri.app/reference/javascript/api/namespacepath/
 - MDN localStorage documents browser origin storage that persists across sessions, which fits the web app's local copy of the pairing token: https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage
+- Tauri Opener is the v2 plugin for opening URLs in the system/default application, so Open Vault should use it instead of shell command execution: https://v2.tauri.app/plugin/opener/
 - The user reports no current or planned in-game browser in the observed EVE Frontier client. Signal Vault should treat any official browser/dApp surface as future adaptation work only after it ships and is verified.
 
 ## Product Decision
@@ -46,7 +47,8 @@ If EVE Frontier later ships a current, documented, and verified in-game/dApp bro
 - 13A.4: Read-only bridge state contract and desktop client. Complete.
 - 13A.5: Bridge host / live web state serving. Complete.
 - 13A.6: Bridge pairing token / local trust hardening. Complete.
-- 13A.7: Quick-capture write bridge.
+- 13A.7: Open Vault action. Complete.
+- 13A.8: Quick-capture write bridge.
 
 ## Explicit Non-Goals
 
@@ -118,3 +120,5 @@ Tauri-first is preferred because the v1 overlay is local UI plus a localhost bri
 The bridge host belongs in the desktop companion because that process can own a native localhost listener. The browser app remains a publisher of normalized read-only state, which keeps the web app deployable on Render or any normal host without pretending it can listen on the player's loopback interface.
 
 The pairing token is added before any command endpoint because read-only display spoofing is tolerable during feasibility, but command surfaces such as Quick Note or Set Current System need a local trust check first. The token is local-only, persisted by the desktop app, and copied into browser localStorage by the player.
+
+Open Vault is allowed before Quick Note because it does not mutate Signal Vault data and does not cross into wallet, dApp Kit, or game-process authority. It is limited to validated `http`/`https` URLs opened through Tauri Opener.

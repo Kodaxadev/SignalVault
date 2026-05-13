@@ -32,11 +32,12 @@ test('global shortcut plugin is initialized for the desktop app', () => {
   assert.match(libRs, /tauri_plugin_global_shortcut::Builder::new\(\)/);
 });
 
-test('global shortcut permissions are scoped to the main window', () => {
+test('desktop permissions are scoped to the main window', () => {
   assert.deepEqual(capability.windows, ['main']);
   assert.deepEqual(capability.permissions, [
     'global-shortcut:allow-is-registered',
     'global-shortcut:allow-register',
     'global-shortcut:allow-unregister',
+    'opener:allow-open-url',
   ]);
 });

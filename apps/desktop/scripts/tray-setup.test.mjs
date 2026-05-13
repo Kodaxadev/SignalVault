@@ -27,15 +27,16 @@ test('desktop tray menu uses stable action ids', () => {
   }
 });
 
-test('disabled tray actions remain disabled', () => {
+test('Open Vault tray action is enabled', () => {
   assert.match(
     trayRs,
-    /MenuItem::with_id\(app,\s*OPEN_VAULT,\s*"Open Vault",\s*false/,
+    /MenuItem::with_id\(app,\s*OPEN_VAULT,\s*"Open Vault",\s*true/,
   );
 });
 
 test('tray handlers target only window or app controls', () => {
   assert.match(trayRs, /window\.show\(\)\?/);
   assert.match(trayRs, /window\.hide\(\)\?/);
+  assert.match(trayRs, /open_vault_url\(app\)\?/);
   assert.match(trayRs, /app\.exit\(0\)/);
 });

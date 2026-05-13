@@ -3,6 +3,9 @@ use tauri::{
     tray::TrayIconBuilder,
     App, Manager, Wry,
 };
+use tauri_plugin_opener::OpenerExt;
+
+use crate::vault_url::configured_vault_url;
 
 const SHOW_OVERLAY: &str = "show_overlay";
 const HIDE_OVERLAY: &str = "hide_overlay";
@@ -15,7 +18,7 @@ pub fn create_tray(app: &mut App<Wry>) -> tauri::Result<()> {
     let hide_overlay = MenuItem::with_id(app, HIDE_OVERLAY, "Hide Overlay", true, None::<&str>)?;
     let toggle_overlay =
         MenuItem::with_id(app, TOGGLE_OVERLAY, "Toggle Overlay", true, None::<&str>)?;
-    let open_vault = MenuItem::with_id(app, OPEN_VAULT, "Open Vault", false, None::<&str>)?;
+    let open_vault = MenuItem::with_id(app, OPEN_VAULT, "Open Vault", true, None::<&str>)?;
     let quit = MenuItem::with_id(app, QUIT, "Quit", true, None::<&str>)?;
     let menu = Menu::with_items(
         app,
@@ -64,8 +67,17 @@ fn handle_tray_menu_event(app: &tauri::AppHandle, id: &str) -> tauri::Result<()>
                 window.set_focus()?;
             }
         }
+        OPEN_VAULT => open_vault_url(app)?,
         QUIT => app.exit(0),
         _ => {}
+    }
+
+    Ok(())
+}
+
+fn open_vault_url(app: &tauri::AppHandle) -> tauri::Result<()> {
+    if let Err(error) = app.opener().open_url(configured_vault_url(), None::<&str>) {
+        eprintln!("[tray] failed to open Signal Vault URL: {error}");
     }
 
     Ok(())

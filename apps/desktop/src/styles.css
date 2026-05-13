@@ -218,3 +218,11 @@ h1 {
   align-self: end;
   padding: 10px;
 }
+
+.action-status {
+  min-height: 18px;
+  margin: -6px 0 0;
+  color: #f2bd5c;
+  font-size: 11px;
+  text-transform: uppercase;
+}

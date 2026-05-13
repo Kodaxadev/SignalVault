@@ -2,7 +2,7 @@
 
 Phase 13A desktop overlay feasibility starts here.
 
-This app is a native shell proof for a future Windows companion overlay. The current window is compact, frameless, fixed-size, always-on-top, can be toggled with `Ctrl+Shift+Space`, and has tray controls for show, hide, toggle, and quit. It is a viewer surface only:
+This app is a native shell proof for a future Windows companion overlay. The current window is compact, frameless, fixed-size, always-on-top, can be toggled with `Ctrl+Shift+Space`, and has tray controls for show, hide, toggle, Open Vault, and quit. It is a viewer surface only:
 
 - no wallet signing
 - no EVE Vault impersonation
@@ -16,6 +16,8 @@ The desktop companion hosts `http://127.0.0.1:17777/state` for the Phase 13A bri
 The companion generates a local pairing token on first run, persists it in the app config directory, and displays it in the overlay. The web app stores the player's pasted bridge token in browser `localStorage` and sends it as `X-Signal-Vault-Bridge-Token`.
 
 This bridge is not a command channel. It accepts local UI state only and carries no wallet data, auth secrets, remote sync tokens, dApp Kit provider context, game process data, or quick-note writes.
+
+Open Vault uses the Tauri opener plugin to open the configured Signal Vault web URL in the system browser. The default is `http://localhost:5173/app`; set `VITE_SIGNAL_VAULT_WEB_URL` for the overlay button and `SIGNAL_VAULT_WEB_URL` for the native tray action when a packaged or hosted URL is ready.
 
 ## Commands
 

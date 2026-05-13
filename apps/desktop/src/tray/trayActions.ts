@@ -1,6 +1,6 @@
 import type { TrayMenuItemId } from "./trayConfig";
 
-export type TrayActionTarget = "window" | "app" | "disabled";
+export type TrayActionTarget = "window" | "app" | "external_url";
 
 export function getTrayActionTarget(id: TrayMenuItemId): TrayActionTarget {
   if (id === "quit") {
@@ -8,7 +8,7 @@ export function getTrayActionTarget(id: TrayMenuItemId): TrayActionTarget {
   }
 
   if (id === "open_vault") {
-    return "disabled";
+    return "external_url";
   }
 
   return "window";

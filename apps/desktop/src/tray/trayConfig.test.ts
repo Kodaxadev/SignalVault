@@ -12,12 +12,12 @@ describe("trayMenuItems", () => {
     ]);
   });
 
-  it("keeps Open Vault disabled until the external-open slice", () => {
+  it("enables Open Vault for the external-open slice", () => {
     expect(
       trayMenuItems.find((item) => item.id === "open_vault"),
     ).toMatchObject({
       label: "Open Vault",
-      enabled: false,
+      enabled: true,
     });
   });
 });

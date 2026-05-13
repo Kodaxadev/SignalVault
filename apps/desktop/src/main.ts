@@ -15,6 +15,7 @@ import { hideCompanionWindow } from "./companionWindow";
 import { companionToggleHotkey } from "./hotkeys/hotkeyConfig";
 import { formatHotkeyStatus } from "./hotkeys/hotkeyStatus";
 import { registerCompanionHotkey } from "./hotkeys/registerCompanionHotkey";
+import { openVault } from "./openVault";
 import { shellProofStatus } from "./overlayState";
 import { registerTrayStatus } from "./tray/registerTrayStatus";
 import { formatTrayStatus } from "./tray/trayStatus";
@@ -109,15 +110,31 @@ app.innerHTML = `
     </section>
 
     <footer class="actions">
-      <button type="button" disabled>Open Vault</button>
+      <button type="button" data-action="open-vault">Open Vault</button>
       <button type="button" disabled>Quick Note</button>
       <button type="button" data-action="hide">Hide</button>
     </footer>
+    <p class="action-status" data-open-vault-status></p>
   </section>
 `;
 
 app.querySelector('[data-action="hide"]')?.addEventListener("click", () => {
   void hideCompanionWindow();
+});
+
+app.querySelector('[data-action="open-vault"]')?.addEventListener("click", () => {
+  void openVault().then((result) => {
+    const status = app.querySelector<HTMLElement>("[data-open-vault-status]");
+    if (!status) return;
+
+    if (result.status === "opened") {
+      status.textContent = "Vault opened in browser.";
+    } else if (result.status === "invalid_url") {
+      status.textContent = "Open Vault URL is invalid.";
+    } else {
+      status.textContent = "Open Vault failed.";
+    }
+  });
 });
 
 const hotkeyStatus = app.querySelector<HTMLElement>("[data-hotkey-status]");
