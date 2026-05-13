@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Signal } from '@/features/signals';
+import type { CurrentSystem } from '@/features/worldContext';
 import { applyCompanionCommand } from './applyCompanionCommand';
 import type { CompanionCommand } from './companionCommands';
 
@@ -10,6 +11,15 @@ const command: CompanionCommand = {
   payload: {
     body: 'Hostile contact near the node',
     currentSystemName: 'OQQ-0R8',
+  },
+};
+
+const setCurrentSystemCommand: CompanionCommand = {
+  id: 'cmd-2',
+  type: 'set_current_system',
+  createdAt: '2026-05-13T12:10:00.000Z',
+  payload: {
+    systemInput: '30000142',
   },
 };
 
@@ -62,5 +72,76 @@ describe('applyCompanionCommand', () => {
     ).rejects.toThrow('quick_note_empty');
 
     expect(saved).toBe(false);
+  });
+
+  it('sets a World API verified current system for numeric input', async () => {
+    const systems: CurrentSystem[] = [];
+
+    await applyCompanionCommand(setCurrentSystemCommand, {
+      addSignal: async () => {},
+      setCurrentSystem: async (system) => {
+        systems.push(system);
+      },
+      fetchSolarSystem: async () => ({
+        status: 'loaded',
+        data: {
+          id: '30000142',
+          name: 'OQQ-0R8',
+          regionId: '1',
+          constellationId: '2',
+          connectedSystemIds: [],
+        },
+      }),
+      now: new Date('2026-05-13T12:15:00.000Z'),
+    });
+
+    expect(systems).toEqual([
+      {
+        systemId: '30000142',
+        systemName: 'OQQ-0R8',
+        source: 'world_api',
+        setAt: '2026-05-13T12:15:00.000Z',
+      },
+    ]);
+  });
+
+  it('falls back to manual current system when lookup is unavailable', async () => {
+    const systems: CurrentSystem[] = [];
+
+    await applyCompanionCommand(setCurrentSystemCommand, {
+      addSignal: async () => {},
+      setCurrentSystem: async (system) => {
+        systems.push(system);
+      },
+      fetchSolarSystem: async () => ({ status: 'unavailable', reason: 'not_found' }),
+      now: new Date('2026-05-13T12:15:00.000Z'),
+    });
+
+    expect(systems[0]).toMatchObject({
+      systemId: '30000142',
+      systemName: '30000142',
+      source: 'manual',
+    });
+  });
+
+  it('falls back to manual current system when lookup throws', async () => {
+    const systems: CurrentSystem[] = [];
+
+    await applyCompanionCommand(setCurrentSystemCommand, {
+      addSignal: async () => {},
+      setCurrentSystem: async (system) => {
+        systems.push(system);
+      },
+      fetchSolarSystem: async () => {
+        throw new Error('world_api_unavailable');
+      },
+      now: new Date('2026-05-13T12:15:00.000Z'),
+    });
+
+    expect(systems[0]).toMatchObject({
+      systemId: '30000142',
+      systemName: '30000142',
+      source: 'manual',
+    });
   });
 });

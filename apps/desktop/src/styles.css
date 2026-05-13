@@ -55,6 +55,7 @@ button:disabled {
 .signal-list,
 .checks,
 .quick-note,
+.current-system-entry,
 .actions {
   border: 1px solid rgba(242, 240, 232, 0.22);
   background: rgba(8, 8, 7, 0.9);
@@ -194,14 +195,28 @@ h1 {
   padding: 10px;
 }
 
-.quick-note textarea {
+.current-system-entry {
+  display: grid;
+  gap: 6px;
+  padding: 10px;
+}
+
+.quick-note textarea,
+.current-system-entry input {
   min-height: 54px;
-  resize: vertical;
   border: 1px solid #3f3f46;
   background: #050505;
   color: #f4f4f5;
   padding: 8px;
   font: inherit;
+}
+
+.quick-note textarea {
+  resize: vertical;
+}
+
+.current-system-entry input {
+  min-height: 38px;
 }
 
 .check-row {
@@ -230,7 +245,7 @@ h1 {
 
 .actions {
   display: grid;
-  grid-template-columns: 1fr 1fr 0.8fr;
+  grid-template-columns: 1fr 1fr 1fr 0.8fr;
   gap: 8px;
   align-self: end;
   padding: 10px;

@@ -12,6 +12,7 @@ import {
 } from "./bridge/bridgeStateFormatter";
 import type { BridgeWarningLevel } from "./bridge/bridgeTypes";
 import { hideCompanionWindow } from "./companionWindow";
+import { queueCurrentSystem } from "./currentSystem/queueCurrentSystem";
 import { companionToggleHotkey } from "./hotkeys/hotkeyConfig";
 import { formatHotkeyStatus } from "./hotkeys/hotkeyStatus";
 import { registerCompanionHotkey } from "./hotkeys/registerCompanionHotkey";
@@ -115,9 +116,15 @@ app.innerHTML = `
       <textarea id="quick-note-body" data-quick-note-body maxlength="500"></textarea>
     </section>
 
+    <section class="current-system-entry" aria-label="Set current system">
+      <label class="label" for="current-system-input">Set Current System</label>
+      <input id="current-system-input" data-current-system-input maxlength="100" />
+    </section>
+
     <footer class="actions">
       <button type="button" data-action="open-vault">Open Vault</button>
       <button type="button" data-action="quick-note">Quick Note</button>
+      <button type="button" data-action="set-current-system">Set System</button>
       <button type="button" data-action="hide">Hide</button>
     </footer>
     <p class="action-status" data-action-status></p>
@@ -160,6 +167,27 @@ app.querySelector('[data-action="quick-note"]')?.addEventListener("click", () =>
       status.textContent = "Quick note is too long.";
     } else {
       status.textContent = "Quick note failed.";
+    }
+  });
+});
+
+app.querySelector('[data-action="set-current-system"]')?.addEventListener("click", () => {
+  const input = app.querySelector<HTMLInputElement>("[data-current-system-input]");
+  const status = app.querySelector<HTMLElement>("[data-action-status]");
+  const systemInput = input?.value ?? "";
+
+  void queueCurrentSystem({ systemInput }).then((result) => {
+    if (!status) return;
+
+    if (result.status === "queued") {
+      status.textContent = "Current system queued.";
+      if (input) input.value = "";
+    } else if (result.status === "invalid" && result.reason === "empty") {
+      status.textContent = "Current system is empty.";
+    } else if (result.status === "invalid") {
+      status.textContent = "Current system is too long.";
+    } else {
+      status.textContent = "Current system failed.";
     }
   });
 });

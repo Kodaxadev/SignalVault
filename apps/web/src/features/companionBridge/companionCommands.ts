@@ -4,14 +4,26 @@ export const companionCommandsPendingUrl = 'http://127.0.0.1:17777/commands/pend
 export const companionCommandAckUrl = (id: string) =>
   `http://127.0.0.1:17777/commands/${encodeURIComponent(id)}/ack`;
 export const maxCompanionQuickNoteLength = 500;
+export const maxCompanionCurrentSystemInputLength = 100;
 
-export interface CompanionCommand {
+export type CompanionCommand = QuickNoteCommand | SetCurrentSystemCommand;
+
+export interface QuickNoteCommand {
   id: string;
   type: 'quick_note';
   createdAt: string;
   payload: {
     body: string;
     currentSystemName?: string;
+  };
+}
+
+export interface SetCurrentSystemCommand {
+  id: string;
+  type: 'set_current_system';
+  createdAt: string;
+  payload: {
+    systemInput: string;
   };
 }
 
@@ -102,16 +114,41 @@ function isCompanionCommand(value: unknown): value is CompanionCommand {
   const payload = command['payload'];
   if (typeof payload !== 'object' || payload === null) return false;
   const payloadRecord = payload as Record<string, unknown>;
-  const body = payloadRecord['body'];
 
   return (
     typeof command['id'] === 'string' &&
-    command['type'] === 'quick_note' &&
     typeof command['createdAt'] === 'string' &&
+    (isQuickNotePayload(command['type'], payloadRecord) ||
+      isSetCurrentSystemPayload(command['type'], payloadRecord))
+  );
+}
+
+function isQuickNotePayload(
+  type: unknown,
+  payloadRecord: Record<string, unknown>,
+): boolean {
+  const body = payloadRecord['body'];
+
+  return (
+    type === 'quick_note' &&
     typeof body === 'string' &&
     body.trim().length > 0 &&
     body.trim().length <= maxCompanionQuickNoteLength &&
     (payloadRecord['currentSystemName'] === undefined ||
       typeof payloadRecord['currentSystemName'] === 'string')
+  );
+}
+
+function isSetCurrentSystemPayload(
+  type: unknown,
+  payloadRecord: Record<string, unknown>,
+): boolean {
+  const systemInput = payloadRecord['systemInput'];
+
+  return (
+    type === 'set_current_system' &&
+    typeof systemInput === 'string' &&
+    systemInput.trim().length > 0 &&
+    systemInput.trim().length <= maxCompanionCurrentSystemInputLength
   );
 }

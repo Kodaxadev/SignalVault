@@ -6,7 +6,7 @@ Prove Signal Vault can provide in-play utility through a lightweight Windows ove
 
 ## Status
 
-13A.0 through 13A.8 are implemented across `apps/desktop` and `apps/web`: the companion has a standalone Tauri shell, a compact always-on-top frameless window contract, a `Ctrl+Shift+Space` global hotkey toggle, tray controls for show/hide/toggle/open/quit, a read-only bridge state contract/client, a desktop-owned localhost bridge host, local pairing-token hardening for browser publishing, an Open Vault action, and paired Quick Note capture into browser-owned local Signal Vault state. Future in-game/dApp browser support is deferred until EVE Frontier ships and documents a current working browser surface.
+13A.0 through 13A.9 are implemented across `apps/desktop` and `apps/web`: the companion has a standalone Tauri shell, a compact always-on-top frameless window contract, a `Ctrl+Shift+Space` global hotkey toggle, tray controls for show/hide/toggle/open/quit, a read-only bridge state contract/client, a desktop-owned localhost bridge host, local pairing-token hardening for browser publishing, Open Vault, paired Quick Note capture, and paired Set Current System capture into browser-owned local Signal Vault state. Future in-game/dApp browser support is deferred until EVE Frontier ships and documents a current working browser surface.
 
 ## Build
 
@@ -21,7 +21,7 @@ Prove Signal Vault can provide in-play utility through a lightweight Windows ove
 - latest local Signals
 - stale/critical alerts
 - contradiction count
-- Open Vault, Quick Note, and Hide controls
+- Open Vault, Quick Note, Set Current System, and Hide controls
 
 ## Acceptance Criteria
 
@@ -50,6 +50,7 @@ Prove Signal Vault can provide in-play utility through a lightweight Windows ove
 - 13A.6: Bridge pairing token / local trust hardening. Complete.
 - 13A.7: Open Vault action. Complete.
 - 13A.8: Quick Note bridge to local-only field notes. Complete.
+- 13A.9: Set Current System bridge to browser-owned local state. Complete.
 
 ## Authority Rule
 
@@ -64,7 +65,7 @@ The desktop app is a viewer/bridge, not an authority.
 
 The desktop companion owns the localhost listener because normal browser apps can make HTTP requests but do not act as arbitrary local HTTP servers. The browser publishes state with `POST http://127.0.0.1:17777/state`; the desktop overlay reads the latest accepted snapshot with `GET http://127.0.0.1:17777/state`.
 
-13A.5 through 13A.8 keep this transport intentionally narrow:
+13A.5 through 13A.9 keep this transport intentionally narrow:
 
 - binds only to `127.0.0.1:17777`
 - accepts only `/state`, `/commands/pending`, and `/commands/:id/ack`
@@ -74,9 +75,9 @@ The desktop companion owns the localhost listener because normal browser apps ca
 - stores the browser copy of the token in the web app's origin-local `localStorage`
 - rejects malformed state without updating the stored snapshot
 - carries no wallet data, auth secrets, remote sync tokens, dApp Kit context, game process data, command execution, or remote-sync authority
-- queues only `quick_note` commands from the desktop UI
-- browser ACKs a command only after its local IndexedDB write succeeds
-- leaves Set Current System and other write flows to later slices
+- queues only `quick_note` and `set_current_system` commands from the desktop UI
+- browser ACKs a command only after its local write succeeds
+- leaves route controls, sync controls, and packaging to later slices
 
 ## Open Vault
 
@@ -85,6 +86,10 @@ The Open Vault action is intentionally lower risk than bridge write commands: it
 ## Quick Note
 
 Quick Note is the first bridge write flow and is intentionally constrained. The desktop queues only `quick_note` commands with trimmed text and optional current-system name. The browser polls with the pairing token, converts each command into a `field_note` Signal with `visibility: "local_private"`, `syncState: "local_only"`, `confidence: "unverified"`, and `createdInContext.surface: "external_app"`, then ACKs only after the local save resolves. Empty and oversized notes are rejected before queueing.
+
+## Set Current System
+
+Set Current System follows the same paired command discipline. The desktop queues only trimmed `set_current_system` input and does not call World API or write browser storage. The browser validates the input, attempts World API solar-system resolution for numeric IDs, persists verified `world_api` state on success, falls back to `manual` state on lookup failure or text input, and ACKs only after the local current-system write succeeds. Empty and oversized inputs are rejected before queueing.
 
 ## Evidence
 
@@ -99,3 +104,4 @@ Quick Note is the first bridge write flow and is intentionally constrained. The 
 - Tauri path docs define `appConfigDir()` as the app-specific config directory derived from the bundle identifier, matching where the desktop pairing token belongs: https://v2.tauri.app/reference/javascript/api/namespacepath/
 - MDN localStorage documents origin-local browser storage that persists across sessions, matching the web-side copy of the bridge token: https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage
 - Tauri Opener plugin is the current v2 API for opening URLs in the default application, matching the Open Vault action without introducing shell command execution: https://v2.tauri.app/plugin/opener/
+- EVE Frontier Stillness World API docs expose the browser-side solar-system lookup surface used by Set Current System: https://world-api-stillness.live.tech.evefrontier.com/docs/index.html

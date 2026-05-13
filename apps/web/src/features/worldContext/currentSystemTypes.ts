@@ -10,5 +10,6 @@ export interface CurrentSystem {
 export interface CurrentSystemContextValue {
   currentSystem: CurrentSystem | null;
   setCurrentSystem: (system: CurrentSystem) => void;
+  setCurrentSystemPersisted: (system: CurrentSystem) => Promise<void>;
   clearCurrentSystem: () => void;
 }

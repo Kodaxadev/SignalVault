@@ -17,9 +17,24 @@ const command = {
   },
 };
 
+const setCurrentSystemCommand = {
+  id: 'cmd-2',
+  type: 'set_current_system',
+  createdAt: '2026-05-13T12:01:00.000Z',
+  payload: {
+    systemInput: '30000142',
+  },
+};
+
 describe('parseCompanionCommands', () => {
   it('accepts quick note commands only', () => {
     expect(parseCompanionCommands([command])).toEqual([command]);
+  });
+
+  it('accepts set current system commands', () => {
+    expect(parseCompanionCommands([setCurrentSystemCommand])).toEqual([
+      setCurrentSystemCommand,
+    ]);
   });
 
   it('rejects wrong command types and invalid note bodies', () => {
@@ -31,6 +46,16 @@ describe('parseCompanionCommands', () => {
     ).toThrow('companion_command_invalid');
     expect(() =>
       parseCompanionCommands([{ ...command, payload: { body: 'x'.repeat(501) } }]),
+    ).toThrow('companion_command_invalid');
+    expect(() =>
+      parseCompanionCommands([
+        { ...setCurrentSystemCommand, payload: { systemInput: '   ' } },
+      ]),
+    ).toThrow('companion_command_invalid');
+    expect(() =>
+      parseCompanionCommands([
+        { ...setCurrentSystemCommand, payload: { systemInput: 'x'.repeat(101) } },
+      ]),
     ).toThrow('companion_command_invalid');
   });
 });

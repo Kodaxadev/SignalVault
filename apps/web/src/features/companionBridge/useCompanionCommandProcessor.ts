@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { Signal } from '@/features/signals';
+import type { CurrentSystem } from '@/features/worldContext';
 import { applyCompanionCommand } from './applyCompanionCommand';
 import {
   ackCompanionCommand,
@@ -10,6 +11,7 @@ import {
 
 interface UseCompanionCommandProcessorInput {
   addSignal: (signal: Signal) => Promise<void>;
+  setCurrentSystem: (system: CurrentSystem) => Promise<void> | void;
   enabled?: boolean;
   intervalMs?: number;
   fetchPending?: () => Promise<PendingCommandResult>;
@@ -18,6 +20,7 @@ interface UseCompanionCommandProcessorInput {
 
 export function useCompanionCommandProcessor({
   addSignal,
+  setCurrentSystem,
   enabled = true,
   intervalMs = 3000,
   fetchPending = fetchPendingCompanionCommands,
@@ -40,7 +43,7 @@ export function useCompanionCommandProcessor({
 
         for (const command of result.commands) {
           try {
-            await applyCompanionCommand(command, { addSignal });
+            await applyCompanionCommand(command, { addSignal, setCurrentSystem });
             await ack(command.id);
           } catch {
             // Leave the command pending so a later local write can retry safely.
@@ -61,5 +64,5 @@ export function useCompanionCommandProcessor({
       cancelled = true;
       window.clearInterval(interval);
     };
-  }, [ack, addSignal, enabled, fetchPending, intervalMs]);
+  }, [ack, addSignal, enabled, fetchPending, intervalMs, setCurrentSystem]);
 }

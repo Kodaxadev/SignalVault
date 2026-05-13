@@ -13,6 +13,7 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             bridge_pairing::get_bridge_pairing_token,
+            bridge_commands::queue_current_system_command,
             bridge_commands::queue_quick_note_command
         ])
         .setup(|app| {

@@ -3,6 +3,7 @@ use serde_json::json;
 use std::sync::{Arc, Mutex};
 
 pub const MAX_QUICK_NOTE_LENGTH: usize = 500;
+pub const MAX_CURRENT_SYSTEM_INPUT_LENGTH: usize = 100;
 
 #[derive(Clone, Default)]
 pub struct BridgeCommandQueue {
@@ -16,6 +17,7 @@ pub struct BridgeCommand {
     pub created_at: String,
     pub body: String,
     pub current_system_name: Option<String>,
+    pub system_input: Option<String>,
 }
 
 pub struct QuickNoteDraft {
@@ -24,10 +26,17 @@ pub struct QuickNoteDraft {
     pub current_system_name: Option<String>,
 }
 
+pub struct CurrentSystemDraft {
+    pub system_input: String,
+    pub created_at: Option<String>,
+}
+
 #[derive(Debug, PartialEq, Eq)]
 pub enum BridgeCommandError {
     EmptyQuickNote,
     QuickNoteTooLong,
+    EmptyCurrentSystem,
+    CurrentSystemTooLong,
     StoreUnavailable,
 }
 
@@ -52,6 +61,36 @@ impl BridgeCommandQueue {
             current_system_name: draft
                 .current_system_name
                 .and_then(|system| (!system.trim().is_empty()).then(|| system.trim().to_string())),
+            system_input: None,
+        };
+
+        self.pending
+            .lock()
+            .map_err(|_| BridgeCommandError::StoreUnavailable)?
+            .push(command.clone());
+
+        Ok(command)
+    }
+
+    pub fn queue_current_system(
+        &self,
+        draft: CurrentSystemDraft,
+    ) -> Result<BridgeCommand, BridgeCommandError> {
+        let system_input = draft.system_input.trim().to_string();
+        if system_input.is_empty() {
+            return Err(BridgeCommandError::EmptyCurrentSystem);
+        }
+        if system_input.len() > MAX_CURRENT_SYSTEM_INPUT_LENGTH {
+            return Err(BridgeCommandError::CurrentSystemTooLong);
+        }
+
+        let command = BridgeCommand {
+            id: format!("cmd-{}", random_suffix()),
+            command_type: "set_current_system".to_string(),
+            created_at: draft.created_at.unwrap_or_default(),
+            body: String::new(),
+            current_system_name: None,
+            system_input: Some(system_input),
         };
 
         self.pending
@@ -107,10 +146,31 @@ pub fn queue_quick_note_command(
         .map_err(|error| format!("{error:?}"))
 }
 
+#[tauri::command]
+pub fn queue_current_system_command(
+    system_input: String,
+    created_at: Option<String>,
+    queue: tauri::State<'_, BridgeCommandQueue>,
+) -> Result<(), String> {
+    queue
+        .queue_current_system(CurrentSystemDraft {
+            system_input,
+            created_at,
+        })
+        .map(|_| ())
+        .map_err(|error| format!("{error:?}"))
+}
+
 fn command_json(command: &BridgeCommand) -> serde_json::Value {
-    let mut payload = json!({
-        "body": command.body,
-    });
+    let mut payload = if command.command_type == "set_current_system" {
+        json!({
+            "systemInput": command.system_input,
+        })
+    } else {
+        json!({
+            "body": command.body,
+        })
+    };
 
     if let (Some(system_name), Some(payload_object)) =
         (&command.current_system_name, payload.as_object_mut())
@@ -136,7 +196,7 @@ fn random_suffix() -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::{BridgeCommandQueue, QuickNoteDraft};
+    use super::{BridgeCommandQueue, CurrentSystemDraft, QuickNoteDraft};
 
     #[test]
     fn queues_quick_note_commands() {
@@ -203,5 +263,23 @@ mod tests {
         let json = queue.pending_json().expect("pending JSON should serialize");
 
         assert!(!json.contains("currentSystemName"));
+    }
+
+    #[test]
+    fn queues_set_current_system_commands() {
+        let queue = BridgeCommandQueue::default();
+
+        let command = queue
+            .queue_current_system(CurrentSystemDraft {
+                system_input: "  30000142  ".to_string(),
+                created_at: Some("2026-05-13T12:20:00.000Z".to_string()),
+            })
+            .expect("current system should queue");
+
+        assert_eq!(command.command_type, "set_current_system");
+        assert!(queue
+            .pending_json()
+            .expect("pending JSON should serialize")
+            .contains(r#""systemInput":"30000142""#));
     }
 }
