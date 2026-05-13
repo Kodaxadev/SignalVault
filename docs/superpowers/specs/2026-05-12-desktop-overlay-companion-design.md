@@ -9,6 +9,8 @@
 - EF-Map documents EF Helper as a desktop companion for in-game overlay, visited-system sync, and follow mode, proving a Frontier-specific desktop companion precedent exists: https://ef-map.com/features
 - EF-Map's helper bridge article describes a native Windows helper with a localhost HTTP server and overlay integration, which is the closest current precedent for a local bridge pattern: https://ef-map.com/blog/helper-bridge-desktop-integration
 - Tauri v2 documents official global shortcuts, system tray support, and always-on-top window behavior, which covers the first feasibility risks for hotkey, tray, and overlay window behavior: https://v2.tauri.app/plugin/global-shortcut/ / https://v2.tauri.app/learn/system-tray/ / https://v2.tauri.app/reference/javascript/api/namespacewindow/
+- MDN documents Fetch as a browser API for making requests, so the web app can publish to localhost but should not be treated as the host of an arbitrary localhost HTTP listener: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
+- MDN secure-context guidance treats loopback resources such as `http://127.0.0.1` as locally delivered / potentially trustworthy, which supports the Render-hosted web app publishing to a local desktop companion without making localhost a wallet authority: https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Secure_Contexts
 - The user reports no current or planned in-game browser in the observed EVE Frontier client. Signal Vault should treat any official browser/dApp surface as future adaptation work only after it ships and is verified.
 
 ## Product Decision
@@ -29,8 +31,8 @@ If EVE Frontier later ships a current, documented, and verified in-game/dApp bro
 - Stale and contradiction alerts.
 - Open full Signal Vault in the user's browser.
 - Clipboard import/export bridge.
-- Optional localhost bridge between Signal Vault web state and the overlay.
-- Read-only bridge state endpoint contract: `GET http://127.0.0.1:17777/state`.
+- Desktop-owned localhost bridge between Signal Vault web state and the overlay.
+- Read-only bridge state endpoint contract: `POST /state` publishes browser state and `GET /state` reads the latest accepted companion state.
 
 ## First Implementation Slices
 
@@ -39,7 +41,7 @@ If EVE Frontier later ships a current, documented, and verified in-game/dApp bro
 - 13A.2: Hotkey show/hide. Complete.
 - 13A.3: Tray controls. Complete.
 - 13A.4: Read-only bridge state contract and desktop client. Complete.
-- 13A.5: Bridge host / live web state serving.
+- 13A.5: Bridge host / live web state serving. Complete.
 - 13A.6: Quick-capture write bridge.
 
 ## Explicit Non-Goals
@@ -57,15 +59,23 @@ If EVE Frontier later ships a current, documented, and verified in-game/dApp bro
 
 Prefer Tauri first for a small Windows companion footprint. Use Electron only if Tauri blocks required overlay behavior after a prototype proves the limitation.
 
-The bridge should be local-only:
+The bridge should be local-only and desktop-owned:
 
 ```txt
 Signal Vault web app / local state
-<-> localhost bridge
-<-> desktop overlay
+-> POST http://127.0.0.1:17777/state
+-> desktop-owned localhost bridge
+-> overlay reads latest accepted state
 ```
 
-Candidate local endpoints:
+Current 13A.5 endpoint:
+
+```txt
+POST http://127.0.0.1:17777/state
+GET  http://127.0.0.1:17777/state
+```
+
+Deferred candidate local endpoints:
 
 ```txt
 GET  http://127.0.0.1:17777/status
@@ -92,3 +102,5 @@ POST http://127.0.0.1:17777/current-system
 ## Decision Log
 
 Tauri-first is preferred because the v1 overlay is local UI plus a localhost bridge, not a Chromium-extension wallet surface. That keeps the companion small and reduces temptation to turn it into an unofficial dApp browser. Electron remains a fallback only if overlay/window APIs are materially better for this specific use case.
+
+The bridge host belongs in the desktop companion because that process can own a native localhost listener. The browser app remains a publisher of normalized read-only state, which keeps the web app deployable on Render or any normal host without pretending it can listen on the player's loopback interface.

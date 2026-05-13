@@ -1,3 +1,5 @@
+mod bridge_server;
+mod bridge_state;
 mod tray;
 
 use tauri::Manager;
@@ -12,6 +14,11 @@ pub fn run() {
 
             if let Some(window) = app.get_webview_window("main") {
                 window.set_title("Signal Vault Companion")?;
+            }
+
+            let bridge_state = bridge_state::BridgeStateStore::default();
+            if let Err(error) = bridge_server::spawn_bridge_server(bridge_state) {
+                eprintln!("[bridge] failed to start localhost bridge: {error}");
             }
 
             tray::create_tray(app)?;
