@@ -1,4 +1,7 @@
-use crate::bridge_state::{BridgeStateError, BridgeStateStore};
+use crate::{
+    bridge_commands::BridgeCommandQueue,
+    bridge_state::{BridgeStateError, BridgeStateStore},
+};
 use std::{
     io::{self, Read, Write},
     net::{TcpListener, TcpStream},
@@ -10,13 +13,16 @@ pub const BRIDGE_BIND_ADDRESS: &str = "127.0.0.1:17777";
 
 pub fn spawn_bridge_server(
     store: BridgeStateStore,
+    command_queue: BridgeCommandQueue,
     pairing_token: String,
 ) -> io::Result<thread::JoinHandle<()>> {
     let listener = TcpListener::bind(BRIDGE_BIND_ADDRESS)?;
     let handle = thread::spawn(move || {
         for stream in listener.incoming() {
             match stream {
-                Ok(stream) => handle_connection(stream, store.clone(), &pairing_token),
+                Ok(stream) => {
+                    handle_connection(stream, store.clone(), command_queue.clone(), &pairing_token)
+                }
                 Err(error) => eprintln!("[bridge] connection failed: {error}"),
             }
         }
@@ -25,7 +31,12 @@ pub fn spawn_bridge_server(
     Ok(handle)
 }
 
-fn handle_connection(mut stream: TcpStream, store: BridgeStateStore, pairing_token: &str) {
+fn handle_connection(
+    mut stream: TcpStream,
+    store: BridgeStateStore,
+    command_queue: BridgeCommandQueue,
+    pairing_token: &str,
+) {
     let _ = stream.set_read_timeout(Some(Duration::from_millis(500)));
     let request = match read_request(&mut stream) {
         Ok(request) => request,
@@ -35,7 +46,7 @@ fn handle_connection(mut stream: TcpStream, store: BridgeStateStore, pairing_tok
         }
     };
 
-    let response = route_request(&request, &store, pairing_token);
+    let response = route_request(&request, &store, &command_queue, pairing_token);
     let _ = write_response(
         &mut stream,
         response.status_code,
@@ -47,12 +58,29 @@ fn handle_connection(mut stream: TcpStream, store: BridgeStateStore, pairing_tok
 fn route_request(
     request: &HttpRequest,
     store: &BridgeStateStore,
+    command_queue: &BridgeCommandQueue,
     pairing_token: &str,
 ) -> HttpResponse {
-    if request.path != "/state" {
-        return HttpResponse::new(404, "Not Found", "");
+    if request.path == "/state" {
+        return route_state_request(request, store, pairing_token);
     }
 
+    if request.path == "/commands/pending" {
+        return route_pending_commands(request, command_queue, pairing_token);
+    }
+
+    if let Some(command_id) = command_ack_id(&request.path) {
+        return route_command_ack(request, command_queue, pairing_token, command_id);
+    }
+
+    HttpResponse::new(404, "Not Found", "")
+}
+
+fn route_state_request(
+    request: &HttpRequest,
+    store: &BridgeStateStore,
+    pairing_token: &str,
+) -> HttpResponse {
     match request.method.as_str() {
         "OPTIONS" => HttpResponse::new(204, "No Content", ""),
         "GET" => match store.latest_state() {
@@ -74,6 +102,55 @@ fn route_request(
         }
         _ => HttpResponse::new(405, "Method Not Allowed", ""),
     }
+}
+
+fn route_pending_commands(
+    request: &HttpRequest,
+    command_queue: &BridgeCommandQueue,
+    pairing_token: &str,
+) -> HttpResponse {
+    match request.method.as_str() {
+        "OPTIONS" => HttpResponse::new(204, "No Content", ""),
+        "GET" => {
+            if !request.has_pairing_token(pairing_token) {
+                return HttpResponse::new(401, "Unauthorized", "");
+            }
+
+            match command_queue.pending_json() {
+                Ok(body) => HttpResponse::new(200, "OK", body),
+                Err(_) => HttpResponse::new(503, "Service Unavailable", ""),
+            }
+        }
+        _ => HttpResponse::new(405, "Method Not Allowed", ""),
+    }
+}
+
+fn route_command_ack(
+    request: &HttpRequest,
+    command_queue: &BridgeCommandQueue,
+    pairing_token: &str,
+    command_id: &str,
+) -> HttpResponse {
+    match request.method.as_str() {
+        "OPTIONS" => HttpResponse::new(204, "No Content", ""),
+        "POST" => {
+            if !request.has_pairing_token(pairing_token) {
+                return HttpResponse::new(401, "Unauthorized", "");
+            }
+
+            if command_queue.ack_command(command_id) {
+                HttpResponse::new(204, "No Content", "")
+            } else {
+                HttpResponse::new(404, "Not Found", "")
+            }
+        }
+        _ => HttpResponse::new(405, "Method Not Allowed", ""),
+    }
+}
+
+fn command_ack_id(path: &str) -> Option<&str> {
+    let suffix = path.strip_prefix("/commands/")?;
+    suffix.strip_suffix("/ack").filter(|id| !id.is_empty())
 }
 
 fn bridge_error_response(error: BridgeStateError) -> HttpResponse {
@@ -152,7 +229,7 @@ fn write_response(
         "HTTP/1.1 {status_code} {reason}\r\n\
          Access-Control-Allow-Origin: *\r\n\
          Access-Control-Allow-Methods: GET, POST, OPTIONS\r\n\
-         Access-Control-Allow-Headers: content-type\r\n\
+         Access-Control-Allow-Headers: content-type, x-signal-vault-bridge-token\r\n\
          Content-Type: application/json\r\n\
          Content-Length: {}\r\n\
          Connection: close\r\n\r\n",
@@ -206,128 +283,5 @@ impl HttpResponse {
 }
 
 #[cfg(test)]
-mod tests {
-    use super::{route_request, HttpRequest};
-    use crate::bridge_state::BridgeStateStore;
-
-    const VALID_STATE: &str = r#"{
-      "app":"signal-vault",
-      "schemaVersion":1,
-      "generatedAt":"2026-05-12T12:00:00.000Z",
-      "warnings":[],
-      "latestSignals":[]
-    }"#;
-
-    #[test]
-    fn get_state_is_unavailable_until_state_is_published() {
-        let store = BridgeStateStore::default();
-
-        let response = route_request(&request("GET", "/state", "", false), &store, "paired-token");
-
-        assert_eq!(response.status_code, 503);
-    }
-
-    #[test]
-    fn post_state_stores_latest_state_for_get() {
-        let store = BridgeStateStore::default();
-
-        let post_response = route_request(
-            &request_with_token("POST", "/state", VALID_STATE, "paired-token"),
-            &store,
-            "paired-token",
-        );
-        let get_response =
-            route_request(&request("GET", "/state", "", false), &store, "paired-token");
-
-        assert_eq!(post_response.status_code, 204);
-        assert_eq!(get_response.status_code, 200);
-        assert_eq!(get_response.body, VALID_STATE);
-    }
-
-    #[test]
-    fn malformed_post_does_not_replace_previous_state() {
-        let store = BridgeStateStore::default();
-
-        let _ = route_request(
-            &request_with_token("POST", "/state", VALID_STATE, "paired-token"),
-            &store,
-            "paired-token",
-        );
-        let bad_response = route_request(
-            &request_with_token("POST", "/state", r#"{"app":"other"}"#, "paired-token"),
-            &store,
-            "paired-token",
-        );
-        let get_response =
-            route_request(&request("GET", "/state", "", false), &store, "paired-token");
-
-        assert_eq!(bad_response.status_code, 400);
-        assert_eq!(get_response.body, VALID_STATE);
-    }
-
-    #[test]
-    fn post_state_requires_json_content_type() {
-        let store = BridgeStateStore::default();
-
-        let response = route_request(
-            &request("POST", "/state", VALID_STATE, false),
-            &store,
-            "paired-token",
-        );
-
-        assert_eq!(response.status_code, 415);
-    }
-
-    #[test]
-    fn post_state_requires_pairing_token() {
-        let store = BridgeStateStore::default();
-
-        let response = route_request(
-            &request("POST", "/state", VALID_STATE, true),
-            &store,
-            "paired-token",
-        );
-
-        assert_eq!(response.status_code, 401);
-        assert_eq!(store.latest_state(), None);
-    }
-
-    #[test]
-    fn post_state_accepts_valid_pairing_token() {
-        let store = BridgeStateStore::default();
-
-        let response = route_request(
-            &request_with_token("POST", "/state", VALID_STATE, "paired-token"),
-            &store,
-            "paired-token",
-        );
-
-        assert_eq!(response.status_code, 204);
-        assert_eq!(store.latest_state(), Some(VALID_STATE.to_string()));
-    }
-
-    fn request(method: &str, path: &str, body: &str, json: bool) -> HttpRequest {
-        HttpRequest {
-            method: method.to_string(),
-            path: path.to_string(),
-            headers: if json {
-                vec!["Content-Type: application/json".to_string()]
-            } else {
-                Vec::new()
-            },
-            body: body.to_string(),
-        }
-    }
-
-    fn request_with_token(method: &str, path: &str, body: &str, token: &str) -> HttpRequest {
-        HttpRequest {
-            method: method.to_string(),
-            path: path.to_string(),
-            headers: vec![
-                "Content-Type: application/json".to_string(),
-                format!("X-Signal-Vault-Bridge-Token: {token}"),
-            ],
-            body: body.to_string(),
-        }
-    }
-}
+#[path = "bridge_server_tests.rs"]
+mod bridge_server_tests;

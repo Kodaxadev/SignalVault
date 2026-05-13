@@ -17,6 +17,7 @@ import { formatHotkeyStatus } from "./hotkeys/hotkeyStatus";
 import { registerCompanionHotkey } from "./hotkeys/registerCompanionHotkey";
 import { openVault } from "./openVault";
 import { shellProofStatus } from "./overlayState";
+import { queueQuickNote } from "./quickNote/queueQuickNote";
 import { registerTrayStatus } from "./tray/registerTrayStatus";
 import { formatTrayStatus } from "./tray/trayStatus";
 
@@ -109,12 +110,17 @@ app.innerHTML = `
         .join("")}
     </section>
 
+    <section class="quick-note" aria-label="Quick note capture">
+      <label class="label" for="quick-note-body">Quick Note</label>
+      <textarea id="quick-note-body" data-quick-note-body maxlength="500"></textarea>
+    </section>
+
     <footer class="actions">
       <button type="button" data-action="open-vault">Open Vault</button>
-      <button type="button" disabled>Quick Note</button>
+      <button type="button" data-action="quick-note">Quick Note</button>
       <button type="button" data-action="hide">Hide</button>
     </footer>
-    <p class="action-status" data-open-vault-status></p>
+    <p class="action-status" data-action-status></p>
   </section>
 `;
 
@@ -124,7 +130,7 @@ app.querySelector('[data-action="hide"]')?.addEventListener("click", () => {
 
 app.querySelector('[data-action="open-vault"]')?.addEventListener("click", () => {
   void openVault().then((result) => {
-    const status = app.querySelector<HTMLElement>("[data-open-vault-status]");
+    const status = app.querySelector<HTMLElement>("[data-action-status]");
     if (!status) return;
 
     if (result.status === "opened") {
@@ -133,6 +139,27 @@ app.querySelector('[data-action="open-vault"]')?.addEventListener("click", () =>
       status.textContent = "Open Vault URL is invalid.";
     } else {
       status.textContent = "Open Vault failed.";
+    }
+  });
+});
+
+app.querySelector('[data-action="quick-note"]')?.addEventListener("click", () => {
+  const input = app.querySelector<HTMLTextAreaElement>("[data-quick-note-body]");
+  const status = app.querySelector<HTMLElement>("[data-action-status]");
+  const body = input?.value ?? "";
+
+  void queueQuickNote({ body, currentSystemName: latestSystemName }).then((result) => {
+    if (!status) return;
+
+    if (result.status === "queued") {
+      status.textContent = "Quick note queued.";
+      if (input) input.value = "";
+    } else if (result.status === "invalid" && result.reason === "empty") {
+      status.textContent = "Quick note is empty.";
+    } else if (result.status === "invalid") {
+      status.textContent = "Quick note is too long.";
+    } else {
+      status.textContent = "Quick note failed.";
     }
   });
 });
@@ -146,6 +173,7 @@ const currentSystem = app.querySelector<HTMLElement>("[data-current-system]");
 const warningCount = app.querySelector<HTMLElement>("[data-warning-count]");
 const signalCount = app.querySelector<HTMLElement>("[data-signal-count]");
 const bridgeSignals = app.querySelector<HTMLElement>("[data-bridge-signals]");
+let latestSystemName: string | undefined;
 
 void registerCompanionHotkey((status) => {
   if (hotkeyStatus) {
@@ -196,7 +224,9 @@ async function refreshBridgeState(): Promise<void> {
     bridgeStatus.textContent = formatBridgeStatus("connected");
   }
   if (currentSystem) {
-    currentSystem.textContent = formatBridgeSystemName(result.state);
+    const systemName = formatBridgeSystemName(result.state);
+    currentSystem.textContent = systemName;
+    latestSystemName = result.state.currentSystem?.name;
   }
   if (warningCount) {
     warningCount.textContent = String(result.state.warnings.length);

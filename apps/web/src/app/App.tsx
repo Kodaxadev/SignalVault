@@ -1,7 +1,7 @@
 import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ViewerSessionProvider } from '@/features/viewer';
-import { CompanionBridgePublisher } from '@/features/companionBridge';
+import { CompanionBridgePublisher, CompanionCommandProcessor } from '@/features/companionBridge';
 import { EntityResolutionProvider } from '@/features/entities/EntityResolutionProvider';
 import { SignalProvider } from '@/features/signals/SignalProvider';
 import { CurrentSystemProvider } from '@/features/worldContext';
@@ -26,6 +26,7 @@ export function App() {
               <CurrentSystemProvider>
                 <AppRoutes />
                 <CompanionBridgePublisher />
+                <CompanionCommandProcessor />
               </CurrentSystemProvider>
             </SignalProvider>
           </EntityResolutionProvider>

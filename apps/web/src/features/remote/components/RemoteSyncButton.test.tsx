@@ -5,7 +5,13 @@ import type { ViewerContext } from '@/features/viewer/viewerTypes';
 import type { WalletSigningSnapshot } from '@/features/frontier/dappKit/walletSigningTypes';
 
 vi.mock('@/features/signals/SignalProvider', () => ({
-  useSignalContext: vi.fn(() => ({ updateSignal: vi.fn(), addSignal: vi.fn(), getSignals: vi.fn(), getAllSignals: vi.fn() })),
+  useSignalContext: vi.fn(() => ({
+    updateSignal: vi.fn(),
+    addSignal: vi.fn(),
+    addSignalPersisted: vi.fn(),
+    getSignals: vi.fn(),
+    getAllSignals: vi.fn(),
+  })),
 }));
 
 vi.mock('@/features/viewer/ViewerSessionProvider', () => ({
@@ -66,7 +72,13 @@ function makeSignal(overrides: Partial<Signal> = {}): Signal {
 }
 
 beforeEach(() => {
-  vi.mocked(useSignalContext).mockReturnValue({ updateSignal: vi.fn(), addSignal: vi.fn(), getSignals: vi.fn(), getAllSignals: vi.fn() });
+  vi.mocked(useSignalContext).mockReturnValue({
+    updateSignal: vi.fn(),
+    addSignal: vi.fn(),
+    addSignalPersisted: vi.fn(),
+    getSignals: vi.fn(),
+    getAllSignals: vi.fn(),
+  });
   vi.mocked(getRemoteDevCredentials).mockReturnValue({
     characterJwt: 'eyJ.pay.sig',
     walletSignature: 'wallet-sig',

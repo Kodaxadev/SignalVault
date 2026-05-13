@@ -2,7 +2,7 @@
 
 Phase 13A desktop overlay feasibility starts here.
 
-This app is a native shell proof for a future Windows companion overlay. The current window is compact, frameless, fixed-size, always-on-top, can be toggled with `Ctrl+Shift+Space`, and has tray controls for show, hide, toggle, Open Vault, and quit. It is a viewer surface only:
+This app is a native shell proof for a future Windows companion overlay. The current window is compact, frameless, fixed-size, always-on-top, can be toggled with `Ctrl+Shift+Space`, and has tray controls for show, hide, toggle, Open Vault, quick note capture, and quit. It is a companion surface only:
 
 - no wallet signing
 - no EVE Vault impersonation
@@ -11,11 +11,11 @@ This app is a native shell proof for a future Windows companion overlay. The cur
 - no input automation
 - no process injection
 
-The desktop companion hosts `http://127.0.0.1:17777/state` for the Phase 13A bridge. The browser app publishes normalized read-only Signal Vault state with `POST /state`; the overlay reads the latest accepted state with `GET /state`. The bridge rejects missing pairing tokens, malformed state, wrong app IDs, wrong schema versions, non-JSON posts, and non-`/state` routes.
+The desktop companion hosts `http://127.0.0.1:17777/state` for the Phase 13A bridge. The browser app publishes normalized read-only Signal Vault state with `POST /state`; the overlay reads the latest accepted state with `GET /state`. The bridge rejects missing pairing tokens, malformed state, wrong app IDs, wrong schema versions, non-JSON posts, and unknown routes.
 
 The companion generates a local pairing token on first run, persists it in the app config directory, and displays it in the overlay. The web app stores the player's pasted bridge token in browser `localStorage` and sends it as `X-Signal-Vault-Bridge-Token`.
 
-This bridge is not a command channel. It accepts local UI state only and carries no wallet data, auth secrets, remote sync tokens, dApp Kit provider context, game process data, or quick-note writes.
+Quick Note uses the paired bridge command queue. The overlay queues only `quick_note` commands locally; the browser polls `GET /commands/pending`, creates a `local_private` / `local_only` field note in IndexedDB, and ACKs `POST /commands/:id/ack` only after the local save resolves. The command channel carries no wallet data, auth secrets, remote sync tokens, dApp Kit provider context, game process data, command execution, or remote-sync authority.
 
 Open Vault uses the Tauri opener plugin to open the configured Signal Vault web URL in the system browser. The default is `http://localhost:5173/app`; set `VITE_SIGNAL_VAULT_WEB_URL` for the overlay button and `SIGNAL_VAULT_WEB_URL` for the native tray action when a packaged or hosted URL is ready.
 

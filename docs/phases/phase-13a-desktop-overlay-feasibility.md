@@ -6,7 +6,7 @@ Prove Signal Vault can provide in-play utility through a lightweight Windows ove
 
 ## Status
 
-13A.0 through 13A.7 are implemented across `apps/desktop` and `apps/web`: the companion has a standalone Tauri shell, a compact always-on-top frameless window contract, a `Ctrl+Shift+Space` global hotkey toggle, tray controls for show/hide/toggle/open/quit, a read-only bridge state contract/client, a desktop-owned localhost bridge host, local pairing-token hardening for browser publishing, and an Open Vault action that opens the configured web URL in the system browser. The browser app still owns Signal Vault local state and publishes normalized read-only state to the companion. Future in-game/dApp browser support is deferred until EVE Frontier ships and documents a current working browser surface.
+13A.0 through 13A.8 are implemented across `apps/desktop` and `apps/web`: the companion has a standalone Tauri shell, a compact always-on-top frameless window contract, a `Ctrl+Shift+Space` global hotkey toggle, tray controls for show/hide/toggle/open/quit, a read-only bridge state contract/client, a desktop-owned localhost bridge host, local pairing-token hardening for browser publishing, an Open Vault action, and paired Quick Note capture into browser-owned local Signal Vault state. Future in-game/dApp browser support is deferred until EVE Frontier ships and documents a current working browser surface.
 
 ## Build
 
@@ -49,7 +49,7 @@ Prove Signal Vault can provide in-play utility through a lightweight Windows ove
 - 13A.5: Bridge host / live web state serving. Complete.
 - 13A.6: Bridge pairing token / local trust hardening. Complete.
 - 13A.7: Open Vault action. Complete.
-- 13A.8: Quick-capture write bridge.
+- 13A.8: Quick Note bridge to local-only field notes. Complete.
 
 ## Authority Rule
 
@@ -64,21 +64,27 @@ The desktop app is a viewer/bridge, not an authority.
 
 The desktop companion owns the localhost listener because normal browser apps can make HTTP requests but do not act as arbitrary local HTTP servers. The browser publishes state with `POST http://127.0.0.1:17777/state`; the desktop overlay reads the latest accepted snapshot with `GET http://127.0.0.1:17777/state`.
 
-13A.5 and 13A.6 keep this transport intentionally narrow:
+13A.5 through 13A.8 keep this transport intentionally narrow:
 
 - binds only to `127.0.0.1:17777`
-- accepts only `/state`
+- accepts only `/state`, `/commands/pending`, and `/commands/:id/ack`
 - accepts only JSON `POST` state matching `app: "signal-vault"` and `schemaVersion: 1`
 - requires `X-Signal-Vault-Bridge-Token` for `POST /state`
 - generates and persists the pairing token in the desktop app config directory
 - stores the browser copy of the token in the web app's origin-local `localStorage`
 - rejects malformed state without updating the stored snapshot
-- carries no wallet data, auth secrets, remote sync tokens, dApp Kit context, game process data, or commands
-- leaves Open Vault, Quick Note, and other write flows to later slices
+- carries no wallet data, auth secrets, remote sync tokens, dApp Kit context, game process data, command execution, or remote-sync authority
+- queues only `quick_note` commands from the desktop UI
+- browser ACKs a command only after its local IndexedDB write succeeds
+- leaves Set Current System and other write flows to later slices
 
 ## Open Vault
 
 The Open Vault action is intentionally lower risk than bridge write commands: it only opens a configured `http` or `https` Signal Vault URL in the system browser. The default development URL is `http://localhost:5173/app`. Production URL configuration is deferred to packaging/deployment work through environment configuration.
+
+## Quick Note
+
+Quick Note is the first bridge write flow and is intentionally constrained. The desktop queues only `quick_note` commands with trimmed text and optional current-system name. The browser polls with the pairing token, converts each command into a `field_note` Signal with `visibility: "local_private"`, `syncState: "local_only"`, `confidence: "unverified"`, and `createdInContext.surface: "external_app"`, then ACKs only after the local save resolves. Empty and oversized notes are rejected before queueing.
 
 ## Evidence
 

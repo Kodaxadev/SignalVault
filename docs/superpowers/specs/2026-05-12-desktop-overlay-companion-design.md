@@ -48,7 +48,7 @@ If EVE Frontier later ships a current, documented, and verified in-game/dApp bro
 - 13A.5: Bridge host / live web state serving. Complete.
 - 13A.6: Bridge pairing token / local trust hardening. Complete.
 - 13A.7: Open Vault action. Complete.
-- 13A.8: Quick-capture write bridge.
+- 13A.8: Quick Note bridge to local-only field notes. Complete.
 
 ## Explicit Non-Goals
 
@@ -122,3 +122,5 @@ The bridge host belongs in the desktop companion because that process can own a 
 The pairing token is added before any command endpoint because read-only display spoofing is tolerable during feasibility, but command surfaces such as Quick Note or Set Current System need a local trust check first. The token is local-only, persisted by the desktop app, and copied into browser localStorage by the player.
 
 Open Vault is allowed before Quick Note because it does not mutate Signal Vault data and does not cross into wallet, dApp Kit, or game-process authority. It is limited to validated `http`/`https` URLs opened through Tauri Opener.
+
+Quick Note is allowed after pairing because it mutates only browser-owned local state. The desktop queues a narrow `quick_note` command, the browser polls with the pairing token, creates a `local_private` / `local_only` `field_note`, and ACKs only after the local write succeeds. The command cannot select remote visibility, signal type, wallet identity, or any executable action.

@@ -16,6 +16,7 @@ export type SignalType =
 
 export type SignalConfidence =
   | 'unknown'
+  | 'unverified'
   | 'rumor'
   | 'observed'
   | 'corroborated'

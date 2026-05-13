@@ -54,6 +54,7 @@ button:disabled {
 .system-panel,
 .signal-list,
 .checks,
+.quick-note,
 .actions {
   border: 1px solid rgba(242, 240, 232, 0.22);
   background: rgba(8, 8, 7, 0.9);
@@ -185,6 +186,22 @@ h1 {
 
 .checks {
   padding: 8px 12px;
+}
+
+.quick-note {
+  display: grid;
+  gap: 6px;
+  padding: 10px;
+}
+
+.quick-note textarea {
+  min-height: 54px;
+  resize: vertical;
+  border: 1px solid #3f3f46;
+  background: #050505;
+  color: #f4f4f5;
+  padding: 8px;
+  font: inherit;
 }
 
 .check-row {

@@ -2,6 +2,7 @@ import type { SignalConfidence } from '@/features/signals/signalTypes';
 
 const confidenceLabels: Record<SignalConfidence, string> = {
   unknown: 'Unknown',
+  unverified: 'Unverified',
   rumor: 'Rumor',
   observed: 'Observed',
   corroborated: 'Corroborated',
@@ -12,6 +13,7 @@ const confidenceLabels: Record<SignalConfidence, string> = {
 
 const confidenceColors: Record<SignalConfidence, string> = {
   unknown: 'bg-gray-700 text-gray-300',
+  unverified: 'bg-zinc-800 text-zinc-300',
   rumor: 'bg-yellow-900 text-yellow-300',
   observed: 'bg-blue-900 text-blue-300',
   corroborated: 'bg-emerald-900 text-emerald-300',
