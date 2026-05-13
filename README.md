@@ -2,9 +2,9 @@
 
 **Field intelligence for EVE Frontier.**
 
-Signal Vault is an in-game-first intel layer that turns observations into structured, entity-linked field Signals — logged at the point of encounter, graded by confidence, tracked for staleness, and surfaced as object dossiers when you need them.
+Signal Vault is a field-first intel layer that turns observations into structured, entity-linked field Signals — logged at the point of encounter, graded by confidence, tracked for staleness, and surfaced as object dossiers when you need them.
 
-It runs inside the EVE Frontier in-game browser as a Smart Assembly dApp and as a standalone browser tool. Everything is local-first: your data stays in your browser until you choose to relay it.
+It runs as a standalone browser tool today, with Smart Object context available through URL/object parameters and EVE Frontier dApp Kit paths where a supported provider exists. The in-play direction is a lightweight desktop companion overlay, not a replacement dApp browser. Everything is local-first: your data stays in your browser until you choose to relay it.
 
 ---
 
@@ -42,8 +42,9 @@ Signals are scoped: `local_private` / `private` / `public` / `tribe` / `officer`
 ```
 Signal Vault
 ├── apps/web          React + Vite + Tailwind — local-first frontend
-│   ├── InGame shell  Smart Assembly dApp surface (EVE Frontier in-game browser)
-│   ├── External app  Standalone browser — signal log, dossiers, export/import
+│   ├── Object shell  Smart Object context route for field dossiers
+│   ├── Browser app   Standalone browser — signal log, dossiers, export/import
+│   ├── Companion     Planned desktop overlay bridge for in-play intel
 │   └── /compat       Browser diagnostics page
 │
 └── apps/api          Hono + Postgres — remote push backend

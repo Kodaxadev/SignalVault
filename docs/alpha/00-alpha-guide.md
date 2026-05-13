@@ -62,7 +62,7 @@ Signal Vault requires **IndexedDB** support. These browsers are known to work:
 | Edge (latest) | Supported |
 | Safari (latest) | Supported |
 
-Wallet connection and smart object context require the EVE Frontier in-game browser.
+Wallet connection uses the EVE Vault / dApp Kit path where a supported browser wallet provider is available. Current alpha use should assume normal desktop browser operation; Signal Vault must not depend on an in-game browser being present.
 
 ## Tribe & Visibility
 

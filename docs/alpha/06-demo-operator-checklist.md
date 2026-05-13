@@ -19,7 +19,7 @@ Requires nothing beyond a working web build. Recommended for first demos, browse
 - World API enrichment with cross-session cache (if `VITE_WORLD_API_BASE_URL` is set; cached for 30min/24h after first successful fetch)
 - Current system selector (set manual system context for out-of-game sessions; persists across sessions)
 - Route warning cards (derived from local Signals linked to route systems)
-- InGame smart object context (if opened in EVE Frontier in-game browser)
+- Object-context route (from explicit Signal Vault URL; provider-backed context only when a supported dApp provider exists)
 
 **What does not work:**
 - Remote push button (shows "Remote push not configured")
@@ -144,7 +144,7 @@ Then verify manually:
 | Push button says "character token not available" | `VITE_REMOTE_DEV_CHARACTER_JWT` not set | Set JWT and rebuild |
 | Push returns 401 | `AUTH_DEV_MODE` not set on API, or JWT mismatch | Check API env, restart |
 | Push returns 503 | `ENABLE_REMOTE_SIGNAL_WRITES=false` on API | Set to `true`, restart API |
-| Push button says "EVE Frontier client not detected" | Not in InGame browser; using wallet signing path | Switch to dev auth path |
+| Push button says "EVE dApp provider not detected" | Wallet provider unavailable in this surface | Open the full app in a browser with EVE Vault, or switch to dev auth path |
 | App crashes on load | Zod env validation failed | Check browser console for schema error; verify `VITE_WORLD_API_ENV` is `stillness` or `utopia` |
 | Dossier shows no enrichment | World API unavailable or `VITE_WORLD_API_BASE_URL` not set | Expected graceful fallback; demo continues |
 | IndexedDB unavailable | Private/incognito mode or browser quota | Switch to normal mode; free storage |

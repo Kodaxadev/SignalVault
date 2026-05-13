@@ -118,7 +118,7 @@ With this configuration:
 | Dossier views | ✅ | ✅ | ✅ |
 | Export / Import | ✅ | ✅ | ✅ |
 | World API enrichment | ❌ | ✅ (if configured) | ✅ (if configured) |
-| InGame wallet context | ❌ | ✅ (in-game browser) | ✅ (in-game browser) |
+| Wallet provider context | ❌ | ✅ when EVE Vault / supported provider is available | ✅ when EVE Vault / supported provider is available |
 | Remote push button | ❌ | ❌ (URL not set) | ✅ |
 | Remote saved badge | ❌ | ❌ | ✅ |
 | Retry panel (sync_failed) | ❌ | ❌ | ✅ |

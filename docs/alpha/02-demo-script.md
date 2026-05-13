@@ -12,17 +12,19 @@
 
 Open the deployed web app URL. No wallet connection required for local-only mode. You will be in `anonymous` viewer state — limited to `local_private` visibility signals.
 
-### InGame (preferred for full demo)
+### Object Context Route
 
-Open Signal Vault from inside the EVE Frontier in-game browser via a Smart Object context URL:
+Open Signal Vault in a desktop browser with a Smart Object context URL:
 
 ```
 /ingame/object/:objectId
 ```
 
-The app detects the InGame surface, connects to the EVE Frontier dApp Kit provider, and pulls:
+When a supported EVE Frontier dApp Kit provider exists, the app can pull:
 - Wallet address (from `useFrontierWalletAdapter`)
 - Smart Object context: objectId, type, name, tenant (from `useSmartObjectContextAdapter`)
+
+Without that provider, the route still works from URL/object context and manual classification.
 
 Once the wallet connects, viewer state advances to `wallet_connected`. Tribe identity (for tribe-scoped features) requires character resolution — currently deferred.
 

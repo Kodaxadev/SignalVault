@@ -8,7 +8,7 @@ const cases: [BlockedSyncReason, RegExp][] = [
   ['no_auth_method', /no auth method/i],
   ['signing_not_supported', /wallet signing not available/i],
   ['wallet_not_connected', /no wallet connected/i],
-  ['provider_missing', /frontier client not detected/i],
+  ['provider_missing', /dapp provider not detected/i],
   ['character_token_blocked', /character token not available/i],
 ];
 

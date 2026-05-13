@@ -21,10 +21,10 @@
 | Export (JSON) | ✅ Ready | v1 schema; includes signals + classifications |
 | Import (merge/replace) | ✅ Ready | Validates before import; reports counts |
 | World API enrichment | ✅ Ready | HTTP client with solar system, tribe, and type data; cross-session Dexie cache with 30min/24h TTL and stale fallback |
-| Current system selector | ✅ Ready | Manual system context for players outside in-game browser; numeric ID confirmed via World API, text stored as manual |
+| Current system selector | ✅ Ready | Manual system context for players outside live object context; numeric ID confirmed via World API, text stored as manual |
 | Route warning cards | ✅ Ready | Derive warnings from local Signals linked to route systems; level-degraded on critical staleness; sorted critical→info |
 | dApp Kit wallet adapter | ✅ Ready | Wallet address extraction from EVE Frontier provider |
-| InGame surface detection | ✅ Ready | `/ingame/object/:objectId` path → ingame context |
+| Object context route | ✅ Ready | `/ingame/object/:objectId` path → object-context dossier shell |
 | Tribe/officer scope gating | ✅ Ready | Policy enforced client- and server-side |
 | Chunk isolation | ✅ Ready | Main chunk 0 dApp Kit refs; dApp Kit in InGameRoute chunk only |
 
@@ -34,7 +34,7 @@
 |---------|--------|-------|
 | Remote signal push (dev-auth) | ⚠️ Dev-auth mode | Functional with `VITE_REMOTE_DEV_AUTH=true`; uses dev JWT, not EVE-issued credential |
 | Remote signal push (Sui identity) | ⚠️ Sui mode | Functional when `ENABLE_SUI_CHARACTER_RESOLUTION=true`; uses on-chain character resolution — no dev JWT required. Dev-validated 2026-05-11. Production end-to-end validation pending real Sui wallet signature tooling. |
-| Wallet signing (InGame) | ⚠️ Adapter ready | `useWalletSigningAdapter` wired; real signing available when EVE Frontier provides signing provider |
+| Wallet signing | ⚠️ Adapter ready | `useWalletSigningAdapter` wired; real signing available when EVE Vault / supported wallet provider is present |
 | Challenge/signature auth | ⚠️ Infra complete | Backend issues challenges, server verifies; crypto recovery pending EVE dApp Kit scheme confirmation |
 | Remote sync UX | ⚠️ Alpha labeled | Button shows "Alpha · Manual only"; blocked reasons are specific and actionable |
 
@@ -95,7 +95,7 @@ Remote push with `ENABLE_SUI_CHARACTER_RESOLUTION=true` (API) does not require a
 A demo session using only local-first features is fully safe and does not require any backend:
 
 1. Open in browser (standalone or InGame shell)
-2. Connect EVE Frontier wallet (InGame) — populates wallet address and smart object context
+2. Connect EVE Frontier wallet in a supported browser — populates wallet address when the provider is available
 3. Create signals: pick type, set confidence, set visibility, add body text
 4. View dossier for a smart gate or system — aggregated signal intel, staleness indicators
 5. Mark a signal as stale or contradicted — watch intel health update in dossier
