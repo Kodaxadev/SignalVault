@@ -75,7 +75,7 @@ It is:
 - [`phases/phase-09-indexer-events.md`](phases/phase-09-indexer-events.md)
 - [`phases/phase-10-map-and-bridge.md`](phases/phase-10-map-and-bridge.md)
 - [`phases/phase-11-frontierwarden-integration.md`](phases/phase-11-frontierwarden-integration.md)
-- [`phases/phase-12-desktop-companion-overlay.md`](phases/phase-12-desktop-companion-overlay.md)
+- [`phases/phase-13a-desktop-overlay-feasibility.md`](phases/phase-13a-desktop-overlay-feasibility.md)
 - [`phases/phase-completion-audit.md`](phases/phase-completion-audit.md)
 
 ### Implementation

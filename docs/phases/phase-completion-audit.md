@@ -18,7 +18,8 @@
 | 09 Indexer Events | Deferred | Staleness/contradiction/audit exist, but no external event ingestion timeline exists. |
 | 10 Map and Bridge | Partial | Current-system selector and route warnings exist; native bridge/log watcher moves to overlay phase. |
 | 11 FrontierWarden Integration | Deferred | Internal policy exists, but no FrontierWarden adapter or sealed-intel policy exists. |
-| 12 Desktop Companion Overlay | Designed | Overlay direction is documented; implementation is next phase work. |
+| 12 Release/Docs Bridge | Closed | Release and documentation alignment work is complete enough for alpha tracking. |
+| 13A Desktop Overlay Feasibility | Designed | Overlay direction is documented; implementation is next phase work. |
 
 ## Decisions
 
@@ -26,11 +27,11 @@
 - Phase 08 keeps `scout_cell` as a locked visibility concept until a cell identity model exists.
 - Phase 09 is not complete because no official or selected event/indexer feed is wired.
 - Phase 11 is not complete because FrontierWarden contracts are not selected.
-- Phase 12 is the correct in-play path while there is no current verified EVE Frontier in-game browser.
+- Phase 13A is the correct in-play path while there is no current verified EVE Frontier in-game browser.
 
 ## Follow-Up Work
 
-- Build Phase 12 / 13A desktop overlay feasibility.
+- Build Phase 13A desktop overlay feasibility.
 - Select and validate any future event/indexer source before reopening Phase 09.
 - Define FrontierWarden contract boundaries before reopening Phase 11.
 - Keep future EVE Frontier dApp browser adaptation separate from the overlay path.

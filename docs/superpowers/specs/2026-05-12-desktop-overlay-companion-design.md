@@ -8,6 +8,7 @@
 - EVE Vault is a Chrome extension / web browser wallet for Sui using zkLogin and the Sui Wallet Standard, so wallet signing authority belongs to EVE Vault / supported wallet providers: https://github.com/evefrontier/evevault
 - EF-Map documents EF Helper as a desktop companion for in-game overlay, visited-system sync, and follow mode, proving a Frontier-specific desktop companion precedent exists: https://ef-map.com/features
 - EF-Map's helper bridge article describes a native Windows helper with a localhost HTTP server and overlay integration, which is the closest current precedent for a local bridge pattern: https://ef-map.com/blog/helper-bridge-desktop-integration
+- Tauri v2 documents official global shortcuts, system tray support, and always-on-top window behavior, which covers the first feasibility risks for hotkey, tray, and overlay window behavior: https://v2.tauri.app/plugin/global-shortcut/ / https://v2.tauri.app/learn/system-tray/ / https://v2.tauri.app/reference/javascript/api/namespacewindow/
 - The user reports no current or planned in-game browser in the observed EVE Frontier client. Signal Vault should treat any official browser/dApp surface as future adaptation work only after it ships and is verified.
 
 ## Product Decision
@@ -28,6 +29,14 @@ If EVE Frontier later ships a current, documented, and verified in-game/dApp bro
 - Open full Signal Vault in the user's browser.
 - Clipboard import/export bridge.
 - Optional localhost bridge between Signal Vault web state and the overlay.
+
+## First Implementation Slices
+
+- 13A.0: Tauri shell proof.
+- 13A.1: Always-on-top transparent window.
+- 13A.2: Hotkey show/hide.
+- 13A.3: Static mock warning data.
+- 13A.4: Bridge to live Signal Vault state.
 
 ## Explicit Non-Goals
 
@@ -74,6 +83,7 @@ POST http://127.0.0.1:17777/current-system
 - Does not emulate EVE Vault.
 - Does not read game memory or automate game input.
 - Works with Path A local-only Signal Vault.
+- Browser app release checks remain green.
 
 ## Decision Log
 
