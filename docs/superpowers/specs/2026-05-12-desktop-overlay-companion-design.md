@@ -21,7 +21,7 @@ If EVE Frontier later ships a current, documented, and verified in-game/dApp bro
 
 - Lightweight Windows desktop companion.
 - Always-on-top overlay.
-- Hotkey show/hide.
+- Hotkey show/hide with `Ctrl+Shift+Space` as the default accelerator.
 - Compact current-system panel.
 - Latest local Signals.
 - Route warnings.
@@ -32,9 +32,9 @@ If EVE Frontier later ships a current, documented, and verified in-game/dApp bro
 
 ## First Implementation Slices
 
-- 13A.0: Tauri shell proof.
-- 13A.1: Always-on-top transparent window.
-- 13A.2: Hotkey show/hide.
+- 13A.0: Tauri shell proof. Complete.
+- 13A.1: Always-on-top transparent window. Complete.
+- 13A.2: Hotkey show/hide. Complete.
 - 13A.3: Static mock warning data.
 - 13A.4: Bridge to live Signal Vault state.
 

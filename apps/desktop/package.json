@@ -7,17 +7,21 @@
     "dev:vite": "vite --host 127.0.0.1 --port 1420",
     "build:vite": "tsc --noEmit && vite build",
     "preview": "vite preview --host 127.0.0.1",
+    "test:run": "vitest run src",
     "test:window-config": "node --test scripts/overlay-window-config.test.mjs",
+    "test:global-shortcut": "node --test scripts/global-shortcut-plugin.test.mjs",
     "typecheck": "tsc --noEmit",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build --no-bundle"
   },
   "dependencies": {
-    "@tauri-apps/api": "^2.11.0"
+    "@tauri-apps/api": "^2.11.0",
+    "@tauri-apps/plugin-global-shortcut": "^2.3.1"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2.11.1",
     "typescript": "^5.8.3",
-    "vite": "^5.4.19"
+    "vite": "^5.4.19",
+    "vitest": "^2.1.9"
   }
 }

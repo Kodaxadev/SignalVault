@@ -23,7 +23,7 @@
     "check:bundle-clean": "node scripts/assert-main-bundle-clean.mjs",
     "check:docs": "node scripts/assert-alpha-docs-current.mjs",
     "check:release": "pnpm typecheck && pnpm typecheck:api && pnpm test:run && pnpm test:api && pnpm test:scripts && pnpm build && pnpm check:prod-auth && pnpm check:world-env && pnpm check:bundle-clean && pnpm check:docs && pnpm check:lines",
-    "check:desktop": "pnpm --filter desktop test:window-config && pnpm typecheck:desktop && pnpm build:desktop",
+    "check:desktop": "pnpm --filter desktop test:window-config && pnpm --filter desktop test:global-shortcut && pnpm --filter desktop test:run && pnpm typecheck:desktop && pnpm build:desktop",
     "demo:status": "node scripts/print-alpha-demo-status.mjs"
   },
   "engines": {

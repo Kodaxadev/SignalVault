@@ -1,5 +1,8 @@
 import "./styles.css";
 import { hideCompanionWindow } from "./companionWindow";
+import { companionToggleHotkey } from "./hotkeys/hotkeyConfig";
+import { formatHotkeyStatus } from "./hotkeys/hotkeyStatus";
+import { registerCompanionHotkey } from "./hotkeys/registerCompanionHotkey";
 import { shellProofStatus } from "./overlayState";
 
 const app = document.querySelector<HTMLDivElement>("#app");
@@ -51,6 +54,10 @@ app.innerHTML = `
     </section>
 
     <section class="checks" aria-label="Authority checks">
+      <div class="check-row">
+        <span>Hotkey</span>
+        <strong data-hotkey-status>${companionToggleHotkey}</strong>
+      </div>
       ${shellProofStatus.checks
         .map(
           (check) => `
@@ -73,4 +80,12 @@ app.innerHTML = `
 
 app.querySelector('[data-action="hide"]')?.addEventListener("click", () => {
   void hideCompanionWindow();
+});
+
+const hotkeyStatus = app.querySelector<HTMLElement>("[data-hotkey-status]");
+
+void registerCompanionHotkey((status) => {
+  if (hotkeyStatus) {
+    hotkeyStatus.textContent = formatHotkeyStatus(status);
+  }
 });

@@ -2,7 +2,7 @@
 
 Phase 13A desktop overlay feasibility starts here.
 
-This app is a native shell proof for a future Windows companion overlay. The current window is compact, frameless, fixed-size, and always-on-top. It is a viewer surface only:
+This app is a native shell proof for a future Windows companion overlay. The current window is compact, frameless, fixed-size, always-on-top, and can be toggled with `Ctrl+Shift+Space`. It is a viewer surface only:
 
 - no wallet signing
 - no EVE Vault impersonation

@@ -4,6 +4,10 @@ use tauri::Manager;
 pub fn run() {
     tauri::Builder::default()
         .setup(|app| {
+            #[cfg(desktop)]
+            app.handle()
+                .plugin(tauri_plugin_global_shortcut::Builder::new().build())?;
+
             if let Some(window) = app.get_webview_window("main") {
                 window.set_title("Signal Vault Companion")?;
             }
