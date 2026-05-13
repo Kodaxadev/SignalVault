@@ -4,6 +4,10 @@
 
 Specialize object pages by entity type.
 
+## Status
+
+Closed for alpha. Gate, storage, market, system, route, tribe, object, and unknown dossier paths are implemented. Turret/network-node still route through the unknown/object-safe fallback until dedicated layouts are needed.
+
 ## Build
 
 - ObjectDossier router
@@ -21,3 +25,10 @@ Specialize object pages by entity type.
 - Unknown dossier remains safe.
 - System dossier aggregates linked Signals.
 - Route dossier aggregates gate/system Signals.
+
+## Evidence
+
+- `apps/web/src/features/dossiers/`
+- `apps/web/src/features/dossiers/ObjectDossier.test.tsx`
+- `apps/web/src/features/dossiers/SystemDossier.test.tsx`
+- `apps/web/src/features/dossiers/TribeDossier.test.tsx`

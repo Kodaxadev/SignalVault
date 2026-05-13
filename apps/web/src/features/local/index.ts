@@ -1,4 +1,4 @@
-// local — Dexie schema, local draft store, sync queue
+// local — Dexie schema, local persistence, import/export helpers
 export { db } from './localDb';
 export { getLocalDbStatus, setLocalDbStatus, subscribeLocalDbStatus, type LocalDbStatusType } from './localDbStatus';
 export { loadAllSignals, addSignal, addSignalsBatch, clearSignals } from './localSignalRepository';

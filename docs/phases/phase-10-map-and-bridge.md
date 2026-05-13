@@ -4,6 +4,10 @@
 
 Reduce tabbing by improving map/context handoff.
 
+## Status
+
+Partially closed for alpha. Current-system manual selection, route warnings, World API context, and the desktop companion overlay design are in place. A local log watcher and native bridge are not implemented yet; they now belong to Phase 12 / Phase 13A overlay work.
+
 ## Build
 
 - copy/open map route actions
@@ -19,3 +23,10 @@ Reduce tabbing by improving map/context handoff.
 - Route dossier shows warnings.
 - Current-system context can be selected quickly.
 - Signal Bridge prototype, if built, does not block web app.
+
+## Evidence
+
+- `apps/web/src/features/worldContext/`
+- `apps/web/src/features/routes/`
+- `apps/web/src/features/routes/deriveRouteWarnings.test.ts`
+- `docs/superpowers/specs/2026-05-12-desktop-overlay-companion-design.md`

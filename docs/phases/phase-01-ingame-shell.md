@@ -1,8 +1,12 @@
-# Phase 01: In-Game Shell
+# Phase 01: Object Context Shell
 
 ## Goal
 
-Build the compact in-game route shell.
+Build the compact object-context route shell.
+
+## Status
+
+Closed for alpha. The route remains named `/ingame/object` for compatibility, but the product framing is now object context plus future desktop companion overlay, not a dependency on a current in-game browser.
 
 ## Build
 
@@ -22,3 +26,9 @@ Build the compact in-game route shell.
 - Unknown object page renders.
 - No authentication required for public shell.
 - In-game UI is compact and readable.
+
+## Evidence
+
+- `apps/web/src/app/InGameShell.tsx`
+- `apps/web/src/app/InGameShell.test.tsx`
+- `apps/web/src/app/routes.tsx`

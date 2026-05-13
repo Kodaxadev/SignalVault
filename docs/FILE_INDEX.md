@@ -54,6 +54,8 @@
 - `phases/phase-09-indexer-events.md`
 - `phases/phase-10-map-and-bridge.md`
 - `phases/phase-11-frontierwarden-integration.md`
+- `phases/phase-12-desktop-companion-overlay.md`
+- `phases/phase-completion-audit.md`
 - `policy/00-privacy-and-data-ownership.md`
 - `policy/01-object-classification-and-dispute-workflow.md`
 - `policy/02-attachments-and-screenshots-spec.md`
