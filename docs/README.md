@@ -105,6 +105,7 @@ It is:
 - [`operations/02-qa-checklist.md`](operations/02-qa-checklist.md)
 - [`operations/03-risk-register.md`](operations/03-risk-register.md)
 - [`operations/04-release-checklist.md`](operations/04-release-checklist.md)
+- [`operations/06-desktop-companion-alpha-readiness.md`](operations/06-desktop-companion-alpha-readiness.md)
 
 ## Non-Negotiable Development Rules
 

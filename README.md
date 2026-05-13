@@ -44,7 +44,7 @@ Signal Vault
 ├── apps/web          React + Vite + Tailwind — local-first frontend
 │   ├── Object shell  Smart Object context route for field dossiers
 │   ├── Browser app   Standalone browser — signal log, dossiers, export/import
-│   ├── Companion     Planned desktop overlay bridge for in-play intel
+│   ├── Companion     Desktop overlay bridge for in-play local intel
 │   └── /compat       Browser diagnostics page
 │
 └── apps/api          Hono + Postgres — remote push backend
@@ -85,7 +85,7 @@ Signal Vault
 | Gate | Result |
 |---|---|
 | TypeScript | 0 errors |
-| Web tests | 658 passed |
+| Web tests | 683 passed |
 | API tests | 228 passed / 5 skipped |
 | Main bundle dApp Kit refs | 0 |
 | All files | ≤ 400 lines |

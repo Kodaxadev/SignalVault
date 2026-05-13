@@ -2,6 +2,8 @@
 
 Phase 13A desktop overlay feasibility starts here.
 
+Operator guide: [`../../docs/operations/06-desktop-companion-alpha-readiness.md`](../../docs/operations/06-desktop-companion-alpha-readiness.md)
+
 This app is a native shell proof for a future Windows companion overlay. The current window is compact, frameless, fixed-size, always-on-top, can be toggled with `Ctrl+Shift+Space`, and has tray controls for show, hide, toggle, Open Vault, quick note capture, current-system capture, and quit. It is a companion surface only:
 
 - no wallet signing

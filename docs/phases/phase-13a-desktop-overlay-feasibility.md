@@ -6,7 +6,7 @@ Prove Signal Vault can provide in-play utility through a lightweight Windows ove
 
 ## Status
 
-13A.0 through 13A.9 are implemented across `apps/desktop` and `apps/web`: the companion has a standalone Tauri shell, a compact always-on-top frameless window contract, a `Ctrl+Shift+Space` global hotkey toggle, tray controls for show/hide/toggle/open/quit, a read-only bridge state contract/client, a desktop-owned localhost bridge host, local pairing-token hardening for browser publishing, Open Vault, paired Quick Note capture, and paired Set Current System capture into browser-owned local Signal Vault state. Future in-game/dApp browser support is deferred until EVE Frontier ships and documents a current working browser surface.
+13A.0 through 13A.10 are implemented across `apps/desktop`, `apps/web`, and docs: the companion has a standalone Tauri shell, a compact always-on-top frameless window contract, a `Ctrl+Shift+Space` global hotkey toggle, tray controls for show/hide/toggle/open/quit, a read-only bridge state contract/client, a desktop-owned localhost bridge host, local pairing-token hardening for browser publishing, Open Vault, paired Quick Note capture, paired Set Current System capture into browser-owned local Signal Vault state, and an alpha operator guide. Future in-game/dApp browser support is deferred until EVE Frontier ships and documents a current working browser surface.
 
 ## Build
 
@@ -51,6 +51,7 @@ Prove Signal Vault can provide in-play utility through a lightweight Windows ove
 - 13A.7: Open Vault action. Complete.
 - 13A.8: Quick Note bridge to local-only field notes. Complete.
 - 13A.9: Set Current System bridge to browser-owned local state. Complete.
+- 13A.10: Desktop companion alpha readiness docs. Complete.
 
 ## Authority Rule
 
@@ -91,8 +92,13 @@ Quick Note is the first bridge write flow and is intentionally constrained. The 
 
 Set Current System follows the same paired command discipline. The desktop queues only trimmed `set_current_system` input and does not call World API or write browser storage. The browser validates the input, attempts World API solar-system resolution for numeric IDs, persists verified `world_api` state on success, falls back to `manual` state on lookup failure or text input, and ACKs only after the local current-system write succeeds. Empty and oversized inputs are rejected before queueing.
 
+## Alpha Readiness
+
+The operator guide lives at `docs/operations/06-desktop-companion-alpha-readiness.md`. It documents the pairing flow, bridge contract, command ownership, security boundary, troubleshooting, packaging gaps, and evidence links. This is intentionally documentation-only: 13A.10 adds no new bridge command types and does not expand desktop authority.
+
 ## Evidence
 
+- `docs/operations/06-desktop-companion-alpha-readiness.md`
 - `docs/superpowers/specs/2026-05-12-desktop-overlay-companion-design.md`
 - `docs/superpowers/specs/2026-05-12-ingame-terminal-ui-design.md`
 - `README.md`

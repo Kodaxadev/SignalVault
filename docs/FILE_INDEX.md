@@ -42,6 +42,7 @@
 - `operations/02-qa-checklist.md`
 - `operations/03-risk-register.md`
 - `operations/04-release-checklist.md`
+- `operations/06-desktop-companion-alpha-readiness.md`
 - `phases/phase-00-scaffold.md`
 - `phases/phase-01-ingame-shell.md`
 - `phases/phase-02-viewer-context.md`

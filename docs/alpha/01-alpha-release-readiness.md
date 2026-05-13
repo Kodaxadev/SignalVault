@@ -134,7 +134,7 @@ Still pending CCP-issued JWT:
 | Gate | Result |
 |------|--------|
 | TypeScript | 0 errors |
-| Web tests | 658 passed |
+| Web tests | 683 passed |
 | API tests | 228 passed / 5 skipped |
 | Build | ✅ success |
 | Line limit (400 lines) | ✅ all files pass |
