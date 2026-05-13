@@ -30,6 +30,7 @@ If EVE Frontier later ships a current, documented, and verified in-game/dApp bro
 - Open full Signal Vault in the user's browser.
 - Clipboard import/export bridge.
 - Optional localhost bridge between Signal Vault web state and the overlay.
+- Read-only bridge state endpoint contract: `GET http://127.0.0.1:17777/state`.
 
 ## First Implementation Slices
 
@@ -37,7 +38,9 @@ If EVE Frontier later ships a current, documented, and verified in-game/dApp bro
 - 13A.1: Always-on-top transparent window. Complete.
 - 13A.2: Hotkey show/hide. Complete.
 - 13A.3: Tray controls. Complete.
-- 13A.4: Bridge to live Signal Vault state.
+- 13A.4: Read-only bridge state contract and desktop client. Complete.
+- 13A.5: Bridge host / live web state serving.
+- 13A.6: Quick-capture write bridge.
 
 ## Explicit Non-Goals
 

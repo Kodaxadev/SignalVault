@@ -6,7 +6,7 @@ Prove Signal Vault can provide in-play utility through a lightweight Windows ove
 
 ## Status
 
-13A.0 through 13A.3 are implemented in `apps/desktop`: the companion has a standalone Tauri shell, a compact always-on-top frameless window contract, a `Ctrl+Shift+Space` global hotkey toggle, and tray controls for show, hide, toggle, and quit. The repo still treats the browser app and object-context route as the current shippable surfaces. Future in-game/dApp browser support is deferred until EVE Frontier ships and documents a current working browser surface.
+13A.0 through 13A.4 are implemented across `apps/desktop` and `apps/web`: the companion has a standalone Tauri shell, a compact always-on-top frameless window contract, a `Ctrl+Shift+Space` global hotkey toggle, tray controls for show/hide/toggle/quit, and a read-only bridge state contract/client. The browser app still owns Signal Vault local state; the desktop app only consumes a normalized feed. Future in-game/dApp browser support is deferred until EVE Frontier ships and documents a current working browser surface.
 
 ## Build
 
@@ -45,7 +45,9 @@ Prove Signal Vault can provide in-play utility through a lightweight Windows ove
 - 13A.1: Always-on-top overlay window with static content. Complete.
 - 13A.2: Global hotkey show/hide. Complete.
 - 13A.3: Tray controls. Complete.
-- 13A.4: Bridge to live Signal Vault state.
+- 13A.4: Read-only bridge state contract and desktop client. Complete.
+- 13A.5: Bridge host / live web state serving.
+- 13A.6: Quick-capture write bridge.
 
 ## Authority Rule
 

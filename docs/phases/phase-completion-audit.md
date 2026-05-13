@@ -19,7 +19,7 @@
 | 10 Map and Bridge | Partial | Current-system selector and route warnings exist; native bridge/log watcher moves to overlay phase. |
 | 11 FrontierWarden Integration | Deferred | Internal policy exists, but no FrontierWarden adapter or sealed-intel policy exists. |
 | 12 Release/Docs Bridge | Closed | Release and documentation alignment work is complete enough for alpha tracking. |
-| 13A Desktop Overlay Feasibility | Started | Tauri shell proof, overlay window behavior, global hotkey toggle, and tray controls are scaffolded; bridge work remains open. |
+| 13A Desktop Overlay Feasibility | Started | Tauri shell proof, overlay window behavior, global hotkey toggle, tray controls, and read-only bridge contract/client are scaffolded; bridge hosting and write actions remain open. |
 
 ## Decisions
 
@@ -31,7 +31,7 @@
 
 ## Follow-Up Work
 
-- Continue Phase 13A desktop overlay feasibility with read-only bridge and quick-capture slices.
+- Continue Phase 13A desktop overlay feasibility with bridge hosting and quick-capture slices.
 - Select and validate any future event/indexer source before reopening Phase 09.
 - Define FrontierWarden contract boundaries before reopening Phase 11.
 - Keep future EVE Frontier dApp browser adaptation separate from the overlay path.

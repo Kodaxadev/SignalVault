@@ -11,6 +11,8 @@ This app is a native shell proof for a future Windows companion overlay. The cur
 - no input automation
 - no process injection
 
+The read-only bridge client polls `http://127.0.0.1:17777/state` when available. The browser app owns Signal Vault state; the desktop app consumes the normalized bridge feed and does not write back.
+
 ## Commands
 
 - `pnpm dev:desktop` starts the Tauri development shell.
