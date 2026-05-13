@@ -4,6 +4,8 @@ import { companionToggleHotkey } from "./hotkeys/hotkeyConfig";
 import { formatHotkeyStatus } from "./hotkeys/hotkeyStatus";
 import { registerCompanionHotkey } from "./hotkeys/registerCompanionHotkey";
 import { shellProofStatus } from "./overlayState";
+import { registerTrayStatus } from "./tray/registerTrayStatus";
+import { formatTrayStatus } from "./tray/trayStatus";
 
 const app = document.querySelector<HTMLDivElement>("#app");
 
@@ -58,6 +60,10 @@ app.innerHTML = `
         <span>Hotkey</span>
         <strong data-hotkey-status>${companionToggleHotkey}</strong>
       </div>
+      <div class="check-row">
+        <span>Tray</span>
+        <strong data-tray-status>checking</strong>
+      </div>
       ${shellProofStatus.checks
         .map(
           (check) => `
@@ -83,9 +89,16 @@ app.querySelector('[data-action="hide"]')?.addEventListener("click", () => {
 });
 
 const hotkeyStatus = app.querySelector<HTMLElement>("[data-hotkey-status]");
+const trayStatus = app.querySelector<HTMLElement>("[data-tray-status]");
 
 void registerCompanionHotkey((status) => {
   if (hotkeyStatus) {
     hotkeyStatus.textContent = formatHotkeyStatus(status);
+  }
+});
+
+registerTrayStatus((status) => {
+  if (trayStatus) {
+    trayStatus.textContent = formatTrayStatus(status);
   }
 });
