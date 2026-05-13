@@ -7,6 +7,7 @@
     "dev:vite": "vite --host 127.0.0.1 --port 1420",
     "build:vite": "tsc --noEmit && vite build",
     "preview": "vite preview --host 127.0.0.1",
+    "test:window-config": "node --test scripts/overlay-window-config.test.mjs",
     "typecheck": "tsc --noEmit",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build --no-bundle"

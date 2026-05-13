@@ -34,6 +34,12 @@ button {
   cursor: default;
 }
 
+button:disabled {
+  border-color: rgba(242, 240, 232, 0.2);
+  color: #8b877d;
+  background: rgba(242, 240, 232, 0.08);
+}
+
 .shell {
   display: grid;
   min-height: 100vh;

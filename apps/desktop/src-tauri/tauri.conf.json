@@ -12,9 +12,14 @@
   "app": {
     "windows": [
       {
+        "label": "main",
         "title": "Signal Vault Companion",
-        "width": 380,
-        "height": 520,
+        "width": 360,
+        "height": 460,
+        "x": 24,
+        "y": 24,
+        "alwaysOnTop": true,
+        "decorations": false,
         "resizable": false,
         "fullscreen": false
       }

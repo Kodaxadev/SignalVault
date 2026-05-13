@@ -1,4 +1,5 @@
 import "./styles.css";
+import { hideCompanionWindow } from "./companionWindow";
 import { shellProofStatus } from "./overlayState";
 
 const app = document.querySelector<HTMLDivElement>("#app");
@@ -63,9 +64,13 @@ app.innerHTML = `
     </section>
 
     <footer class="actions">
-      <button type="button">Open Vault</button>
-      <button type="button">Quick Note</button>
-      <button type="button">Hide</button>
+      <button type="button" disabled>Open Vault</button>
+      <button type="button" disabled>Quick Note</button>
+      <button type="button" data-action="hide">Hide</button>
     </footer>
   </section>
 `;
+
+app.querySelector('[data-action="hide"]')?.addEventListener("click", () => {
+  void hideCompanionWindow();
+});

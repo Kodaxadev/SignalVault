@@ -6,7 +6,7 @@ Prove Signal Vault can provide in-play utility through a lightweight Windows ove
 
 ## Status
 
-13A.0 implementation started with a standalone Tauri shell proof in `apps/desktop`. The repo still treats the browser app and object-context route as the current shippable surfaces. Phase 13A is the next in-play compromise, while future in-game/dApp browser support is deferred until EVE Frontier ships and documents a current working browser surface.
+13A.0 and 13A.1 are implemented in `apps/desktop`: the companion has a standalone Tauri shell plus a compact always-on-top frameless window contract. The repo still treats the browser app and object-context route as the current shippable surfaces. Future in-game/dApp browser support is deferred until EVE Frontier ships and documents a current working browser surface.
 
 ## Build
 
@@ -41,8 +41,8 @@ Prove Signal Vault can provide in-play utility through a lightweight Windows ove
 
 ## First Implementation Slices
 
-- 13A.0: Tauri shell proof.
-- 13A.1: Always-on-top overlay window with static content.
+- 13A.0: Tauri shell proof. Complete.
+- 13A.1: Always-on-top overlay window with static content. Complete.
 - 13A.2: Global hotkey show/hide.
 - 13A.3: Static mock warning data.
 - 13A.4: Bridge to live Signal Vault state.
