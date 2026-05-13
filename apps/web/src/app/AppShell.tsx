@@ -1,3 +1,4 @@
+import { CompanionBridgeTokenPanel } from '@/features/companionBridge';
 import { LocalExportPanel, LocalImportPanel, LocalPersistenceBadge, LocalDbErrorBanner } from '@/features/local';
 import { CurrentSystemBadge, CurrentSystemSelector } from '@/features/worldContext';
 
@@ -16,6 +17,7 @@ export function AppShell() {
         </p>
         <div className="space-y-4 max-w-md">
           <CurrentSystemSelector />
+          <CompanionBridgeTokenPanel />
           <LocalExportPanel />
           <LocalImportPanel />
         </div>

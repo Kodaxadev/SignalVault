@@ -8,12 +8,15 @@ use std::{
 
 pub const BRIDGE_BIND_ADDRESS: &str = "127.0.0.1:17777";
 
-pub fn spawn_bridge_server(store: BridgeStateStore) -> io::Result<thread::JoinHandle<()>> {
+pub fn spawn_bridge_server(
+    store: BridgeStateStore,
+    pairing_token: String,
+) -> io::Result<thread::JoinHandle<()>> {
     let listener = TcpListener::bind(BRIDGE_BIND_ADDRESS)?;
     let handle = thread::spawn(move || {
         for stream in listener.incoming() {
             match stream {
-                Ok(stream) => handle_connection(stream, store.clone()),
+                Ok(stream) => handle_connection(stream, store.clone(), &pairing_token),
                 Err(error) => eprintln!("[bridge] connection failed: {error}"),
             }
         }
@@ -22,7 +25,7 @@ pub fn spawn_bridge_server(store: BridgeStateStore) -> io::Result<thread::JoinHa
     Ok(handle)
 }
 
-fn handle_connection(mut stream: TcpStream, store: BridgeStateStore) {
+fn handle_connection(mut stream: TcpStream, store: BridgeStateStore, pairing_token: &str) {
     let _ = stream.set_read_timeout(Some(Duration::from_millis(500)));
     let request = match read_request(&mut stream) {
         Ok(request) => request,
@@ -32,7 +35,7 @@ fn handle_connection(mut stream: TcpStream, store: BridgeStateStore) {
         }
     };
 
-    let response = route_request(&request, &store);
+    let response = route_request(&request, &store, pairing_token);
     let _ = write_response(
         &mut stream,
         response.status_code,
@@ -41,7 +44,11 @@ fn handle_connection(mut stream: TcpStream, store: BridgeStateStore) {
     );
 }
 
-fn route_request(request: &HttpRequest, store: &BridgeStateStore) -> HttpResponse {
+fn route_request(
+    request: &HttpRequest,
+    store: &BridgeStateStore,
+    pairing_token: &str,
+) -> HttpResponse {
     if request.path != "/state" {
         return HttpResponse::new(404, "Not Found", "");
     }
@@ -55,6 +62,9 @@ fn route_request(request: &HttpRequest, store: &BridgeStateStore) -> HttpRespons
         "POST" => {
             if !request.has_json_content_type() {
                 return HttpResponse::new(415, "Unsupported Media Type", "");
+            }
+            if !request.has_pairing_token(pairing_token) {
+                return HttpResponse::new(401, "Unauthorized", "");
             }
 
             match store.accept_state(&request.body) {
@@ -166,6 +176,17 @@ impl HttpRequest {
                 .starts_with("content-type: application/json")
         })
     }
+
+    fn has_pairing_token(&self, expected_token: &str) -> bool {
+        self.headers.iter().any(|header| {
+            let Some((name, value)) = header.split_once(':') else {
+                return false;
+            };
+
+            name.eq_ignore_ascii_case("x-signal-vault-bridge-token")
+                && value.trim() == expected_token
+        })
+    }
 }
 
 struct HttpResponse {
@@ -201,7 +222,7 @@ mod tests {
     fn get_state_is_unavailable_until_state_is_published() {
         let store = BridgeStateStore::default();
 
-        let response = route_request(&request("GET", "/state", "", false), &store);
+        let response = route_request(&request("GET", "/state", "", false), &store, "paired-token");
 
         assert_eq!(response.status_code, 503);
     }
@@ -210,8 +231,13 @@ mod tests {
     fn post_state_stores_latest_state_for_get() {
         let store = BridgeStateStore::default();
 
-        let post_response = route_request(&request("POST", "/state", VALID_STATE, true), &store);
-        let get_response = route_request(&request("GET", "/state", "", false), &store);
+        let post_response = route_request(
+            &request_with_token("POST", "/state", VALID_STATE, "paired-token"),
+            &store,
+            "paired-token",
+        );
+        let get_response =
+            route_request(&request("GET", "/state", "", false), &store, "paired-token");
 
         assert_eq!(post_response.status_code, 204);
         assert_eq!(get_response.status_code, 200);
@@ -222,12 +248,18 @@ mod tests {
     fn malformed_post_does_not_replace_previous_state() {
         let store = BridgeStateStore::default();
 
-        let _ = route_request(&request("POST", "/state", VALID_STATE, true), &store);
-        let bad_response = route_request(
-            &request("POST", "/state", r#"{"app":"other"}"#, true),
+        let _ = route_request(
+            &request_with_token("POST", "/state", VALID_STATE, "paired-token"),
             &store,
+            "paired-token",
         );
-        let get_response = route_request(&request("GET", "/state", "", false), &store);
+        let bad_response = route_request(
+            &request_with_token("POST", "/state", r#"{"app":"other"}"#, "paired-token"),
+            &store,
+            "paired-token",
+        );
+        let get_response =
+            route_request(&request("GET", "/state", "", false), &store, "paired-token");
 
         assert_eq!(bad_response.status_code, 400);
         assert_eq!(get_response.body, VALID_STATE);
@@ -237,9 +269,41 @@ mod tests {
     fn post_state_requires_json_content_type() {
         let store = BridgeStateStore::default();
 
-        let response = route_request(&request("POST", "/state", VALID_STATE, false), &store);
+        let response = route_request(
+            &request("POST", "/state", VALID_STATE, false),
+            &store,
+            "paired-token",
+        );
 
         assert_eq!(response.status_code, 415);
+    }
+
+    #[test]
+    fn post_state_requires_pairing_token() {
+        let store = BridgeStateStore::default();
+
+        let response = route_request(
+            &request("POST", "/state", VALID_STATE, true),
+            &store,
+            "paired-token",
+        );
+
+        assert_eq!(response.status_code, 401);
+        assert_eq!(store.latest_state(), None);
+    }
+
+    #[test]
+    fn post_state_accepts_valid_pairing_token() {
+        let store = BridgeStateStore::default();
+
+        let response = route_request(
+            &request_with_token("POST", "/state", VALID_STATE, "paired-token"),
+            &store,
+            "paired-token",
+        );
+
+        assert_eq!(response.status_code, 204);
+        assert_eq!(store.latest_state(), Some(VALID_STATE.to_string()));
     }
 
     fn request(method: &str, path: &str, body: &str, json: bool) -> HttpRequest {
@@ -251,6 +315,18 @@ mod tests {
             } else {
                 Vec::new()
             },
+            body: body.to_string(),
+        }
+    }
+
+    fn request_with_token(method: &str, path: &str, body: &str, token: &str) -> HttpRequest {
+        HttpRequest {
+            method: method.to_string(),
+            path: path.to_string(),
+            headers: vec![
+                "Content-Type: application/json".to_string(),
+                format!("X-Signal-Vault-Bridge-Token: {token}"),
+            ],
             body: body.to_string(),
         }
     }

@@ -201,7 +201,14 @@ h1 {
 
 .check-row strong {
   color: #f2f0e8;
+  max-width: 190px;
+  overflow-wrap: anywhere;
   text-transform: uppercase;
+}
+
+.check-row .token-value {
+  font-size: 10px;
+  text-transform: none;
 }
 
 .actions {

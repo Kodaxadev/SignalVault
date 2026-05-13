@@ -11,6 +11,8 @@
 - Tauri v2 documents official global shortcuts, system tray support, and always-on-top window behavior, which covers the first feasibility risks for hotkey, tray, and overlay window behavior: https://v2.tauri.app/plugin/global-shortcut/ / https://v2.tauri.app/learn/system-tray/ / https://v2.tauri.app/reference/javascript/api/namespacewindow/
 - MDN documents Fetch as a browser API for making requests, so the web app can publish to localhost but should not be treated as the host of an arbitrary localhost HTTP listener: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
 - MDN secure-context guidance treats loopback resources such as `http://127.0.0.1` as locally delivered / potentially trustworthy, which supports the Render-hosted web app publishing to a local desktop companion without making localhost a wallet authority: https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Secure_Contexts
+- Tauri path docs define the app config directory used for per-app configuration, which is where the desktop companion persists its pairing token: https://v2.tauri.app/reference/javascript/api/namespacepath/
+- MDN localStorage documents browser origin storage that persists across sessions, which fits the web app's local copy of the pairing token: https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage
 - The user reports no current or planned in-game browser in the observed EVE Frontier client. Signal Vault should treat any official browser/dApp surface as future adaptation work only after it ships and is verified.
 
 ## Product Decision
@@ -33,6 +35,7 @@ If EVE Frontier later ships a current, documented, and verified in-game/dApp bro
 - Clipboard import/export bridge.
 - Desktop-owned localhost bridge between Signal Vault web state and the overlay.
 - Read-only bridge state endpoint contract: `POST /state` publishes browser state and `GET /state` reads the latest accepted companion state.
+- Pairing token required for browser `POST /state` publishing.
 
 ## First Implementation Slices
 
@@ -42,7 +45,8 @@ If EVE Frontier later ships a current, documented, and verified in-game/dApp bro
 - 13A.3: Tray controls. Complete.
 - 13A.4: Read-only bridge state contract and desktop client. Complete.
 - 13A.5: Bridge host / live web state serving. Complete.
-- 13A.6: Quick-capture write bridge.
+- 13A.6: Bridge pairing token / local trust hardening. Complete.
+- 13A.7: Quick-capture write bridge.
 
 ## Explicit Non-Goals
 
@@ -75,6 +79,14 @@ POST http://127.0.0.1:17777/state
 GET  http://127.0.0.1:17777/state
 ```
 
+Current 13A.6 pairing rule:
+
+```txt
+X-Signal-Vault-Bridge-Token: <desktop generated token>
+```
+
+The token gates browser publishing only. It is not wallet auth, not a Sui credential, and not a remote sync secret.
+
 Deferred candidate local endpoints:
 
 ```txt
@@ -104,3 +116,5 @@ POST http://127.0.0.1:17777/current-system
 Tauri-first is preferred because the v1 overlay is local UI plus a localhost bridge, not a Chromium-extension wallet surface. That keeps the companion small and reduces temptation to turn it into an unofficial dApp browser. Electron remains a fallback only if overlay/window APIs are materially better for this specific use case.
 
 The bridge host belongs in the desktop companion because that process can own a native localhost listener. The browser app remains a publisher of normalized read-only state, which keeps the web app deployable on Render or any normal host without pretending it can listen on the player's loopback interface.
+
+The pairing token is added before any command endpoint because read-only display spoofing is tolerable during feasibility, but command surfaces such as Quick Note or Set Current System need a local trust check first. The token is local-only, persisted by the desktop app, and copied into browser localStorage by the player.

@@ -1,5 +1,11 @@
 export { CompanionBridgePublisher } from './CompanionBridgePublisher';
+export { CompanionBridgeTokenPanel } from './CompanionBridgeTokenPanel';
 export { buildCompanionBridgeState } from './buildCompanionBridgeState';
+export {
+  companionBridgeTokenStorageKey,
+  loadCompanionBridgeToken,
+  saveCompanionBridgeToken,
+} from './companionBridgeToken';
 export {
   companionBridgePublishUrl,
   publishCompanionBridgeState,

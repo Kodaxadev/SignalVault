@@ -6,7 +6,7 @@ Prove Signal Vault can provide in-play utility through a lightweight Windows ove
 
 ## Status
 
-13A.0 through 13A.5 are implemented across `apps/desktop` and `apps/web`: the companion has a standalone Tauri shell, a compact always-on-top frameless window contract, a `Ctrl+Shift+Space` global hotkey toggle, tray controls for show/hide/toggle/quit, a read-only bridge state contract/client, and a desktop-owned localhost bridge host. The browser app still owns Signal Vault local state and publishes normalized read-only state to the companion. Future in-game/dApp browser support is deferred until EVE Frontier ships and documents a current working browser surface.
+13A.0 through 13A.6 are implemented across `apps/desktop` and `apps/web`: the companion has a standalone Tauri shell, a compact always-on-top frameless window contract, a `Ctrl+Shift+Space` global hotkey toggle, tray controls for show/hide/toggle/quit, a read-only bridge state contract/client, a desktop-owned localhost bridge host, and local pairing-token hardening for browser publishing. The browser app still owns Signal Vault local state and publishes normalized read-only state to the companion. Future in-game/dApp browser support is deferred until EVE Frontier ships and documents a current working browser surface.
 
 ## Build
 
@@ -47,7 +47,8 @@ Prove Signal Vault can provide in-play utility through a lightweight Windows ove
 - 13A.3: Tray controls. Complete.
 - 13A.4: Read-only bridge state contract and desktop client. Complete.
 - 13A.5: Bridge host / live web state serving. Complete.
-- 13A.6: Quick-capture write bridge.
+- 13A.6: Bridge pairing token / local trust hardening. Complete.
+- 13A.7: Quick-capture write bridge.
 
 ## Authority Rule
 
@@ -62,11 +63,14 @@ The desktop app is a viewer/bridge, not an authority.
 
 The desktop companion owns the localhost listener because normal browser apps can make HTTP requests but do not act as arbitrary local HTTP servers. The browser publishes state with `POST http://127.0.0.1:17777/state`; the desktop overlay reads the latest accepted snapshot with `GET http://127.0.0.1:17777/state`.
 
-13A.5 keeps this transport intentionally narrow:
+13A.5 and 13A.6 keep this transport intentionally narrow:
 
 - binds only to `127.0.0.1:17777`
 - accepts only `/state`
 - accepts only JSON `POST` state matching `app: "signal-vault"` and `schemaVersion: 1`
+- requires `X-Signal-Vault-Bridge-Token` for `POST /state`
+- generates and persists the pairing token in the desktop app config directory
+- stores the browser copy of the token in the web app's origin-local `localStorage`
 - rejects malformed state without updating the stored snapshot
 - carries no wallet data, auth secrets, remote sync tokens, dApp Kit context, game process data, or commands
 - leaves Open Vault, Quick Note, and other write flows to later slices
@@ -81,3 +85,5 @@ The desktop companion owns the localhost listener because normal browser apps ca
 - Tauri v2 window API includes always-on-top behavior: https://v2.tauri.app/reference/javascript/api/namespacewindow/
 - MDN Fetch API documents browser-side request behavior, which supports browser-to-localhost publishing but not browser-owned server hosting: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
 - MDN secure-context guidance treats loopback resources such as `http://127.0.0.1` as locally delivered / potentially trustworthy, which supports an HTTPS-hosted web app publishing to a loopback companion bridge: https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Secure_Contexts
+- Tauri path docs define `appConfigDir()` as the app-specific config directory derived from the bundle identifier, matching where the desktop pairing token belongs: https://v2.tauri.app/reference/javascript/api/namespacepath/
+- MDN localStorage documents origin-local browser storage that persists across sessions, matching the web-side copy of the bridge token: https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage

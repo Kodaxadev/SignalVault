@@ -1,6 +1,6 @@
 # Phase Completion Audit
 
-**Date:** 2026-05-12  
+**Date:** 2026-05-13  
 **Verification:** `pnpm check:release` passed after the audit.
 
 ## Summary
@@ -19,7 +19,7 @@
 | 10 Map and Bridge | Partial | Current-system selector and route warnings exist; native bridge/log watcher moves to overlay phase. |
 | 11 FrontierWarden Integration | Deferred | Internal policy exists, but no FrontierWarden adapter or sealed-intel policy exists. |
 | 12 Release/Docs Bridge | Closed | Release and documentation alignment work is complete enough for alpha tracking. |
-| 13A Desktop Overlay Feasibility | Started | Tauri shell proof, overlay window behavior, global hotkey toggle, tray controls, read-only bridge contract/client, and desktop-owned bridge hosting are scaffolded; write actions remain open. |
+| 13A Desktop Overlay Feasibility | Started | Tauri shell proof, overlay window behavior, global hotkey toggle, tray controls, read-only bridge contract/client, desktop-owned bridge hosting, and pairing-token hardening are scaffolded; write actions remain open. |
 
 ## Decisions
 

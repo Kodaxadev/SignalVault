@@ -1,5 +1,9 @@
 import "./styles.css";
 import { fetchCompanionBridgeState } from "./bridge/bridgeClient";
+import {
+  formatBridgePairingToken,
+  getBridgePairingToken,
+} from "./bridge/bridgePairing";
 import { formatBridgeStatus } from "./bridge/bridgeStatus";
 import {
   formatBridgeSignals,
@@ -88,6 +92,10 @@ app.innerHTML = `
         <span>Tray</span>
         <strong data-tray-status>checking</strong>
       </div>
+      <div class="check-row">
+        <span>Pairing</span>
+        <strong class="token-value" data-pairing-token>checking</strong>
+      </div>
       ${shellProofStatus.checks
         .map(
           (check) => `
@@ -114,6 +122,7 @@ app.querySelector('[data-action="hide"]')?.addEventListener("click", () => {
 
 const hotkeyStatus = app.querySelector<HTMLElement>("[data-hotkey-status]");
 const trayStatus = app.querySelector<HTMLElement>("[data-tray-status]");
+const pairingToken = app.querySelector<HTMLElement>("[data-pairing-token]");
 const bridgeBadge = app.querySelector<HTMLElement>("[data-bridge-badge]");
 const bridgeStatus = app.querySelector<HTMLElement>("[data-bridge-status]");
 const currentSystem = app.querySelector<HTMLElement>("[data-current-system]");
@@ -130,6 +139,12 @@ void registerCompanionHotkey((status) => {
 registerTrayStatus((status) => {
   if (trayStatus) {
     trayStatus.textContent = formatTrayStatus(status);
+  }
+});
+
+void getBridgePairingToken().then((result) => {
+  if (pairingToken) {
+    pairingToken.textContent = formatBridgePairingToken(result);
   }
 });
 

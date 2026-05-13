@@ -17,12 +17,18 @@ describe('publishCompanionBridgeState', () => {
   it('posts normalized state to the desktop companion bridge', async () => {
     const fetcher = vi.fn().mockResolvedValue({ ok: true });
 
-    const result = await publishCompanionBridgeState(state, fetcher);
+    const result = await publishCompanionBridgeState(state, {
+      fetcher,
+      token: 'paired-token',
+    });
 
     expect(result).toEqual({ status: 'published' });
     expect(fetcher).toHaveBeenCalledWith(companionBridgePublishUrl, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: {
+        'content-type': 'application/json',
+        'x-signal-vault-bridge-token': 'paired-token',
+      },
       body: JSON.stringify(state),
     });
   });
@@ -30,7 +36,7 @@ describe('publishCompanionBridgeState', () => {
   it('reports disconnected when the companion bridge is absent', async () => {
     const fetcher = vi.fn().mockRejectedValue(new TypeError('offline'));
 
-    const result = await publishCompanionBridgeState(state, fetcher);
+    const result = await publishCompanionBridgeState(state, { fetcher });
 
     expect(result).toEqual({ status: 'disconnected' });
   });
@@ -38,7 +44,7 @@ describe('publishCompanionBridgeState', () => {
   it('does not throw when the companion rejects malformed state', async () => {
     const fetcher = vi.fn().mockResolvedValue({ ok: false });
 
-    const result = await publishCompanionBridgeState(state, fetcher);
+    const result = await publishCompanionBridgeState(state, { fetcher });
 
     expect(result).toEqual({ status: 'rejected' });
   });
