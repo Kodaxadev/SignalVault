@@ -6,7 +6,7 @@ Prove Signal Vault can provide in-play utility through a lightweight Windows ove
 
 ## Status
 
-Design closed; implementation not started. The repo now treats the browser app and object-context route as the current shippable surfaces. Phase 13A is the next in-play compromise, while future in-game/dApp browser support is deferred until EVE Frontier ships and documents a current working browser surface.
+13A.0 implementation started with a standalone Tauri shell proof in `apps/desktop`. The repo still treats the browser app and object-context route as the current shippable surfaces. Phase 13A is the next in-play compromise, while future in-game/dApp browser support is deferred until EVE Frontier ships and documents a current working browser surface.
 
 ## Build
 
@@ -37,6 +37,7 @@ Design closed; implementation not started. The repo now treats the browser app a
 - Works without backend.
 - Works without dApp Kit.
 - Browser app release checks remain green.
+- Desktop feasibility checks are explicit through `pnpm check:desktop` and are not part of the web/API release gate until the native app matures.
 
 ## First Implementation Slices
 

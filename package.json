@@ -2,13 +2,16 @@
   "name": "signal-vault",
   "private": true,
   "version": "0.0.0",
-  "description": "In-game-first intelligence and field-memory dApp for EVE Frontier",
+  "description": "Field-first intelligence and field-memory dApp for EVE Frontier",
   "scripts": {
     "dev": "pnpm --filter web dev",
     "dev:api": "pnpm --filter api dev",
+    "dev:desktop": "pnpm --filter desktop tauri:dev",
     "build": "pnpm --filter web build",
+    "build:desktop": "pnpm --filter desktop tauri:build",
     "typecheck": "pnpm --filter web typecheck",
     "typecheck:api": "pnpm --filter api typecheck",
+    "typecheck:desktop": "pnpm --filter desktop typecheck",
     "lint": "pnpm --filter web lint",
     "test": "pnpm --filter web test",
     "test:run": "pnpm --filter web test:run",
@@ -20,6 +23,7 @@
     "check:bundle-clean": "node scripts/assert-main-bundle-clean.mjs",
     "check:docs": "node scripts/assert-alpha-docs-current.mjs",
     "check:release": "pnpm typecheck && pnpm typecheck:api && pnpm test:run && pnpm test:api && pnpm test:scripts && pnpm build && pnpm check:prod-auth && pnpm check:world-env && pnpm check:bundle-clean && pnpm check:docs && pnpm check:lines",
+    "check:desktop": "pnpm typecheck:desktop && pnpm build:desktop",
     "demo:status": "node scripts/print-alpha-demo-status.mjs"
   },
   "engines": {

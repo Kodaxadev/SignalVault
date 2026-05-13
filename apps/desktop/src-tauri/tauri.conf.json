@@ -1,0 +1,30 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "Signal Vault Companion",
+  "version": "0.0.0",
+  "identifier": "dev.signalvault.companion",
+  "build": {
+    "beforeDevCommand": "pnpm dev:vite",
+    "devUrl": "http://127.0.0.1:1420",
+    "beforeBuildCommand": "pnpm build:vite",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Signal Vault Companion",
+        "width": 380,
+        "height": 520,
+        "resizable": false,
+        "fullscreen": false
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": false,
+    "targets": "all"
+  }
+}

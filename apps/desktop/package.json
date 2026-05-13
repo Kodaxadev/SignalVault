@@ -1,0 +1,22 @@
+{
+  "name": "desktop",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev:vite": "vite --host 127.0.0.1 --port 1420",
+    "build:vite": "tsc --noEmit && vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "typecheck": "tsc --noEmit",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build --no-bundle"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.11.0"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.11.1",
+    "typescript": "^5.8.3",
+    "vite": "^5.4.19"
+  }
+}

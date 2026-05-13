@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="Signal Vault Companion icon">
+  <rect width="128" height="128" fill="#050505"/>
+  <path d="M18 18h92v92H18z" fill="none" stroke="#ff4f12" stroke-width="6"/>
+  <path d="M35 84V44l29-16 29 16v40L64 100 35 84z" fill="none" stroke="#f2f0e8" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M64 31v66M38 46l26 15 26-15" fill="none" stroke="#ff4f12" stroke-width="5" stroke-linecap="square"/>
+</svg>

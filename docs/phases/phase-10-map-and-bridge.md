@@ -6,7 +6,7 @@ Reduce tabbing by improving map/context handoff.
 
 ## Status
 
-Partially closed for alpha. Current-system manual selection, route warnings, World API context, and the desktop companion overlay design are in place. A local log watcher and native bridge are not implemented yet; they now belong to Phase 12 / Phase 13A overlay work.
+Partially closed for alpha. Current-system manual selection, route warnings, World API context, and the desktop companion overlay design are in place. A local log watcher and native bridge are not implemented yet; they now belong to Phase 13A overlay work.
 
 ## Build
 

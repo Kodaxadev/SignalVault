@@ -19,7 +19,7 @@
 | 10 Map and Bridge | Partial | Current-system selector and route warnings exist; native bridge/log watcher moves to overlay phase. |
 | 11 FrontierWarden Integration | Deferred | Internal policy exists, but no FrontierWarden adapter or sealed-intel policy exists. |
 | 12 Release/Docs Bridge | Closed | Release and documentation alignment work is complete enough for alpha tracking. |
-| 13A Desktop Overlay Feasibility | Designed | Overlay direction is documented; implementation is next phase work. |
+| 13A Desktop Overlay Feasibility | Started | Tauri shell proof is scaffolded; overlay window behavior, hotkeys, and bridge work remain open. |
 
 ## Decisions
 
