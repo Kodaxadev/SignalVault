@@ -22,3 +22,11 @@ test('desktop window starts in a gameplay-friendly corner', () => {
   assert.equal(mainWindow.x, 24);
   assert.equal(mainWindow.y, 24);
 });
+
+test('desktop bundle metadata declares alpha app identity', () => {
+  assert.equal(config.productName, 'Signal Vault Companion');
+  assert.equal(config.identifier, 'dev.signalvault.companion');
+  assert.equal(config.bundle.publisher, 'Signal Vault');
+  assert.deepEqual(config.bundle.icon, ['icons/icon.ico']);
+  assert.match(config.bundle.shortDescription, /desktop companion/);
+});

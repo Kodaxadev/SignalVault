@@ -11,6 +11,7 @@
     "test:window-config": "node --test scripts/overlay-window-config.test.mjs",
     "test:global-shortcut": "node --test scripts/global-shortcut-plugin.test.mjs",
     "test:tray": "node --test scripts/tray-setup.test.mjs",
+    "desktop:smoke": "node --test scripts/packaged-smoke.test.mjs",
     "typecheck": "tsc --noEmit",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build --no-bundle"

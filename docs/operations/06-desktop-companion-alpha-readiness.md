@@ -99,14 +99,17 @@ Set Current System:
 
 ## Packaging Notes
 
-Phase 13A builds a no-bundle Tauri executable for feasibility. Before sharing desktop builds outside development, add:
+Phase 13B adds first-pass packaging readiness. See:
 
-- committed Rust `Cargo.lock` for reproducible application builds
+- `docs/operations/09-desktop-packaging-readiness.md`
+- `docs/operations/10-desktop-packaged-smoke-test.md`
+
+Before sharing desktop builds outside development, finish or explicitly disclose:
+
 - Windows installer or signed executable packaging
 - production URL configuration
-- icon and app identity polish
 - visual overlay QA against desktop and gameplay-like resolutions
-- bridge port conflict messaging
+- SmartScreen and Defender behavior for browser-downloaded unsigned artifacts
 
 ## Evidence
 

@@ -30,6 +30,12 @@
   },
   "bundle": {
     "active": false,
-    "targets": "all"
+    "targets": "all",
+    "publisher": "Signal Vault",
+    "icon": [
+      "icons/icon.ico"
+    ],
+    "shortDescription": "Signal Vault desktop companion overlay",
+    "longDescription": "A local-first Windows overlay companion for Signal Vault alpha testing."
   }
 }

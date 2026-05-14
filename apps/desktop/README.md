@@ -4,6 +4,8 @@ Phase 13A desktop overlay feasibility starts here.
 
 Operator guide: [`../../docs/operations/06-desktop-companion-alpha-readiness.md`](../../docs/operations/06-desktop-companion-alpha-readiness.md)
 
+Packaging guide: [`../../docs/operations/09-desktop-packaging-readiness.md`](../../docs/operations/09-desktop-packaging-readiness.md)
+
 This app is a native shell proof for a future Windows companion overlay. The current window is compact, frameless, fixed-size, always-on-top, can be toggled with `Ctrl+Shift+Space`, and has tray controls for show, hide, toggle, Open Vault, quick note capture, current-system capture, and quit. It is a companion surface only:
 
 - no wallet signing
@@ -27,5 +29,6 @@ Open Vault uses the Tauri opener plugin to open the configured Signal Vault web 
 - `pnpm typecheck:desktop` checks the desktop TypeScript surface.
 - `pnpm build:desktop` builds the Tauri shell without bundling an installer.
 - `pnpm check:desktop` runs the desktop feasibility check.
+- `pnpm check:desktop-package` builds the desktop app and smoke-tests the release exe.
 
-The generated Rust `Cargo.lock` is intentionally ignored during Phase 13A so the feasibility scaffold keeps the repository's human-auditable file-size rule. Revisit that if the companion becomes a release artifact.
+The Rust `Cargo.lock` is committed for the desktop application so alpha builds use the same dependency snapshot. The line-limit check remains scoped to authored web source and does not scan generated lockfiles.

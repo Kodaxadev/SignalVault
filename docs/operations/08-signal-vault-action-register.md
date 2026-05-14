@@ -75,3 +75,13 @@ Reason: this is the best P0 backend acceptance task before any public remote wri
 ## Decision
 
 Proceed with Phase 13B first for alpha/demo value, then Phase 09P before making any public production remote-write claim.
+
+## Phase 13B Implementation Note
+
+Phase 13B now has first-pass packaging readiness artifacts:
+
+- `docs/operations/09-desktop-packaging-readiness.md`
+- `docs/operations/10-desktop-packaged-smoke-test.md`
+- `pnpm check:desktop-package`
+
+The remaining desktop distribution gap is installer/signing maturity, not the local release-exe smoke path.

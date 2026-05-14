@@ -1,6 +1,10 @@
 import "./styles.css";
 import { fetchCompanionBridgeState } from "./bridge/bridgeClient";
 import {
+  formatBridgeHostStatus,
+  getBridgeHostStatus,
+} from "./bridge/bridgeHostStatus";
+import {
   formatBridgePairingToken,
   getBridgePairingToken,
 } from "./bridge/bridgePairing";
@@ -94,6 +98,10 @@ app.innerHTML = `
       <div class="check-row">
         <span>Tray</span>
         <strong data-tray-status>checking</strong>
+      </div>
+      <div class="check-row">
+        <span>Bridge Host</span>
+        <strong data-bridge-host-status>checking</strong>
       </div>
       <div class="check-row">
         <span>Pairing</span>
@@ -194,6 +202,7 @@ app.querySelector('[data-action="set-current-system"]')?.addEventListener("click
 
 const hotkeyStatus = app.querySelector<HTMLElement>("[data-hotkey-status]");
 const trayStatus = app.querySelector<HTMLElement>("[data-tray-status]");
+const bridgeHostStatus = app.querySelector<HTMLElement>("[data-bridge-host-status]");
 const pairingToken = app.querySelector<HTMLElement>("[data-pairing-token]");
 const bridgeBadge = app.querySelector<HTMLElement>("[data-bridge-badge]");
 const bridgeStatus = app.querySelector<HTMLElement>("[data-bridge-status]");
@@ -218,6 +227,12 @@ registerTrayStatus((status) => {
 void getBridgePairingToken().then((result) => {
   if (pairingToken) {
     pairingToken.textContent = formatBridgePairingToken(result);
+  }
+});
+
+void getBridgeHostStatus().then((status) => {
+  if (bridgeHostStatus) {
+    bridgeHostStatus.textContent = formatBridgeHostStatus(status);
   }
 });
 
