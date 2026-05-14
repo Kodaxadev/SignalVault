@@ -25,6 +25,7 @@
 - Added new-row constraints requiring `identity_resolved_at` on character-resolved Signal rows.
 - Added new-row audit constraints requiring `identity_source` and `identity_resolved_at` when `actor_character_id` is present.
 - Updated API migration readiness to require `005_harden_signal_rls`.
+- Extended migration readiness to check required RLS policies and identity constraints, not just tables and columns.
 - Added `pnpm verify:rls` deployed-role probe.
 
 ## Verification Command
@@ -52,6 +53,17 @@ Harness status: implemented.
 Live deployed-role result: **not run in this environment** because no `SIGNAL_VAULT_RLS_DATABASE_URL` or `DATABASE_URL` is configured.
 
 This means the production checklist can move from "no harness" to "harness ready, live credential needed", but the P0 item remains open until the command passes against the deployed app role.
+
+## Health Readiness
+
+`/health` now reports schema readiness against:
+
+- required tables
+- required columns
+- required `signals` / `audit_log` RLS policies
+- required identity snapshot constraints
+
+This catches a database that has migrations through `004` but has not applied the Phase 09P RLS hardening in migration `005`.
 
 ## Hard Boundaries
 

@@ -16,6 +16,30 @@ const REQUIRED_COLUMNS = [
   { tableName: 'audit_log', columnName: 'identity_resolved_at' },
 ] as const;
 
+const REQUIRED_POLICIES = [
+  { tableName: 'signals', policyName: 'signal_read_scope' },
+  { tableName: 'signals', policyName: 'signal_insert_auth' },
+  { tableName: 'signals', policyName: 'signal_update_auth' },
+  { tableName: 'signals', policyName: 'signal_delete_auth' },
+  { tableName: 'audit_log', policyName: 'audit_append' },
+  { tableName: 'audit_log', policyName: 'audit_read' },
+] as const;
+
+const REQUIRED_CONSTRAINTS = [
+  {
+    tableName: 'signals',
+    constraintName: 'signals_identity_resolved_at_required_for_character',
+  },
+  {
+    tableName: 'audit_log',
+    constraintName: 'audit_identity_source_required_for_character',
+  },
+  {
+    tableName: 'audit_log',
+    constraintName: 'audit_identity_resolved_at_required_for_character',
+  },
+] as const;
+
 type MigrationStatusBase = {
   latestRequired: typeof LATEST_REQUIRED_MIGRATION;
 };
@@ -29,6 +53,9 @@ export type MigrationStatus =
 type SchemaRow = {
   table_name: string;
   column_name?: string;
+  tablename?: string;
+  policyname?: string;
+  constraint_name?: string;
 };
 
 const REQUIRED_TABLES_SQL = `
@@ -45,6 +72,20 @@ WHERE table_schema = 'public'
 AND table_name = ANY($1)
 `;
 
+const REQUIRED_POLICIES_SQL = `
+SELECT tablename, policyname
+FROM pg_policies
+WHERE schemaname = 'public'
+AND tablename = ANY($1)
+`;
+
+const REQUIRED_CONSTRAINTS_SQL = `
+SELECT table_name, constraint_name
+FROM information_schema.table_constraints
+WHERE table_schema = 'public'
+AND table_name = ANY($1)
+`;
+
 export async function checkMigrationStatus(): Promise<MigrationStatus> {
   const pool = getPool();
   if (!pool) {
@@ -57,9 +98,13 @@ export async function checkMigrationStatus(): Promise<MigrationStatus> {
   try {
     const tableResult = await pool.query(REQUIRED_TABLES_SQL, [REQUIRED_TABLES]);
     const columnResult = await pool.query(REQUIRED_COLUMNS_SQL, [REQUIRED_TABLES]);
+    const policyResult = await pool.query(REQUIRED_POLICIES_SQL, [REQUIRED_TABLES]);
+    const constraintResult = await pool.query(REQUIRED_CONSTRAINTS_SQL, [REQUIRED_TABLES]);
     const missing = findMissingSchemaItems(
       tableResult.rows as SchemaRow[],
-      columnResult.rows as SchemaRow[]
+      columnResult.rows as SchemaRow[],
+      policyResult.rows as SchemaRow[],
+      constraintResult.rows as SchemaRow[]
     );
 
     if (missing.length > 0) {
@@ -84,11 +129,19 @@ export async function checkMigrationStatus(): Promise<MigrationStatus> {
 
 export function findMissingSchemaItems(
   tableRows: SchemaRow[],
-  columnRows: SchemaRow[]
+  columnRows: SchemaRow[],
+  policyRows: SchemaRow[] = [],
+  constraintRows: SchemaRow[] = []
 ): string[] {
   const foundTables = new Set(tableRows.map((row) => row.table_name));
   const foundColumns = new Set(
     columnRows.map((row) => `${row.table_name}.${row.column_name ?? ''}`)
+  );
+  const foundPolicies = new Set(
+    policyRows.map((row) => `${row.tablename ?? ''}.${row.policyname ?? ''}`)
+  );
+  const foundConstraints = new Set(
+    constraintRows.map((row) => `${row.table_name}.${row.constraint_name ?? ''}`)
   );
   const missing: string[] = [];
 
@@ -100,6 +153,20 @@ export function findMissingSchemaItems(
     if (!foundTables.has(tableName)) continue;
     const key = `${tableName}.${columnName}`;
     if (!foundColumns.has(key)) missing.push(key);
+  }
+
+  for (const { tableName, policyName } of REQUIRED_POLICIES) {
+    if (!foundTables.has(tableName)) continue;
+    const key = `${tableName}.${policyName}`;
+    if (!foundPolicies.has(key)) missing.push(`${tableName}.policy.${policyName}`);
+  }
+
+  for (const { tableName, constraintName } of REQUIRED_CONSTRAINTS) {
+    if (!foundTables.has(tableName)) continue;
+    const key = `${tableName}.${constraintName}`;
+    if (!foundConstraints.has(key)) {
+      missing.push(`${tableName}.constraint.${constraintName}`);
+    }
   }
 
   return missing;

@@ -10,11 +10,18 @@ import {
 
 const mockGetPool = vi.mocked(getPool);
 
-function makePool(tableRows: unknown[], columnRows: unknown[]) {
+function makePool(
+  tableRows: unknown[],
+  columnRows: unknown[],
+  policyRows = currentPolicies,
+  constraintRows = currentConstraints
+) {
   return {
     query: vi.fn()
       .mockResolvedValueOnce({ rows: tableRows })
-      .mockResolvedValueOnce({ rows: columnRows }),
+      .mockResolvedValueOnce({ rows: columnRows })
+      .mockResolvedValueOnce({ rows: policyRows })
+      .mockResolvedValueOnce({ rows: constraintRows }),
   };
 }
 
@@ -32,6 +39,30 @@ const currentColumns = [
   { table_name: 'audit_log', column_name: 'identity_resolved_at' },
 ];
 
+const currentPolicies = [
+  { tablename: 'signals', policyname: 'signal_read_scope' },
+  { tablename: 'signals', policyname: 'signal_insert_auth' },
+  { tablename: 'signals', policyname: 'signal_update_auth' },
+  { tablename: 'signals', policyname: 'signal_delete_auth' },
+  { tablename: 'audit_log', policyname: 'audit_append' },
+  { tablename: 'audit_log', policyname: 'audit_read' },
+];
+
+const currentConstraints = [
+  {
+    table_name: 'signals',
+    constraint_name: 'signals_identity_resolved_at_required_for_character',
+  },
+  {
+    table_name: 'audit_log',
+    constraint_name: 'audit_identity_source_required_for_character',
+  },
+  {
+    table_name: 'audit_log',
+    constraint_name: 'audit_identity_resolved_at_required_for_character',
+  },
+];
+
 beforeEach(() => {
   mockGetPool.mockReset();
 });
@@ -46,12 +77,32 @@ describe('checkMigrationStatus', () => {
     });
   });
 
-  it('reports current when required tables and columns exist', async () => {
+  it('reports current when required tables, columns, policies, and constraints exist', async () => {
     mockGetPool.mockReturnValue(makePool(currentTables, currentColumns) as never);
 
     await expect(checkMigrationStatus()).resolves.toEqual({
       status: 'current',
       latestRequired: LATEST_REQUIRED_MIGRATION,
+    });
+  });
+
+  it('reports missing policies and constraints when migration 005 is stale', async () => {
+    mockGetPool.mockReturnValue(makePool(
+      currentTables,
+      currentColumns,
+      currentPolicies.filter((row) => row.policyname !== 'signal_insert_auth'),
+      currentConstraints.filter((row) =>
+        row.constraint_name !== 'audit_identity_source_required_for_character'
+      )
+    ) as never);
+
+    await expect(checkMigrationStatus()).resolves.toEqual({
+      status: 'outdated',
+      latestRequired: LATEST_REQUIRED_MIGRATION,
+      missing: [
+        'signals.policy.signal_insert_auth',
+        'audit_log.constraint.audit_identity_source_required_for_character',
+      ],
     });
   });
 
