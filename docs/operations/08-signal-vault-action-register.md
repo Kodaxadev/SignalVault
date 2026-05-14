@@ -25,6 +25,12 @@
 | P2 | Real lint/static analysis | `pnpm lint` is not authoritative, so release gate lacks lint/static analysis coverage. | Production checklist | Lint is configured, CI-safe, and either added to release gate or docs stop mentioning it as meaningful. |
 | P2 | Observability/incident runbooks | Production backend exposure needs operator visibility and response paths. | Production checklist and risk register | Runbooks cover rollback, env compromise, DB migration failure, auth failures, and World API dependency failures. |
 
+## Current P0 Work
+
+| Priority | Action | Status | Next Proof |
+|---|---|---|---|
+| P0 | Verify Postgres RLS under deployed app role | Harness and RLS hardening migration implemented; live deployed-role run still pending. | Set `SIGNAL_VAULT_RLS_DATABASE_URL`, apply migration `005_harden_signal_rls.sql`, then run `pnpm verify:rls`. |
+
 ## Recommended Next Phase
 
 **Pick:** Phase 13B — Desktop Packaging Readiness.

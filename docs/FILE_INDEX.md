@@ -47,6 +47,7 @@
 - `operations/08-signal-vault-action-register.md`
 - `operations/09-desktop-packaging-readiness.md`
 - `operations/10-desktop-packaged-smoke-test.md`
+- `operations/11-deployed-rls-verification.md`
 - `phases/phase-00-scaffold.md`
 - `phases/phase-01-ingame-shell.md`
 - `phases/phase-02-viewer-context.md`

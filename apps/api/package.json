@@ -7,7 +7,8 @@
     "dev": "tsx watch src/index.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "verify:rls": "tsx scripts/verify-deployed-rls.ts"
   },
   "dependencies": {
     "@hono/node-server": "^1.12.0",

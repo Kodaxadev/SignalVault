@@ -1,6 +1,6 @@
 import { getPool } from './dbClient';
 
-export const LATEST_REQUIRED_MIGRATION = '004_add_identity_snapshot_fields';
+export const LATEST_REQUIRED_MIGRATION = '005_harden_signal_rls';
 
 const REQUIRED_TABLES = [
   'signals',

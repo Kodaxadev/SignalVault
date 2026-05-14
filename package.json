@@ -26,6 +26,7 @@
     "check:desktop": "pnpm --filter desktop test:window-config && pnpm --filter desktop test:global-shortcut && pnpm --filter desktop test:tray && pnpm --filter desktop test:run && pnpm typecheck:desktop && pnpm build:desktop",
     "desktop:smoke": "pnpm --filter desktop desktop:smoke",
     "check:desktop-package": "pnpm build:desktop && pnpm desktop:smoke",
+    "verify:rls": "pnpm --filter api verify:rls",
     "demo:status": "node scripts/print-alpha-demo-status.mjs"
   },
   "engines": {

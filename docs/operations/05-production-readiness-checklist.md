@@ -41,7 +41,7 @@
   `GET /api/v1/signals` and `GET /api/v1/signals/:id` now call [`signalRepository.ts`](../../apps/api/src/db/signalRepository.ts), serialize DB rows, optionally authenticate supplied read credentials, and rely on Postgres RLS filtering through the repository session context. Follow-up: pagination/filter query params are still not implemented.
 
 - [ ] **Verify Postgres RLS under the actual application role.**  
-  Migration [`001_initial_schema.sql`](../../apps/api/migrations/001_initial_schema.sql) enables RLS and uses `current_setting('app.current_tribe_id', true)` / `current_setting('app.current_character_id', true)`. Repository calls now set those session variables in a transaction before list/find/insert queries, but production acceptance still requires integration tests proving cross-tribe reads/writes are denied with the deployed DB role and pool behavior.
+  Migration [`005_harden_signal_rls.sql`](../../apps/api/migrations/005_harden_signal_rls.sql) replaces the broad all-command signal policy with command-specific RLS checks and new identity snapshot constraints. [`verify-deployed-rls.ts`](../../apps/api/scripts/verify-deployed-rls.ts) now provides the deployed-role probe (`pnpm verify:rls`). This remains open until the probe passes with `SIGNAL_VAULT_RLS_DATABASE_URL` against the deployed app role. Evidence: [PostgreSQL row security policies](https://www.postgresql.org/docs/current/ddl-rowsecurity.html), [CREATE POLICY](https://www.postgresql.org/docs/current/sql-createpolicy.html).
 
 ## P1 Hardening Before Public Production
 
@@ -96,4 +96,4 @@
 - [x] `AUTH_DEV_MODE=true` and `VITE_REMOTE_DEV_AUTH=true` are blocked by `pnpm check:prod-auth`.
 - [x] World API enrichment remains optional and is not used to infer Smart Assembly identity; dApp Kit remains the Smart Assembly authority. Evidence: Atlas [`679dd42f`](https://atlas.kodaxa.dev/api/records/679dd42f9b9014cf029d13bdde24af37eb5ec2402a384d385c1dec79dc92f0e1), Stillness World API records above.
 - [x] Remote signals and audit logs preserve request-time character identity snapshots (`characterId`, `characterName`, `tribeId`, `identitySource`, `identityResolvedAt`) instead of assuming a wallet maps to the same character forever.
-- [x] `/health` reports DB schema readiness against required migration `004_add_identity_snapshot_fields` without exposing `DATABASE_URL`.
+- [x] `/health` reports DB schema readiness against required migration `005_harden_signal_rls` without exposing `DATABASE_URL`.

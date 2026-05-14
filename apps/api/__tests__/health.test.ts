@@ -24,7 +24,7 @@ describe('GET /health', () => {
 
     expect(readiness['database']).toBe('not_configured');
     expect(migrations['status']).toBe('not_configured');
-    expect(migrations['latestRequired']).toBe('004_add_identity_snapshot_fields');
+    expect(migrations['latestRequired']).toBe('005_harden_signal_rls');
     expect(JSON.stringify(body)).not.toContain('DATABASE_URL');
   });
 
