@@ -44,6 +44,7 @@
 - `operations/04-release-checklist.md`
 - `operations/06-desktop-companion-alpha-readiness.md`
 - `operations/07-signal-vault-question-battery.md`
+- `operations/08-signal-vault-action-register.md`
 - `phases/phase-00-scaffold.md`
 - `phases/phase-01-ingame-shell.md`
 - `phases/phase-02-viewer-context.md`

@@ -107,6 +107,7 @@ It is:
 - [`operations/04-release-checklist.md`](operations/04-release-checklist.md)
 - [`operations/06-desktop-companion-alpha-readiness.md`](operations/06-desktop-companion-alpha-readiness.md)
 - [`operations/07-signal-vault-question-battery.md`](operations/07-signal-vault-question-battery.md)
+- [`operations/08-signal-vault-action-register.md`](operations/08-signal-vault-action-register.md)
 
 ## Non-Negotiable Development Rules
 
