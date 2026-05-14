@@ -15,6 +15,7 @@ export interface ServerAuditEvent {
   id: string;
   eventType: AuditEventType;
   actorCharacterId?: string;
+  actorCharacterName?: string;
   actorWalletAddress: string;
   actorTribeId?: string;
   actorRoleSnapshot: Record<string, unknown>;
@@ -28,6 +29,8 @@ export interface ServerAuditEvent {
   createdAt: string;
   /** How server-side character identity was derived for this event. */
   identitySource?: ServerIdentitySource;
+  /** When the request-time character identity snapshot was resolved. */
+  identityResolvedAt?: string;
 }
 
 export type AuditEventInput = Omit<ServerAuditEvent, 'id' | 'createdAt'>;

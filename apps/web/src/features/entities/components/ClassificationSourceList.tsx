@@ -1,4 +1,5 @@
 import type { EntityClassificationClaim, EntityResolutionSource } from '@/features/entities/entityClassificationTypes';
+import { TerminalPanel } from '@/features/ingame/TerminalFrame';
 
 const sourceLabels: Record<EntityResolutionSource, string> = {
   url_hint: 'URL Context',
@@ -8,6 +9,7 @@ const sourceLabels: Record<EntityResolutionSource, string> = {
   maintainer_registry: 'Maintainer Registry',
   owner_claim_verified: 'Owner Verified',
   dappkit_current_object: 'dApp Kit',
+  world_api: 'World API',
   indexed: 'Indexed',
   onchain_verified: 'On-Chain Verified',
   unknown: 'Unknown',
@@ -35,19 +37,18 @@ export function ClassificationSourceList({
   if (claims.length === 0) return null;
 
   return (
-    <div className="rounded border border-gray-800 p-3">
-      <h4 className="text-xs font-semibold text-gray-400 mb-2">Sources</h4>
-      <ul className="space-y-1 text-xs text-gray-500">
+    <TerminalPanel title="Sources" code={`${claims.length}`} headingLevel={3}>
+      <ul className="space-y-1 font-mono text-xs uppercase text-zinc-500">
         {claims.map((claim) => (
-          <li key={claim.id} className="flex justify-between">
+          <li key={claim.id} className="grid grid-cols-[minmax(0,1fr)_minmax(90px,auto)_40px] gap-2">
             <span>{sourceLabels[claim.source]}</span>
-            <span className="text-gray-300">{typeLabels[claim.claimedType]}</span>
+            <span className="text-zinc-300">{typeLabels[claim.claimedType]}</span>
             {claim.priority > 0 && (
-              <span className="text-gray-600">[{claim.priority}]</span>
+              <span className="text-right text-zinc-600">[{claim.priority}]</span>
             )}
           </li>
         ))}
       </ul>
-    </div>
+    </TerminalPanel>
   );
 }

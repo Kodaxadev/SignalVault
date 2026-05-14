@@ -13,6 +13,7 @@ import {
   InGameStatusRail,
   InGameActionPanel,
   InGameEmptyStates,
+  TerminalPanel,
 } from '@/features/ingame';
 import type { CharacterResolutionUiState } from '@/features/ingame';
 import { useSmartObjectContextAdapter, useFrontierWalletAdapter, useFrontierCharacterAdapter } from '@/features/frontier';
@@ -65,38 +66,53 @@ export function InGameShell() {
 
   return (
     <WalletSigningProvider snapshot={signingSnapshot}>
-    <div className="min-h-screen bg-gray-950 text-gray-100">
-      <header className="border-b border-gray-800 px-3 py-2 space-y-2">
-        <h1 className="text-base font-semibold">Signal Vault — In-Game</h1>
-        <InGameModeBanner viewer={viewer} />
-        <InGameStatusRail viewer={viewer} entity={resolved} localStatus={localStatus} />
-        <ViewerBadge viewer={viewer} />
-      </header>
+      <div className="min-h-screen bg-[#050505] bg-[radial-gradient(circle_at_20%_0%,rgba(249,115,22,0.08),transparent_28%),linear-gradient(rgba(255,255,255,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.025)_1px,transparent_1px)] bg-[size:auto,24px_24px,24px_24px] text-zinc-100">
+        <header className="border-b border-zinc-800 bg-black/90 px-3 py-2">
+          <div className="mx-auto max-w-[1480px] space-y-3">
+            <div className="flex items-center justify-between border border-zinc-800 bg-zinc-950 px-3 py-2">
+              <h1 className="font-mono text-sm font-semibold uppercase text-zinc-100">
+                Signal Vault // Intel Terminal
+              </h1>
+              <span className="font-mono text-[11px] uppercase text-orange-500">
+                Object Context Link
+              </span>
+            </div>
+            <InGameModeBanner viewer={viewer} />
+            <InGameStatusRail viewer={viewer} entity={resolved} localStatus={localStatus} />
+            <ViewerBadge viewer={viewer} />
+          </div>
+        </header>
 
-      <main className="p-3 space-y-4">
-        {showConnect ? (
-          <ConnectIdentityPanel
-            onDone={() => setShowConnect(false)}
-            walletSnapshot={walletSnapshot}
-            onConnectWallet={handleFrontierWalletConnect}
-          />
-        ) : (
-          <InGameActionPanel
-            viewer={viewer}
-            characterResolution={characterUi}
-            lastSignalMessage={lastSignalMessage}
-            onConnectIdentity={() => setShowConnect(true)}
-            onResolveCharacter={handleResolveCharacter}
-          />
-        )}
+        <main className="mx-auto grid max-w-[1480px] gap-3 p-3 lg:grid-cols-[360px_minmax(0,1fr)]">
+          <aside className="space-y-3">
+            <TerminalPanel title="Operator" code="AUTH" headingLevel={3}>
+              {showConnect ? (
+                <ConnectIdentityPanel
+                  onDone={() => setShowConnect(false)}
+                  walletSnapshot={walletSnapshot}
+                  onConnectWallet={handleFrontierWalletConnect}
+                />
+              ) : (
+                <InGameActionPanel
+                  viewer={viewer}
+                  characterResolution={characterUi}
+                  lastSignalMessage={lastSignalMessage}
+                  onConnectIdentity={() => setShowConnect(true)}
+                  onResolveCharacter={handleResolveCharacter}
+                />
+              )}
+            </TerminalPanel>
+          </aside>
 
-        {hasContext ? (
-          <ObjectDossier entity={resolved} onSignalCreated={setLastSignalMessage} />
-        ) : (
-          <InGameEmptyStates.NoObjectContext />
-        )}
-      </main>
-    </div>
+          <section>
+            {hasContext ? (
+              <ObjectDossier entity={resolved} onSignalCreated={setLastSignalMessage} />
+            ) : (
+              <InGameEmptyStates.NoObjectContext />
+            )}
+          </section>
+        </main>
+      </div>
     </WalletSigningProvider>
   );
 }

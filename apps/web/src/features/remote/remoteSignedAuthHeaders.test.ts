@@ -6,12 +6,11 @@ describe('buildSignedAuthHeaders', () => {
     challengeId: 'uuid-challenge-1',
     signature: 'wallet-sig-bytes',
     walletAddress: '0xabc',
-    characterJwt: 'eyJ.payload.sig',
   };
 
-  it('sets Authorization header with Bearer token', () => {
+  it('does not set Authorization header for signed wallet auth', () => {
     const headers = buildSignedAuthHeaders(input);
-    expect(headers['Authorization']).toBe('Bearer eyJ.payload.sig');
+    expect('Authorization' in headers).toBe(false);
   });
 
   it('sets X-Wallet-Address', () => {

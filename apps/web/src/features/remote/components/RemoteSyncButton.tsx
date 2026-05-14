@@ -38,7 +38,6 @@ export function RemoteSyncButton({ signal }: { signal: Signal }) {
   const devAuthEnabled = isRemoteDevAuthEnabled();
   const credentials = getRemoteDevCredentials();
   const signingAvailable = signing.status === 'available';
-  const characterJwtAvailable = Boolean(env.VITE_REMOTE_DEV_CHARACTER_JWT);
 
   if (signal.visibility === 'local_private') {
     return <span className="text-gray-600 text-xs">Local only</span>;
@@ -59,11 +58,6 @@ export function RemoteSyncButton({ signal }: { signal: Signal }) {
 
   if (!devAuthEnabled && !signingAvailable) {
     return <RemoteSyncBlockedReason reason={signingBlockedReason(signing)} />;
-  }
-
-  // Signing path requires character JWT (still dev-supplied in alpha)
-  if (!devAuthEnabled && signingAvailable && !characterJwtAvailable) {
-    return <RemoteSyncBlockedReason reason="character_token_blocked" />;
   }
 
   const handlePush = async () => {
@@ -105,12 +99,10 @@ export function RemoteSyncButton({ signal }: { signal: Signal }) {
         setIsPushing(false);
         return;
       }
-      const characterJwt = env.VITE_REMOTE_DEV_CHARACTER_JWT ?? '';
       pushHeaders = buildSignedAuthHeaders({
         challengeId: signingResult.challengeId,
         signature: signingResult.signature,
         walletAddress: signingResult.walletAddress,
-        characterJwt,
       });
     } else {
       setPreflightError('No auth method available.');

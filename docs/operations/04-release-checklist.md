@@ -2,10 +2,19 @@
 
 ## Build
 
+- [ ] `pnpm check:release`
+- [ ] For Stillness production, run `SIGNAL_VAULT_RELEASE_ENV=stillness pnpm check:world-env`
 - [ ] `pnpm typecheck`
-- [ ] `pnpm lint`
+- [ ] `pnpm typecheck:api`
 - [ ] `pnpm test:run`
+- [ ] `pnpm test:api`
 - [ ] `pnpm build`
+- [ ] `pnpm check:prod-auth`
+- [ ] `pnpm check:bundle-clean`
+- [ ] `pnpm check:docs`
+- [ ] `pnpm check:lines`
+
+`pnpm lint` is not a release gate yet. The current web lint script is a placeholder until a real lint configuration is added.
 
 ## Security
 

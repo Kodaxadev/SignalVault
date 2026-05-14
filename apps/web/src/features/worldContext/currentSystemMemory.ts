@@ -16,10 +16,14 @@ export function loadCurrentSystem(): CurrentSystem | null {
 
 export function saveCurrentSystem(system: CurrentSystem): void {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(system));
+    saveCurrentSystemStrict(system);
   } catch {
     // Storage unavailable — no-op
   }
+}
+
+export function saveCurrentSystemStrict(system: CurrentSystem): void {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(system));
 }
 
 export function clearCurrentSystemMemory(): void {

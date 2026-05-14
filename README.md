@@ -2,9 +2,9 @@
 
 **Field intelligence for EVE Frontier.**
 
-Signal Vault is an in-game-first intel layer that turns observations into structured, entity-linked field Signals — logged at the point of encounter, graded by confidence, tracked for staleness, and surfaced as object dossiers when you need them.
+Signal Vault is a field-first intel layer that turns observations into structured, entity-linked field Signals — logged at the point of encounter, graded by confidence, tracked for staleness, and surfaced as object dossiers when you need them.
 
-It runs inside the EVE Frontier in-game browser as a Smart Assembly dApp and as a standalone browser tool. Everything is local-first: your data stays in your browser until you choose to relay it.
+It runs as a standalone browser tool today, with Smart Object context available through URL/object parameters and EVE Frontier dApp Kit paths where a supported provider exists. The in-play direction is a lightweight desktop companion overlay, not a replacement dApp browser. Everything is local-first: your data stays in your browser until you choose to relay it.
 
 ---
 
@@ -42,8 +42,9 @@ Signals are scoped: `local_private` / `private` / `public` / `tribe` / `officer`
 ```
 Signal Vault
 ├── apps/web          React + Vite + Tailwind — local-first frontend
-│   ├── InGame shell  Smart Assembly dApp surface (EVE Frontier in-game browser)
-│   ├── External app  Standalone browser — signal log, dossiers, export/import
+│   ├── Object shell  Smart Object context route for field dossiers
+│   ├── Browser app   Standalone browser — signal log, dossiers, export/import
+│   ├── Companion     Desktop overlay bridge for in-play local intel
 │   └── /compat       Browser diagnostics page
 │
 └── apps/api          Hono + Postgres — remote push backend
@@ -54,7 +55,7 @@ Signal Vault
 
 **Local-first by default.** Every feature works without the backend. Remote push is manual, single-signal, and labeled alpha.
 
-**Chunk isolation.** The EVE Frontier dApp Kit (`@evefrontier/dapp-kit`) loads only in the InGame route chunk. The main app bundle has zero `evefrontier` references — verified on every build.
+**Chunk isolation.** The EVE Frontier dApp Kit (`@evefrontier/dapp-kit`) loads only in the InGame route chunk. The main app bundle has zero dApp Kit references — verified on every build.
 
 **Entity resolution pipeline.** Claims from multiple sources are merged by priority: `onchain_verified` (100) › `dappkit_current_object` (80) › `world_api` (75) › `user_manual` (30) › `url_hint` (10). The winning claim sets entity type and label.
 
@@ -69,7 +70,7 @@ Signal Vault
 | Frontend | React 19, Vite, React Router, TanStack Query, Tailwind CSS |
 | Local storage | Dexie (IndexedDB) |
 | Validation | Zod |
-| Backend | Hono, Postgres, `@supabase/supabase-js` |
+| Backend | Hono, Postgres, `pg` |
 | Identity | Sui GraphQL — wallet → PlayerProfile → Character (on-chain) |
 | EVE integration | `@evefrontier/dapp-kit` (InGame only) |
 | Monorepo | pnpm workspaces |
@@ -79,21 +80,22 @@ Signal Vault
 
 ## Status
 
-**Internal alpha.** Local-first features are complete. Remote sync is functional under Sui identity mode (dev-validated) and dev-auth mode. Production wallet signature verification is pending EVE dApp Kit signing scheme confirmation.
+**Internal alpha.** Local-first features are complete. Remote sync is functional under Sui identity mode (dev-validated) and dev-auth mode. Production wallet signature verification is unit-tested for Sui personal messages; live EVE Vault / zkLogin fixture validation remains before public production.
 
 | Gate | Result |
 |---|---|
 | TypeScript | 0 errors |
-| Web tests | 658 passed |
-| API tests | 193 passed |
-| Main bundle evefrontier refs | 0 |
+| Web tests | 683 passed |
+| API tests | 228 passed / 5 skipped |
+| Main bundle dApp Kit refs | 0 |
 | All files | ≤ 400 lines |
+| Dependency audit | 2 moderate dev-tool advisories tracked as follow-up |
 
 ---
 
 ## Getting Started
 
-**Prerequisites:** Node 20+, pnpm 9+
+**Prerequisites:** Node >=24, pnpm 9+
 
 ```bash
 # Install
@@ -113,7 +115,7 @@ pnpm typecheck:api
 pnpm test:run      # web
 pnpm test:api      # api
 
-# Release gates
+# Release gates (typecheck, tests, build, then release guardrails)
 pnpm check:release
 ```
 
@@ -160,6 +162,8 @@ These are unconditional. They do not change for demos, edge cases, or convenienc
 - **No dev-auth in production.** `AUTH_DEV_MODE=true` and `VITE_REMOTE_DEV_AUTH=true` are blocked by `pnpm check:prod-auth`.
 - **Chunk isolation.** dApp Kit must not appear in the main bundle. Enforced by `check:bundle-clean`.
 - **World API does not infer Smart Assembly identity.** Type data from the World API claims `item` only — never `smart_gate`, `smart_storage_unit`, `market`, or `smart_turret`. The dApp Kit is the authority for Smart Assembly classification.
+- **Lint is not a release gate yet.** The current lint script is a placeholder until a real lint configuration is added.
+- **Audit advisories are tracked, not hidden.** Current moderate Vite/esbuild dev-tool advisories require a separate dependency maintenance pass.
 
 ---
 

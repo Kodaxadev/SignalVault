@@ -8,6 +8,7 @@ import { SignalVisibilitySelector } from '@/features/signals/components/SignalVi
 import { getDefaultSignalVisibility } from '@/features/signals/signalVisibilityDefaults';
 import type { SignalVisibility } from '@/features/signals/signalTypes';
 import { useState } from 'react';
+import { TerminalButton, TerminalPanel } from '@/features/ingame';
 
 export function QuickSignalButtons({
   entityType,
@@ -55,33 +56,34 @@ export function QuickSignalButtons({
   };
 
   return (
-    <div className="space-y-3">
+    <TerminalPanel title="Signal Capture" code="LOCAL" headingLevel={3}>
       <SignalVisibilitySelector
         viewer={viewer}
         selectedVisibility={selectedVisibility}
         onChange={setSelectedVisibility}
       />
-      <div>
-        <h3 className="text-xs font-semibold text-gray-400 mb-2">Quick Actions</h3>
+      <div className="mt-3">
+        <h3 className="mb-2 font-mono text-xs font-semibold uppercase text-zinc-400">
+          Quick Actions
+        </h3>
         <div className="flex flex-wrap gap-2">
           {actions.map((action) => (
-            <button
+            <TerminalButton
               key={action.id}
-              type="button"
               onClick={() => handleClick(action.id)}
-              className="rounded border border-gray-700 bg-gray-800 px-3 py-1.5 text-xs text-gray-200 hover:bg-gray-700 active:bg-gray-600"
+              tone={action.id === actions[0]?.id ? 'primary' : 'neutral'}
             >
               {action.label}
-            </button>
+            </TerminalButton>
           ))}
         </div>
       </div>
       {error && (
-        <div className="rounded border border-yellow-800 bg-yellow-900/20 p-2">
-          <p className="text-xs text-yellow-300">{error}</p>
+        <div className="mt-3 border border-orange-700 bg-orange-950/30 p-2">
+          <p className="text-xs text-orange-300">{error}</p>
         </div>
       )}
-    </div>
+    </TerminalPanel>
   );
 }
 

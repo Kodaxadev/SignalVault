@@ -67,6 +67,7 @@ vi.mock('@/features/ingame', () => ({
       {lastSignalMessage && <span data-testid="signal-feedback">{lastSignalMessage}</span>}
     </div>
   ),
+  TerminalPanel: ({ children }: { children: React.ReactNode }) => <div data-testid="terminal-panel">{children}</div>,
   InGameEmptyStates: {
     NoObjectContext: () => <div data-testid="no-object">No object</div>,
   },

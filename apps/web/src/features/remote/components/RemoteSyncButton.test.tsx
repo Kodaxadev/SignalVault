@@ -5,7 +5,13 @@ import type { ViewerContext } from '@/features/viewer/viewerTypes';
 import type { WalletSigningSnapshot } from '@/features/frontier/dappKit/walletSigningTypes';
 
 vi.mock('@/features/signals/SignalProvider', () => ({
-  useSignalContext: vi.fn(() => ({ updateSignal: vi.fn(), addSignal: vi.fn(), getSignals: vi.fn(), getAllSignals: vi.fn() })),
+  useSignalContext: vi.fn(() => ({
+    updateSignal: vi.fn(),
+    addSignal: vi.fn(),
+    addSignalPersisted: vi.fn(),
+    getSignals: vi.fn(),
+    getAllSignals: vi.fn(),
+  })),
 }));
 
 vi.mock('@/features/viewer/ViewerSessionProvider', () => ({
@@ -66,7 +72,13 @@ function makeSignal(overrides: Partial<Signal> = {}): Signal {
 }
 
 beforeEach(() => {
-  vi.mocked(useSignalContext).mockReturnValue({ updateSignal: vi.fn(), addSignal: vi.fn(), getSignals: vi.fn(), getAllSignals: vi.fn() });
+  vi.mocked(useSignalContext).mockReturnValue({
+    updateSignal: vi.fn(),
+    addSignal: vi.fn(),
+    addSignalPersisted: vi.fn(),
+    getSignals: vi.fn(),
+    getAllSignals: vi.fn(),
+  });
   vi.mocked(getRemoteDevCredentials).mockReturnValue({
     characterJwt: 'eyJ.pay.sig',
     walletSignature: 'wallet-sig',
@@ -141,7 +153,7 @@ describe('RemoteSyncButton', () => {
     expect(screen.getByText(/wallet signing not available/i)).toBeTruthy();
   });
 
-  it('shows character_token_blocked when signing available but no JWT', () => {
+  it('shows "Push remote" when signing is available, dev auth disabled, and no JWT is configured', () => {
     vi.mocked(isRemoteDevAuthEnabled).mockReturnValue(false);
     vi.mocked(getRemoteDevCredentials).mockReturnValue(null);
     mockEnv.VITE_REMOTE_DEV_CHARACTER_JWT = undefined;
@@ -151,8 +163,7 @@ describe('RemoteSyncButton', () => {
       signMessage: vi.fn(),
     };
     render(<RemoteSyncButton signal={makeSignal()} />);
-    expect(screen.queryByRole('button')).toBeNull();
-    expect(screen.getByText(/character token not available/i)).toBeTruthy();
+    expect(screen.getByRole('button', { name: /push remote/i })).toBeTruthy();
   });
 
   it('shows "Push remote" when signing is available, dev auth disabled, JWT present', () => {

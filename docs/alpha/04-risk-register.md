@@ -1,6 +1,6 @@
 # Signal Vault — Alpha Risk Register
 
-**Status as of:** 2026-05-11 (Phase 10C.4)
+**Status as of:** 2026-05-12 (Phase 10C.4)
 
 Risk severity: **Critical** (blocks safe release) / **High** (significant UX or security impact) / **Medium** (notable, manageable) / **Low** (minor)
 
@@ -199,13 +199,45 @@ Risk severity: **Critical** (blocks safe release) / **High** (significant UX or 
 
 **Severity:** Medium  
 **Area:** Bundle / Isolation  
-**Description:** The main chunk must have 0 `evefrontier` references. This is enforced manually via `check:lines` and build inspection, not by automated CI assertion on the build artifact.
+**Description:** The main chunk must have 0 dApp Kit package references. World API URLs can legitimately contain `evefrontier`, so the local release gate checks for dApp Kit leakage after building the fresh bundle artifact.
 
 **Mitigations in place:**
-- Manual check confirmed at each phase gate (grep on dist/assets/index-*.js)
+- `pnpm check:release` runs `pnpm build` before `pnpm check:bundle-clean`
 - `WalletSigningContext.tsx` is the clean boundary — no dApp Kit import
 - `useWalletSigningAdapter` is isolated to `frontier/dappKit/`
 
-**Residual risk:** A future import mistake (e.g., a developer adds a dApp Kit import to a shared component) would not fail CI unless the grep check is automated.
+**Residual risk:** A future import mistake (e.g., a developer adds a dApp Kit import to a shared component) is caught only where `pnpm check:release` is actually run.
 
-**Action required:** Add `grep -c evefrontier apps/web/dist/assets/index-*.js` as a CI step that asserts count = 0 before any release build is published.
+**Action required:** Add `pnpm check:release` as a CI step before any release build is published.
+
+---
+
+### RISK-12 — Cross-origin remote push requires explicit CORS policy
+
+**Severity:** Medium  
+**Area:** Remote Sync / Backend  
+**Description:** The web client sends JSON plus authorization and wallet headers. If the web app and API are deployed on different origins, browsers will preflight those requests. The API does not yet install Hono CORS middleware or handle an explicit production origin allowlist.
+
+**Mitigations in place:**
+- Same-origin deployments are unaffected
+- Remote push remains optional and manual
+
+**Residual risk:** Cross-origin alpha deployments may fail before auth or policy checks run.
+
+**Action required:** Add Hono CORS middleware with explicit allowed origins, methods, and headers before any cross-origin deployment.
+
+---
+
+### RISK-13 — Dependency audit has moderate dev-tool advisories
+
+**Severity:** Medium  
+**Area:** Tooling / Supply Chain  
+**Description:** `pnpm audit --audit-level moderate` reports current esbuild and Vite advisories in the dev/build toolchain.
+
+**Mitigations in place:**
+- Advisories are not hidden by the release-blocker fix
+- Runtime production dependencies were not upgraded in this scope
+
+**Residual risk:** Local dev server and optimized dependency handling remain on vulnerable versions until dependency updates are planned and tested.
+
+**Action required:** Schedule a dependency maintenance pass that upgrades Vite/Vitest/esbuild-compatible tooling and re-runs the full release gate plus dApp Kit bundle isolation check.

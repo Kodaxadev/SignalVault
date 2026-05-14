@@ -6,8 +6,9 @@ const INSERT_SQL = `
     id, event_type, actor_character_id, actor_wallet_address,
     actor_tribe_id, actor_role_snapshot, target_signal_id,
     old_visibility, new_visibility, outcome, denial_reason,
-    request_id, metadata, created_at, identity_source
-  ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
+    request_id, metadata, created_at, identity_source,
+    actor_character_name, identity_resolved_at
+  ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)
 `;
 
 export function buildAuditInsertValues(event: ServerAuditEvent): unknown[] {
@@ -27,6 +28,8 @@ export function buildAuditInsertValues(event: ServerAuditEvent): unknown[] {
     JSON.stringify(event.metadata),              // $13 pos 12
     event.createdAt,                             // $14 pos 13
     event.identitySource ?? null,                // $15 pos 14
+    event.actorCharacterName ?? null,            // $16 pos 15
+    event.identityResolvedAt ?? null,            // $17 pos 16
   ];
 }
 

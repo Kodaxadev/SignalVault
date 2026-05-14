@@ -1,7 +1,7 @@
 # Signal Vault Documentation Pack
 
-Signal Vault is an in-game-first intelligence and field-memory dApp for **EVE Frontier**.  
-It expands the basic note concept into a structured system of Signals, dossiers, entity-linked records, quick in-game capture, confidence/staleness, and tribe-scoped operational memory.
+Signal Vault is a field-first intelligence and field-memory dApp for **EVE Frontier**.  
+It expands the basic note concept into a structured system of Signals, dossiers, entity-linked records, quick field capture, confidence/staleness, and tribe-scoped operational memory.
 
 This documentation pack is intended to keep development on course across AI-assisted coding, audits, and future phases.
 
@@ -11,7 +11,7 @@ Signal Vault is **not** a generic Notion/Obsidian clone.
 
 It is:
 
-> An in-game-first EVE Frontier intelligence layer that opens from Smart Assemblies, resolves viewer and object context defensively, and lets players capture or consume actionable field knowledge without constantly tabbing out.
+> A field-first EVE Frontier intelligence layer that resolves viewer and object context defensively, supports browser-based local intel today, and moves in-play use toward a desktop companion overlay until a current EVE Frontier dApp browser exists and is verified.
 
 ## Documentation Map
 
@@ -75,6 +75,8 @@ It is:
 - [`phases/phase-09-indexer-events.md`](phases/phase-09-indexer-events.md)
 - [`phases/phase-10-map-and-bridge.md`](phases/phase-10-map-and-bridge.md)
 - [`phases/phase-11-frontierwarden-integration.md`](phases/phase-11-frontierwarden-integration.md)
+- [`phases/phase-13a-desktop-overlay-feasibility.md`](phases/phase-13a-desktop-overlay-feasibility.md)
+- [`phases/phase-completion-audit.md`](phases/phase-completion-audit.md)
 
 ### Implementation
 - [`implementation/00-repo-structure.md`](implementation/00-repo-structure.md)
@@ -103,6 +105,9 @@ It is:
 - [`operations/02-qa-checklist.md`](operations/02-qa-checklist.md)
 - [`operations/03-risk-register.md`](operations/03-risk-register.md)
 - [`operations/04-release-checklist.md`](operations/04-release-checklist.md)
+- [`operations/06-desktop-companion-alpha-readiness.md`](operations/06-desktop-companion-alpha-readiness.md)
+- [`operations/07-signal-vault-question-battery.md`](operations/07-signal-vault-question-battery.md)
+- [`operations/08-signal-vault-action-register.md`](operations/08-signal-vault-action-register.md)
 
 ## Non-Negotiable Development Rules
 

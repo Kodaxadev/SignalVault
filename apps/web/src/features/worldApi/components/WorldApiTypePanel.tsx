@@ -1,56 +1,54 @@
 import { useGameTypeQuery } from '../types/useGameTypeQuery';
 import type { TypeContext } from '../types/gameTypeExtractors';
+import { TerminalPanel } from '@/features/ingame/TerminalFrame';
 
 export function WorldApiTypePanel({ typeId }: { typeId?: string }) {
   const typeQuery = useGameTypeQuery(typeId);
 
   if (typeQuery.status === 'pending' || !typeId) {
     return (
-      <div className="rounded border border-gray-700 bg-gray-900 p-3">
-        <h3 className="text-xs font-semibold text-gray-400">OFFICIAL TYPE DATA</h3>
-        <p className="mt-1 text-xs text-gray-500">Loading...</p>
-      </div>
+      <TerminalPanel title="Official Type Data" code="WORLD API" headingLevel={3}>
+        <p className="font-mono text-xs uppercase text-zinc-500">Loading...</p>
+      </TerminalPanel>
     );
   }
 
   if (typeQuery.isError || !typeQuery.data) {
     return (
-      <div className="rounded border border-gray-700 bg-gray-900 p-3">
-        <h3 className="text-xs font-semibold text-gray-400">OFFICIAL TYPE DATA</h3>
-        <p className="mt-1 text-xs text-gray-500">World API data unavailable.</p>
-      </div>
+      <TerminalPanel title="Official Type Data" code="WORLD API" tone="warning" headingLevel={3}>
+        <p className="font-mono text-xs uppercase text-zinc-500">World API data unavailable.</p>
+      </TerminalPanel>
     );
   }
 
   const typeData: TypeContext = typeQuery.data;
 
   return (
-    <div className="rounded border border-gray-700 bg-gray-900 p-3">
-      <h3 className="text-xs font-semibold text-gray-400">OFFICIAL TYPE DATA</h3>
-      <dl className="mt-2 space-y-1 text-xs">
-        <div className="flex gap-2">
-          <dt className="text-gray-500">Name:</dt>
-          <dd className="text-gray-200">{typeData.name}</dd>
+    <TerminalPanel title="Official Type Data" code="WORLD API" headingLevel={3}>
+      <dl className="grid gap-1 font-mono text-xs uppercase text-zinc-500 sm:grid-cols-[120px_minmax(0,1fr)]">
+        <div className="contents">
+          <dt>Name</dt>
+          <dd className="text-zinc-200">{typeData.name}</dd>
         </div>
         {typeData.groupName && (
-          <div className="flex gap-2">
-            <dt className="text-gray-500">Group:</dt>
-            <dd className="text-gray-300">{typeData.groupName}</dd>
+          <div className="contents">
+            <dt>Group</dt>
+            <dd className="text-zinc-300">{typeData.groupName}</dd>
           </div>
         )}
         {typeData.categoryName && (
-          <div className="flex gap-2">
-            <dt className="text-gray-500">Category:</dt>
-            <dd className="text-gray-300">{typeData.categoryName}</dd>
+          <div className="contents">
+            <dt>Category</dt>
+            <dd className="text-zinc-300">{typeData.categoryName}</dd>
           </div>
         )}
         {typeData.description && (
-          <div className="flex gap-2">
-            <dt className="text-gray-500">Description:</dt>
-            <dd className="text-gray-300">{typeData.description}</dd>
+          <div className="contents">
+            <dt>Description</dt>
+            <dd className="text-zinc-300 normal-case">{typeData.description}</dd>
           </div>
         )}
       </dl>
-    </div>
+    </TerminalPanel>
   );
 }

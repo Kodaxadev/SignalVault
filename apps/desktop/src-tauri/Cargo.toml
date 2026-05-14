@@ -1,0 +1,20 @@
+[package]
+name = "signal-vault-desktop"
+version = "0.0.0"
+description = "Signal Vault desktop companion shell"
+authors = ["Signal Vault"]
+edition = "2021"
+
+[lib]
+name = "signal_vault_desktop_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["tray-icon"] }
+tauri-plugin-global-shortcut = "2"
+tauri-plugin-opener = "2"
+serde_json = "1"
+rand = "0.8"

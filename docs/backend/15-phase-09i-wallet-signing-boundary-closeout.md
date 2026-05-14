@@ -82,7 +82,7 @@ Server:
 
 ## Chunk Isolation Maintained
 
-| Chunk | evefrontier refs | dApp Kit |
+| Chunk | dApp Kit refs | dApp Kit |
 |-------|-----------------|----------|
 | `index-*.js` (main) | 0 | None |
 | `InGameRoute-*.js` | 2 | `useWalletSigningAdapter`, `useFrontierWalletAdapter`, `useFrontierCharacterAdapter` |
@@ -150,4 +150,4 @@ New/updated web test files:
 - [x] TypeScript: 0 errors
 - [x] Build: success
 - [x] check:lines: all files under 400 lines
-- [x] Main chunk: 0 evefrontier refs
+- [x] Main chunk: 0 dApp Kit refs

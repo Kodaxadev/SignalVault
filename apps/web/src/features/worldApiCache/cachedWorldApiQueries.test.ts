@@ -18,6 +18,7 @@ vi.mock('@/features/worldApi/types/gameTypeRepository', () => ({
 import { fetchSolarSystemCached, fetchTribeCached, fetchGameTypeCached } from './cachedWorldApiQueries';
 import { getCacheRecord, putCacheRecord } from './worldApiCacheRepository';
 import { fetchSolarSystem } from '@/features/worldApi/solarSystems/solarSystemRepository';
+import type { SystemContext } from '@/features/worldApi/solarSystems/solarSystemExtractors';
 import { fetchTribe } from '@/features/worldApi/tribes/tribeRepository';
 import { fetchGameType } from '@/features/worldApi/types/gameTypeRepository';
 
@@ -27,7 +28,7 @@ const mockFetchSolarSystem = vi.mocked(fetchSolarSystem);
 const mockFetchTribe = vi.mocked(fetchTribe);
 const mockFetchGameType = vi.mocked(fetchGameType);
 
-const SYSTEM_DATA = {
+const SYSTEM_DATA: SystemContext = {
   id: '30000001',
   name: 'A 2560',
   constellationId: '20000001',

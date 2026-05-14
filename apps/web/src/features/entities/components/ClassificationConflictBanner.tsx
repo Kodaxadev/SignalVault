@@ -1,4 +1,5 @@
 import type { EntityClassificationClaim } from '@/features/entities/entityClassificationTypes';
+import { TerminalPanel, TerminalStatusStrip } from '@/features/ingame/TerminalFrame';
 
 const typeLabels = {
   smart_gate: 'Smart Gate',
@@ -29,16 +30,15 @@ export function ClassificationConflictBanner({
   const uniqueTypes = [...new Set(allTypes)];
 
   return (
-    <div className="rounded border border-red-800 bg-red-900/30 p-3">
-      <h4 className="text-sm font-semibold text-red-300 mb-1">Classification Conflict</h4>
-      <p className="text-xs text-red-400 mb-2">
+    <TerminalPanel title="Classification Conflict" code="RECHECK" tone="danger" headingLevel={3}>
+      <TerminalStatusStrip tone="danger">
         Sources disagree about this object. Recheck before relying on this dossier.
-      </p>
-      <ul className="text-xs text-gray-400 space-y-1">
+      </TerminalStatusStrip>
+      <ul className="mt-2 space-y-1 font-mono text-xs uppercase text-zinc-400">
         {uniqueTypes.map((t) => (
           <li key={t}>{typeLabels[t]}</li>
         ))}
       </ul>
-    </div>
+    </TerminalPanel>
   );
 }

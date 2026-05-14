@@ -7,10 +7,12 @@
     "dev": "tsx watch src/index.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "verify:rls": "tsx scripts/verify-deployed-rls.ts"
   },
   "dependencies": {
     "@hono/node-server": "^1.12.0",
+    "@mysten/sui": "2.16.2",
     "hono": "^4.6.0",
     "jose": "^5.9.0",
     "pg": "^8.13.0",

@@ -25,7 +25,7 @@ export async function verifyAuthFromHeaders(inputs: AuthInputs): Promise<AuthRes
       return { ok: false, reason: 'wallet_signature_invalid' };
     }
 
-    const consumeResult = consumeChallenge(challengeId, walletAddressHint);
+    const consumeResult = await consumeChallenge(challengeId, walletAddressHint);
     if (!consumeResult.ok) {
       return { ok: false, reason: 'wallet_signature_invalid' };
     }
@@ -67,8 +67,10 @@ export async function verifyAuthFromHeaders(inputs: AuthInputs): Promise<AuthRes
     auth: {
       walletAddress: context.walletAddress,
       characterId: context.characterId,
+      characterName: context.characterName,
       tribeId: context.tribeId,
       identitySource: context.identitySource,
+      identityResolvedAt: context.identityResolvedAt,
     },
   };
 }

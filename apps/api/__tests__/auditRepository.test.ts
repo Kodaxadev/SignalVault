@@ -15,9 +15,9 @@ const baseEvent: ServerAuditEvent = {
 };
 
 describe('buildAuditInsertValues', () => {
-  it('returns exactly 15 values (matching INSERT_SQL placeholders)', () => {
+  it('returns exactly 17 values (matching INSERT_SQL placeholders)', () => {
     const values = buildAuditInsertValues(baseEvent);
-    expect(values).toHaveLength(15);
+    expect(values).toHaveLength(17);
   });
 
   it('position 0 is event id', () => {
@@ -77,6 +77,19 @@ describe('buildAuditInsertValues', () => {
   it('position 14 is identitySource when present', () => {
     const values = buildAuditInsertValues({ ...baseEvent, identitySource: 'sui_player_profile' });
     expect(values[14]).toBe('sui_player_profile');
+  });
+
+  it('position 15 is actorCharacterName when present', () => {
+    const values = buildAuditInsertValues({ ...baseEvent, actorCharacterName: 'Kivik' });
+    expect(values[15]).toBe('Kivik');
+  });
+
+  it('position 16 is identityResolvedAt when present', () => {
+    const values = buildAuditInsertValues({
+      ...baseEvent,
+      identityResolvedAt: '2026-05-12T16:00:00.000Z',
+    });
+    expect(values[16]).toBe('2026-05-12T16:00:00.000Z');
   });
 
   it('handles denied event with full actor context', () => {

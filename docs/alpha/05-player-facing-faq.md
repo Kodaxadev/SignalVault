@@ -16,7 +16,7 @@ No. Signal Vault is an independent project. It uses the EVE Frontier dApp Kit an
 
 **Does Signal Vault access my game account?**
 
-Signal Vault reads your wallet address and connected smart object context through the EVE Frontier in-game browser. It does not access your game account, credentials, passwords, or any data beyond what the in-game provider makes available.
+Signal Vault can read your wallet address through EVE Vault / dApp Kit when a supported browser wallet provider is available. Object context comes from supported dApp Kit context or from explicit Signal Vault URLs. It does not access your game account, credentials, passwords, or game memory.
 
 **What data does Signal Vault store?**
 
@@ -129,9 +129,9 @@ Not in the current alpha. Remote pull is not implemented. Signals you push to th
 
 This message appears when the server is not configured to resolve character identity. Signal Vault uses your wallet address to look up your EVE character on-chain — this requires the server to have `ENABLE_SUI_CHARACTER_RESOLUTION` enabled and a valid Sui GraphQL endpoint configured. If you see this message, the server is running without that configuration. Contact the server operator. It is not a bug in the client.
 
-**Why does the push button say "Open in the EVE Frontier in-game browser to push Signals"?**
+**Why does the push button say wallet signing or provider context is unavailable?**
 
-Wallet signing only works inside the EVE Frontier in-game browser, where the dApp Kit provider can sign challenge messages with your wallet. It is not available in standalone browser mode.
+Wallet signing requires a supported EVE Vault / dApp Kit wallet provider. A desktop overlay or ordinary webview should not impersonate that provider. Open the full Signal Vault web app in a browser where EVE Vault is installed and connected, or use the dev-auth demo path in trusted internal environments only.
 
 **Is my data safe on the remote backend?**
 
@@ -147,7 +147,7 @@ A dossier is a view of all signals associated with a specific in-game entity —
 
 **How do I open a dossier?**
 
-When you are viewing a signal associated with an entity, click the entity link or navigate to the dossier view. Dossiers are also accessible via the InGame smart object context.
+When you are viewing a signal associated with an entity, click the entity link or navigate to the dossier view. Dossiers are also accessible through Signal Vault object-context URLs.
 
 **Why does a dossier show entity data I didn't enter?**
 
@@ -179,11 +179,11 @@ Yes. Tribe-scoped signals can only be pushed by a character with a verified trib
 
 **What browsers work?**
 
-Any modern browser with IndexedDB support. Chrome, Firefox, Edge, and Safari should all work. The in-game browser (required for wallet connection and smart object context) is the primary target.
+Any modern browser with IndexedDB support. Chrome, Firefox, Edge, and Safari should all work. For wallet signing, use a browser where EVE Vault / the supported wallet provider is available.
 
 **What is the current system selector?**
 
-If you are using Signal Vault outside the EVE Frontier in-game browser (for example, in a standalone browser window), you can manually set which solar system you are in using the system selector in the header. Enter a numeric system ID and Signal Vault will confirm the name via the World API. Any text entry is stored as-is if it cannot be confirmed. Your selection persists across sessions.
+If you are using Signal Vault without live object context, you can manually set which solar system you are in using the system selector in the header. Enter a numeric system ID and Signal Vault will confirm the name via the World API. Any text entry is stored as-is if it cannot be confirmed. Your selection persists across sessions.
 
 **What are route warning cards?**
 

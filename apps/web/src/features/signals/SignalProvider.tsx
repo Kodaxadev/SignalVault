@@ -11,6 +11,7 @@ import { setLocalDbStatus } from '@/features/local/localDbStatus';
 
 interface SignalContextValue {
   addSignal: (signal: Signal) => void;
+  addSignalPersisted: (signal: Signal) => Promise<void>;
   updateSignal: (signal: Signal) => void;
   getSignals: (entityKey: string) => Signal[];
   getAllSignals: () => Signal[];
@@ -18,6 +19,7 @@ interface SignalContextValue {
 
 const SignalContext = createContext<SignalContextValue>({
   addSignal: () => {},
+  addSignalPersisted: async () => {},
   updateSignal: () => {},
   getSignals: () => [],
   getAllSignals: () => [],
@@ -57,6 +59,17 @@ export function SignalProvider({ children }: { children: React.ReactNode }) {
     });
   }, [bump]);
 
+  const addSignalPersisted = useCallback(async (signal: Signal) => {
+    try {
+      await dbAddSignal(db, signal);
+    } catch (error) {
+      setLocalDbStatus('degraded');
+      throw error;
+    }
+    memoryRef.current.add(signal);
+    bump();
+  }, [bump]);
+
   const updateSignal = useCallback((signal: Signal) => {
     memoryRef.current.update(signal);
     bump();
@@ -75,7 +88,9 @@ export function SignalProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <SignalContext.Provider value={{ addSignal, updateSignal, getSignals, getAllSignals }}>
+    <SignalContext.Provider
+      value={{ addSignal, addSignalPersisted, updateSignal, getSignals, getAllSignals }}
+    >
       {children}
     </SignalContext.Provider>
   );

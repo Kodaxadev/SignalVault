@@ -42,6 +42,12 @@
 - `operations/02-qa-checklist.md`
 - `operations/03-risk-register.md`
 - `operations/04-release-checklist.md`
+- `operations/06-desktop-companion-alpha-readiness.md`
+- `operations/07-signal-vault-question-battery.md`
+- `operations/08-signal-vault-action-register.md`
+- `operations/09-desktop-packaging-readiness.md`
+- `operations/10-desktop-packaged-smoke-test.md`
+- `operations/11-deployed-rls-verification.md`
 - `phases/phase-00-scaffold.md`
 - `phases/phase-01-ingame-shell.md`
 - `phases/phase-02-viewer-context.md`
@@ -54,6 +60,8 @@
 - `phases/phase-09-indexer-events.md`
 - `phases/phase-10-map-and-bridge.md`
 - `phases/phase-11-frontierwarden-integration.md`
+- `phases/phase-13a-desktop-overlay-feasibility.md`
+- `phases/phase-completion-audit.md`
 - `policy/00-privacy-and-data-ownership.md`
 - `policy/01-object-classification-and-dispute-workflow.md`
 - `policy/02-attachments-and-screenshots-spec.md`

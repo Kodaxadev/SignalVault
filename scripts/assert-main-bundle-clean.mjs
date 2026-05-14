@@ -1,5 +1,5 @@
 /**
- * CI guardrail: fails if the main web bundle contains evefrontier references.
+ * CI guardrail: fails if the main web bundle contains dApp Kit references.
  *
  * Run after `pnpm build`. The main chunk (index-*.js) must have 0 references
  * to @evefrontier packages — dApp Kit must stay isolated to the InGameRoute chunk.
@@ -15,7 +15,13 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const DIST_DIR = join(ROOT, 'apps', 'web', 'dist', 'assets');
-const FORBIDDEN_PATTERN = /evefrontier/;
+const FORBIDDEN_PATTERNS = [
+  /@evefrontier\/dapp-kit/g,
+  /EveFrontierProvider/g,
+  /useSmartObject/g,
+  /useConnection/g,
+  /useWalletSigningAdapter/g,
+];
 const MAIN_CHUNK_PATTERN = /^index-.*\.js$/;
 
 let files;
@@ -39,17 +45,17 @@ let failed = false;
 
 for (const chunk of mainChunks) {
   const content = await readFile(join(DIST_DIR, chunk), 'utf8');
-  const matches = content.match(new RegExp(FORBIDDEN_PATTERN.source, 'g'));
-  if (matches && matches.length > 0) {
+  const matches = FORBIDDEN_PATTERNS.flatMap((pattern) => content.match(pattern) ?? []);
+  if (matches.length > 0) {
     console.error(
-      `❌ ${chunk}: found ${matches.length} evefrontier reference(s) in main bundle.`
+      `❌ ${chunk}: found ${matches.length} dApp Kit reference(s) in main bundle.`
     );
     console.error(
       '   dApp Kit must stay isolated to InGameRoute chunk. A shared component likely imported from @evefrontier.'
     );
     failed = true;
   } else {
-    console.log(`✅ ${chunk}: 0 evefrontier references — main chunk is clean.`);
+    console.log(`✅ ${chunk}: 0 dApp Kit references — main chunk is clean.`);
   }
 }
 

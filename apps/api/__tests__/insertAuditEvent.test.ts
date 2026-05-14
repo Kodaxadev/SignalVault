@@ -57,6 +57,17 @@ describe('insertAuditEvent', () => {
     expect(event.identitySource).toBe('sui_player_profile');
   });
 
+  it('preserves resolved character snapshot fields', async () => {
+    const event = await insertAuditEvent({
+      ...baseInput,
+      actorCharacterName: 'Kivik',
+      identityResolvedAt: '2026-05-12T16:00:00.000Z',
+    });
+
+    expect(event.actorCharacterName).toBe('Kivik');
+    expect(event.identityResolvedAt).toBe('2026-05-12T16:00:00.000Z');
+  });
+
   it('identitySource is undefined when not provided', async () => {
     const event = await insertAuditEvent(baseInput);
     expect(event.identitySource).toBeUndefined();

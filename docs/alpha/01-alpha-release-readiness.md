@@ -1,6 +1,6 @@
 # Signal Vault — Alpha Release Readiness
 
-**Date:** 2026-05-11  
+**Date:** 2026-05-12  
 **Phase:** 10C.4 complete (10C.1–10C.4 World-Aware Navigation & Context; 09L.2 backend Sui identity)  
 **Status:** Internal alpha — local-first features complete; remote sync functional; Sui-based production identity implemented and dev-validated; World API cross-session cache implemented
 
@@ -21,12 +21,12 @@
 | Export (JSON) | ✅ Ready | v1 schema; includes signals + classifications |
 | Import (merge/replace) | ✅ Ready | Validates before import; reports counts |
 | World API enrichment | ✅ Ready | HTTP client with solar system, tribe, and type data; cross-session Dexie cache with 30min/24h TTL and stale fallback |
-| Current system selector | ✅ Ready | Manual system context for players outside in-game browser; numeric ID confirmed via World API, text stored as manual |
+| Current system selector | ✅ Ready | Manual system context for players outside live object context; numeric ID confirmed via World API, text stored as manual |
 | Route warning cards | ✅ Ready | Derive warnings from local Signals linked to route systems; level-degraded on critical staleness; sorted critical→info |
 | dApp Kit wallet adapter | ✅ Ready | Wallet address extraction from EVE Frontier provider |
-| InGame surface detection | ✅ Ready | `/ingame/object/:objectId` path → ingame context |
+| Object context route | ✅ Ready | `/ingame/object/:objectId` path → object-context dossier shell |
 | Tribe/officer scope gating | ✅ Ready | Policy enforced client- and server-side |
-| Chunk isolation | ✅ Ready | Main chunk 0 evefrontier refs; dApp Kit in InGameRoute chunk only |
+| Chunk isolation | ✅ Ready | Main chunk 0 dApp Kit refs; dApp Kit in InGameRoute chunk only |
 
 ### Working under dev-auth or Sui-auth constraints (see limitations)
 
@@ -34,7 +34,7 @@
 |---------|--------|-------|
 | Remote signal push (dev-auth) | ⚠️ Dev-auth mode | Functional with `VITE_REMOTE_DEV_AUTH=true`; uses dev JWT, not EVE-issued credential |
 | Remote signal push (Sui identity) | ⚠️ Sui mode | Functional when `ENABLE_SUI_CHARACTER_RESOLUTION=true`; uses on-chain character resolution — no dev JWT required. Dev-validated 2026-05-11. Production end-to-end validation pending real Sui wallet signature tooling. |
-| Wallet signing (InGame) | ⚠️ Adapter ready | `useWalletSigningAdapter` wired; real signing available when EVE Frontier provides signing provider |
+| Wallet signing | ⚠️ Adapter ready | `useWalletSigningAdapter` wired; real signing available when EVE Vault / supported wallet provider is present |
 | Challenge/signature auth | ⚠️ Infra complete | Backend issues challenges, server verifies; crypto recovery pending EVE dApp Kit scheme confirmation |
 | Remote sync UX | ⚠️ Alpha labeled | Button shows "Alpha · Manual only"; blocked reasons are specific and actionable |
 
@@ -74,6 +74,8 @@ Remote push with `ENABLE_SUI_CHARACTER_RESOLUTION=true` (API) does not require a
 
 **Remaining production gaps:** Wallet crypto recovery (structural-only in dev mode) and challenge store persistence (in-memory) still need hardening before public deployment.
 
+**Current client caveat:** The web signing path still treats `VITE_REMOTE_DEV_CHARACTER_JWT` as required before attempting a signed push. Removing that dev-token dependency is follow-up hardening and is not part of the release-blocker fix.
+
 ---
 
 ## What Must Not Be Marketed as Production
@@ -93,7 +95,7 @@ Remote push with `ENABLE_SUI_CHARACTER_RESOLUTION=true` (API) does not require a
 A demo session using only local-first features is fully safe and does not require any backend:
 
 1. Open in browser (standalone or InGame shell)
-2. Connect EVE Frontier wallet (InGame) — populates wallet address and smart object context
+2. Connect EVE Frontier wallet in a supported browser — populates wallet address when the provider is available
 3. Create signals: pick type, set confidence, set visibility, add body text
 4. View dossier for a smart gate or system — aggregated signal intel, staleness indicators
 5. Mark a signal as stale or contradicted — watch intel health update in dossier
@@ -132,11 +134,12 @@ Still pending CCP-issued JWT:
 | Gate | Result |
 |------|--------|
 | TypeScript | 0 errors |
-| Web tests | 658 passed |
-| API tests | 193 passed / 5 skipped |
+| Web tests | 683 passed |
+| API tests | 228 passed / 5 skipped |
 | Build | ✅ success |
 | Line limit (400 lines) | ✅ all files pass |
-| Main chunk evefrontier refs | 0 |
+| Main chunk dApp Kit refs | 0 |
 | No background sync | ✅ confirmed |
 | `isProductionCharacterTokenAvailable()` | `false` — JWT path still blocked |
 | Sui identity production guard | ✅ `auth_mode_conflict` on JWT-in-prod-Sui-mode |
+| Dependency audit | ⚠️ 2 moderate dev-tool advisories tracked as follow-up |

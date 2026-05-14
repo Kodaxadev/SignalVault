@@ -2,6 +2,8 @@ import { Hono } from 'hono';
 import type { AppEnv } from './appEnv';
 import { injectRequestId } from './middleware/requestId';
 import { onError } from './middleware/errorHandler';
+import { apiCors } from './middleware/apiCors';
+import { apiRateLimit } from './middleware/rateLimit';
 import { healthHandler } from './health/healthHandler';
 import { signalRoutes } from './signals/signalRoutes';
 import { challengeRoutes } from './auth/challengeRoutes';
@@ -9,6 +11,8 @@ import { challengeRoutes } from './auth/challengeRoutes';
 export const app = new Hono<AppEnv>();
 
 app.use('*', injectRequestId);
+app.use('/api/*', apiCors);
+app.use('/api/*', apiRateLimit);
 app.onError(onError);
 
 app.get('/health', healthHandler);

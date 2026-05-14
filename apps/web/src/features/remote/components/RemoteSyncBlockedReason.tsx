@@ -12,11 +12,11 @@ const COPY: Record<BlockedSyncReason, string> = {
   no_auth_method:
     'No auth method available. Enable dev auth or connect a wallet.',
   signing_not_supported:
-    'Wallet signing not available here. Open in the EVE Frontier in-game browser to push Signals.',
+    'Wallet signing not available here. Open Signal Vault in a browser with EVE Vault available.',
   wallet_not_connected:
     'No wallet connected. Connect your wallet to push Signals remotely.',
   provider_missing:
-    'EVE Frontier client not detected. Open in the in-game browser to push Signals.',
+    'EVE dApp provider not detected. Use browser wallet signing or the trusted dev-auth path.',
   character_token_blocked:
     'Character token not available (alpha limitation). Set VITE_REMOTE_DEV_CHARACTER_JWT to continue.',
 };

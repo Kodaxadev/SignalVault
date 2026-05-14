@@ -62,7 +62,15 @@ Signal Vault requires **IndexedDB** support. These browsers are known to work:
 | Edge (latest) | Supported |
 | Safari (latest) | Supported |
 
-Wallet connection and smart object context require the EVE Frontier in-game browser.
+Wallet connection uses the EVE Vault / dApp Kit path where a supported browser wallet provider is available. Current alpha use should assume normal desktop browser operation; Signal Vault must not depend on an in-game browser being present.
+
+## Desktop Companion Alpha
+
+Signal Vault also has a Windows desktop companion feasibility build for in-play visibility. It is an overlay and local bridge, not a wallet, dApp browser, or game-client integration.
+
+The companion can show live local Signal Vault state, open the full browser app, capture local-only Quick Notes, and set the current system through the browser-owned local state path. Pairing uses a local token between the desktop app and your browser session.
+
+Do not use the companion as an authority source. It does not sign wallet messages, emulate EVE Vault, read game memory, automate input, trigger remote sync, or replace the full browser app. See [`../operations/06-desktop-companion-alpha-readiness.md`](../operations/06-desktop-companion-alpha-readiness.md) for operator setup and troubleshooting.
 
 ## Tribe & Visibility
 
