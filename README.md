@@ -44,8 +44,13 @@ Signal Vault
 ├── apps/web          React + Vite + Tailwind — local-first frontend
 │   ├── Object shell  Smart Object context route for field dossiers
 │   ├── Browser app   Standalone browser — signal log, dossiers, export/import
-│   ├── Companion     Desktop overlay bridge for in-play local intel
 │   └── /compat       Browser diagnostics page
+│
+├── apps/desktop      Tauri 2 — desktop companion overlay
+│   ├── Overlay       Frameless always-on-top window for in-play intel
+│   ├── Hotkey        Global toggle shortcut (Ctrl+Shift+V)
+│   ├── Tray          System tray icon + menu
+│   └── Bridge        HTTP bridge for web ↔ companion communication
 │
 └── apps/api          Hono + Postgres — remote push backend
     ├── Auth          Sui wallet challenge/response + character resolution
@@ -68,6 +73,7 @@ Signal Vault
 | Layer | Tech |
 |---|---|
 | Frontend | React 19, Vite, React Router, TanStack Query, Tailwind CSS |
+| Desktop | Tauri 2 (Rust + WebView2), tauri-plugin-global-shortcut |
 | Local storage | Dexie (IndexedDB) |
 | Validation | Zod |
 | Backend | Hono, Postgres, `pg` |
@@ -86,7 +92,7 @@ Signal Vault
 |---|---|
 | TypeScript | 0 errors |
 | Web tests | 683 passed |
-| API tests | 228 passed / 5 skipped |
+| API tests | 238 passed / 5 skipped |
 | Main bundle dApp Kit refs | 0 |
 | All files | ≤ 400 lines |
 | Dependency audit | 2 moderate dev-tool advisories tracked as follow-up |
@@ -95,7 +101,7 @@ Signal Vault
 
 ## Getting Started
 
-**Prerequisites:** Node >=24, pnpm 9+
+**Prerequisites:** Node >=24, pnpm 9+, Rust toolchain (for desktop companion only — `rustup` + `cargo`)
 
 ```bash
 # Install
@@ -107,9 +113,13 @@ pnpm dev
 # API backend
 pnpm dev:api
 
+# Desktop companion (requires Rust toolchain + Tauri CLI)
+pnpm --filter desktop tauri:dev
+
 # Type check
 pnpm --filter web tsc --noEmit
 pnpm typecheck:api
+pnpm --filter desktop typecheck
 
 # Tests
 pnpm test:run      # web
