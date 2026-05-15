@@ -1,15 +1,8 @@
 import { Pool, type PoolClient } from 'pg';
+import { buildRlsPoolConfig } from './rlsDbConfig';
 
-const databaseUrl =
-  process.env['SIGNAL_VAULT_RLS_DATABASE_URL'] ?? process.env['DATABASE_URL'];
-
-if (!databaseUrl) {
-  throw new Error(
-    'Set SIGNAL_VAULT_RLS_DATABASE_URL or DATABASE_URL to run deployed RLS verification.'
-  );
-}
-
-const pool = new Pool({ connectionString: databaseUrl });
+const poolConfig = buildRlsPoolConfig();
+const pool = new Pool(poolConfig.config);
 const runId = crypto.randomUUID();
 const alpha = {
   characterId: `rls-alpha-${runId}`,

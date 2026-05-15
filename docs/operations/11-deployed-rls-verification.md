@@ -37,6 +37,19 @@ $env:SIGNAL_VAULT_RLS_DATABASE_URL="<postgres app role connection string>"
 pnpm verify:rls
 ```
 
+For hosts such as Nhost where a password may be awkward to encode safely in a
+URI, the verifier also accepts component env vars:
+
+```powershell
+$env:SIGNAL_VAULT_RLS_DATABASE_HOST="hloexrimoebmcivaespe.db.us-west-2.nhost.run"
+$env:SIGNAL_VAULT_RLS_DATABASE_PORT="5432"
+$env:SIGNAL_VAULT_RLS_DATABASE_NAME="hloexrimoebmcivaespe"
+$env:SIGNAL_VAULT_RLS_DATABASE_USER="postgres"
+$env:SIGNAL_VAULT_RLS_DATABASE_PASSWORD=Read-Host "Nhost database password"
+$env:SIGNAL_VAULT_RLS_DATABASE_SSLMODE="verify-full"
+pnpm verify:rls
+```
+
 The probe uses one transaction and rolls back at the end. It inserts unique probe rows and verifies:
 
 - same-tribe read succeeds
