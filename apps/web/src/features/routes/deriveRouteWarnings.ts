@@ -1,7 +1,11 @@
 import type { Signal, SignalType } from '@/features/signals/signalTypes';
 import { evaluateSignalStaleness } from '@/features/staleness';
 import type { StalenessLevel } from '@/features/staleness';
-import type { RouteWarning, RouteWarningLevel } from './routeWarningTypes';
+import type {
+  RouteStaticIntelContext,
+  RouteWarning,
+  RouteWarningLevel,
+} from './routeWarningTypes';
 
 const WARNING_SIGNAL_TYPES: SignalType[] = [
   'hostile_contact',
@@ -38,7 +42,8 @@ function matchesSystem(signal: Signal, systemIds: string[]): string | undefined 
 export function deriveRouteWarnings(
   allSignals: Signal[],
   systemIds: string[],
-  systemNames?: Map<string, string>
+  systemNames?: Map<string, string>,
+  staticIntelBySystem?: Map<string, RouteStaticIntelContext>
 ): RouteWarning[] {
   if (systemIds.length === 0) return [];
 
@@ -81,6 +86,7 @@ export function deriveRouteWarnings(
       latestSignalAt: latest.createdAt,
       stalenessLevel: staleResult.level,
       isStale: staleResult.isStale,
+      staticIntel: staticIntelBySystem?.get(systemId),
     });
   }
 

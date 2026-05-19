@@ -3,6 +3,14 @@ import type { SignalType } from '@/features/signals/signalTypes';
 
 export type RouteWarningLevel = 'critical' | 'high' | 'medium' | 'info';
 
+export interface RouteStaticIntelContext {
+  siteCount: number;
+  beltGroups: number;
+  trojanGroups: number;
+  dangerTaggedGroups: number;
+  tags: string[];
+}
+
 export interface RouteWarning {
   systemId: string;
   systemName?: string;
@@ -12,4 +20,5 @@ export interface RouteWarning {
   latestSignalAt: string; // ISO
   stalenessLevel: StalenessLevel;
   isStale: boolean;
+  staticIntel?: RouteStaticIntelContext;
 }

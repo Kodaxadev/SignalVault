@@ -49,6 +49,13 @@ describe('useCompanionBridgePublisher', () => {
     renderHook(() =>
       useCompanionBridgePublisher({
         currentSystem,
+        currentSystemStaticIntel: {
+          siteCount: 9,
+          beltGroups: 3,
+          trojanGroups: 2,
+          dangerTaggedGroups: 5,
+          tags: ['non_zero_danger_level'],
+        },
         warnings: [warning],
         signals: [signal],
         publish,
@@ -60,6 +67,7 @@ describe('useCompanionBridgePublisher', () => {
       app: 'signal-vault',
       schemaVersion: 1,
       currentSystem: { name: 'OQQ-0R8' },
+      currentSystemStaticIntel: { siteCount: 9 },
       warnings: [{ level: 'critical' }],
       latestSignals: [{ id: 'sig-1' }],
     });

@@ -40,6 +40,13 @@ describe('buildCompanionBridgeState', () => {
         source: 'world_api',
         setAt: '2026-05-12T00:00:00Z',
       },
+      currentSystemStaticIntel: {
+        siteCount: 9,
+        beltGroups: 3,
+        trojanGroups: 2,
+        dangerTaggedGroups: 5,
+        tags: ['non_zero_danger_level'],
+      },
       warnings: [warning],
       signals: [makeSignal({ id: 'sig-1' })],
       generatedAt: '2026-05-12T01:00:00Z',
@@ -52,6 +59,12 @@ describe('buildCompanionBridgeState', () => {
         id: '30000142',
         name: 'OQQ-0R8',
         source: 'world_api',
+      },
+      currentSystemStaticIntel: {
+        siteCount: 9,
+        beltGroups: 3,
+        trojanGroups: 2,
+        dangerTaggedGroups: 5,
       },
     });
     expect(state.warnings[0]).toMatchObject({

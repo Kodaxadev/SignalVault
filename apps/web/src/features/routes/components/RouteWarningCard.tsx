@@ -31,9 +31,14 @@ function formatAge(isoTimestamp: string): string {
   return `${Math.floor(hours / 24)}d ago`;
 }
 
+function formatTag(tag: string): string {
+  return tag.replace(/_/g, ' ');
+}
+
 export function RouteWarningCard({ warning }: { warning: RouteWarning }) {
   const colors = levelColor(warning.level);
   const systemDisplay = warning.systemName ?? warning.systemId;
+  const staticIntel = warning.staticIntel;
 
   return (
     <div className={`rounded border px-3 py-2 space-y-0.5 ${colors}`}>
@@ -51,6 +56,15 @@ export function RouteWarningCard({ warning }: { warning: RouteWarning }) {
         )}
         <span className="text-gray-600 ml-2">{formatAge(warning.latestSignalAt)}</span>
       </div>
+      {staticIntel && (
+        <div className="text-xs text-gray-500">
+          Static context: {staticIntel.siteCount} sites, {staticIntel.beltGroups} belts,{' '}
+          {staticIntel.trojanGroups} trojans, {staticIntel.dangerTaggedGroups} danger groups.
+          {staticIntel.tags.length > 0 && (
+            <span> Tags: {staticIntel.tags.slice(0, 4).map(formatTag).join(', ')}.</span>
+          )}
+        </div>
+      )}
     </div>
   );
 }

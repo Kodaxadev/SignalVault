@@ -7,6 +7,8 @@ interface RouteWarningListProps {
 }
 
 export function RouteWarningList({ warnings, worldApiAvailable }: RouteWarningListProps) {
+  const hasStaticIntel = warnings.some((warning) => warning.staticIntel);
+
   if (warnings.length === 0) {
     return (
       <div className="text-xs text-gray-600 space-y-0.5">
@@ -27,6 +29,11 @@ export function RouteWarningList({ warnings, worldApiAvailable }: RouteWarningLi
           warning={warning}
         />
       ))}
+      {hasStaticIntel && (
+        <p className="text-xs text-gray-700 mt-1">
+          Static context is alpha game-data enrichment, not live system state.
+        </p>
+      )}
       {!worldApiAvailable && (
         <p className="text-xs text-gray-700 mt-1">
           World API unavailable — warnings derived from local signals only.

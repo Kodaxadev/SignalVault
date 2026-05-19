@@ -11,6 +11,7 @@ The companion is an alpha feasibility artifact. It can:
 - expose tray actions for show, hide, toggle, Open Vault, and quit
 - host a localhost bridge on `127.0.0.1:17777`
 - receive read-only browser state
+- display optional current-system static site context from the paired browser
 - queue `quick_note` and `set_current_system` commands
 - open the configured Signal Vault web URL in the system browser
 
@@ -64,6 +65,10 @@ The current command types are deliberately narrow:
 quick_note
 set_current_system
 ```
+
+Optional read-only state includes current-system static site context when the
+browser has loaded the compact Frontier static index. This field is display-only
+and does not create commands, route warnings, remote sync, or game-data authority.
 
 ## Command Ownership
 

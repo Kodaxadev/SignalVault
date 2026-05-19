@@ -3,6 +3,7 @@ import type { RouteWarning } from '@/features/routes';
 import type { Signal } from '@/features/signals';
 import type { CurrentSystem } from '@/features/worldContext';
 import { buildCompanionBridgeState } from './buildCompanionBridgeState';
+import type { CompanionBridgeStaticIntel } from './companionBridgeTypes';
 import {
   publishCompanionBridgeState,
   type CompanionBridgePublishResult,
@@ -10,6 +11,7 @@ import {
 
 interface UseCompanionBridgePublisherInput {
   currentSystem: CurrentSystem | null;
+  currentSystemStaticIntel?: CompanionBridgeStaticIntel | null;
   warnings: RouteWarning[];
   signals: Signal[];
   enabled?: boolean;
@@ -20,6 +22,7 @@ interface UseCompanionBridgePublisherInput {
 
 export function useCompanionBridgePublisher({
   currentSystem,
+  currentSystemStaticIntel,
   warnings,
   signals,
   enabled = true,
@@ -30,10 +33,11 @@ export function useCompanionBridgePublisher({
 
     const state = buildCompanionBridgeState({
       currentSystem,
+      currentSystemStaticIntel,
       warnings,
       signals,
     });
 
     void publish(state);
-  }, [currentSystem, warnings, signals, enabled, publish]);
+  }, [currentSystem, currentSystemStaticIntel, warnings, signals, enabled, publish]);
 }

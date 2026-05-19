@@ -1,5 +1,6 @@
 import type { ResolvedEntity } from '@/features/entities';
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useSignalContext } from '@/features/signals/SignalProvider';
 import { QuickSignalButtons } from '@/features/signals/components/QuickSignalButtons';
 import { SignalList } from '@/features/signals/components/SignalList';
@@ -15,6 +16,11 @@ import { getContradictionsForEntity } from '@/features/contradictions/contradict
 import { useSolarSystemQuery } from '@/features/worldApi/solarSystems/useSolarSystemQuery';
 import { WorldApiTopologyPanel } from '@/features/worldApi/components/WorldApiTopologyPanel';
 import { deriveRouteWarnings, RouteWarningList } from '@/features/routes';
+import {
+  fetchFrontierStaticIndex,
+  getFrontierSystemIntel,
+} from '@/features/frontierStaticData/frontierStaticIndexClient';
+import type { RouteStaticIntelContext } from '@/features/routes';
 
 export function RouteDossier({ entity, onSignalCreated }: { entity: ResolvedEntity; onSignalCreated?: (message: string) => void }) {
   const { getAllSignals } = useSignalContext();
@@ -55,6 +61,28 @@ export function RouteDossier({ entity, onSignalCreated }: { entity: ResolvedEnti
     return ids;
   }, [firstSystemId, systemQuery.data]);
 
+  const routeStaticIntelQuery = useQuery({
+    queryKey: ['frontierStaticData', 'routeIntel', routeSystemIds.join('|')],
+    queryFn: async () => {
+      const index = await fetchFrontierStaticIndex();
+      const entries = routeSystemIds.flatMap((systemId) => {
+        const intel = getFrontierSystemIntel(index, systemId);
+        if (!intel) return [];
+        return [[systemId, {
+          siteCount: intel.siteCount,
+          beltGroups: intel.beltGroups,
+          trojanGroups: intel.trojanGroups,
+          dangerTaggedGroups: intel.dangerTaggedGroups,
+          tags: intel.tags,
+        } satisfies RouteStaticIntelContext]] as const;
+      });
+      return new Map(entries);
+    },
+    enabled: routeSystemIds.length > 0,
+    staleTime: Infinity,
+    retry: false,
+  });
+
   const systemNames = React.useMemo(() => {
     const map = new Map<string, string>();
     if (systemQuery.data) map.set(systemQuery.data.id, systemQuery.data.name);
@@ -62,8 +90,13 @@ export function RouteDossier({ entity, onSignalCreated }: { entity: ResolvedEnti
   }, [systemQuery.data]);
 
   const routeWarnings = React.useMemo(
-    () => deriveRouteWarnings(allSignals, routeSystemIds, systemNames),
-    [allSignals, routeSystemIds, systemNames]
+    () => deriveRouteWarnings(
+      allSignals,
+      routeSystemIds,
+      systemNames,
+      routeStaticIntelQuery.data ?? undefined,
+    ),
+    [allSignals, routeSystemIds, systemNames, routeStaticIntelQuery.data]
   );
 
   return (

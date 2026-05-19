@@ -14,6 +14,8 @@ import { getContradictionsForEntity } from '@/features/contradictions/contradict
 import { useSolarSystemQuery } from '@/features/worldApi/solarSystems/useSolarSystemQuery';
 import { WorldApiContextPanel } from '@/features/worldApi/components/WorldApiContextPanel';
 import { WorldApiStatusBadge } from '@/features/worldApi/components/WorldApiStatusBadge';
+import { FrontierStaticSiteIntelPanel } from '@/features/frontierStaticData/FrontierStaticSiteIntelPanel';
+import { useFrontierSystemIntelQuery } from '@/features/frontierStaticData/useFrontierSystemIntelQuery';
 
 export function SystemDossier({ entity, onSignalCreated }: { entity: ResolvedEntity; onSignalCreated?: (message: string) => void }) {
   const { getAllSignals } = useSignalContext();
@@ -27,6 +29,7 @@ export function SystemDossier({ entity, onSignalCreated }: { entity: ResolvedEnt
   // World API enrichment — degrades gracefully, never hides local data
   const systemId = entity.entityKey;
   const systemQuery = useSolarSystemQuery(systemId || undefined);
+  const staticIntelQuery = useFrontierSystemIntelQuery(systemId || undefined);
 
   return (
     <div className="space-y-4">
@@ -48,6 +51,16 @@ export function SystemDossier({ entity, onSignalCreated }: { entity: ResolvedEnt
       <WorldApiContextPanel
         system={systemQuery.data ?? null}
         status={systemQuery.status === 'pending' ? 'pending' : systemQuery.isError ? 'error' : 'success'}
+      />
+      <FrontierStaticSiteIntelPanel
+        intel={staticIntelQuery.data}
+        status={
+          staticIntelQuery.status === 'pending'
+            ? 'pending'
+            : staticIntelQuery.isError
+              ? 'error'
+              : 'success'
+        }
       />
 
       <div className="flex gap-3 text-xs">

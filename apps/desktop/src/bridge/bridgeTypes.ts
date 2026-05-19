@@ -5,6 +5,7 @@ export interface CompanionBridgeState {
   readonly schemaVersion: 1;
   readonly generatedAt: string;
   readonly currentSystem?: CompanionBridgeSystem;
+  readonly currentSystemStaticIntel?: CompanionBridgeStaticIntel;
   readonly warnings: readonly CompanionBridgeWarning[];
   readonly latestSignals: readonly CompanionBridgeSignal[];
 }
@@ -13,6 +14,14 @@ export interface CompanionBridgeSystem {
   readonly id?: string;
   readonly name: string;
   readonly source: "world_api" | "manual";
+}
+
+export interface CompanionBridgeStaticIntel {
+  readonly siteCount: number;
+  readonly beltGroups: number;
+  readonly trojanGroups: number;
+  readonly dangerTaggedGroups: number;
+  readonly tags: readonly string[];
 }
 
 export interface CompanionBridgeWarning {
@@ -64,6 +73,13 @@ export function parseCompanionBridgeState(
   }
 
   if (
+    value.currentSystemStaticIntel !== undefined &&
+    !isStaticIntel(value.currentSystemStaticIntel)
+  ) {
+    throw new Error("bridge_static_intel_invalid");
+  }
+
+  if (
     !value.warnings.every(isBridgeWarning) ||
     !value.latestSignals.every(isBridgeSignal)
   ) {
@@ -71,6 +87,18 @@ export function parseCompanionBridgeState(
   }
 
   return value as unknown as CompanionBridgeState;
+}
+
+function isStaticIntel(value: unknown): value is CompanionBridgeStaticIntel {
+  return (
+    isObject(value) &&
+    typeof value.siteCount === "number" &&
+    typeof value.beltGroups === "number" &&
+    typeof value.trojanGroups === "number" &&
+    typeof value.dangerTaggedGroups === "number" &&
+    Array.isArray(value.tags) &&
+    value.tags.every((tag) => typeof tag === "string")
+  );
 }
 
 function isBridgeSystem(value: unknown): value is CompanionBridgeSystem {
