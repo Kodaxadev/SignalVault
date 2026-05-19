@@ -31,5 +31,9 @@ pnpm-debug.log*
 # Docs source (the original stays in signal-vault-docs/)
 signal-vault-docs/
 
+# Local Frontier mined data inputs and generated static indexes
+data/frontier/raw/
+data/frontier/derived/
+
 # Claude Code local settings (machine-specific, not for repo)
 .claude/

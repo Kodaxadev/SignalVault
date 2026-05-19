@@ -2,12 +2,14 @@ import type { RouteWarning, RouteWarningLevel } from '@/features/routes';
 import type { Signal } from '@/features/signals';
 import type { CurrentSystem } from '@/features/worldContext';
 import type {
+  CompanionBridgeStaticIntel,
   CompanionBridgeState,
   CompanionBridgeWarningLevel,
 } from './companionBridgeTypes';
 
 interface BuildCompanionBridgeStateInput {
   currentSystem: CurrentSystem | null;
+  currentSystemStaticIntel?: CompanionBridgeStaticIntel | null;
   warnings: RouteWarning[];
   signals: Signal[];
   generatedAt?: string;
@@ -18,6 +20,7 @@ const DEFAULT_LATEST_SIGNAL_LIMIT = 5;
 
 export function buildCompanionBridgeState({
   currentSystem,
+  currentSystemStaticIntel,
   warnings,
   signals,
   generatedAt = new Date().toISOString(),
@@ -34,6 +37,7 @@ export function buildCompanionBridgeState({
           source: currentSystem.source,
         }
       : undefined,
+    currentSystemStaticIntel: currentSystemStaticIntel ?? undefined,
     warnings: warnings.map((warning) => ({
       id: `${warning.systemId}:${warning.signalType}:${warning.latestSignalAt}`,
       level: mapWarningLevel(warning.level),

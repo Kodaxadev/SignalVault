@@ -5,6 +5,7 @@ export interface CompanionBridgeState {
   schemaVersion: 1;
   generatedAt: string;
   currentSystem?: CompanionBridgeSystem;
+  currentSystemStaticIntel?: CompanionBridgeStaticIntel;
   warnings: CompanionBridgeWarning[];
   latestSignals: CompanionBridgeSignal[];
 }
@@ -13,6 +14,14 @@ export interface CompanionBridgeSystem {
   id?: string;
   name: string;
   source: 'world_api' | 'manual';
+}
+
+export interface CompanionBridgeStaticIntel {
+  siteCount: number;
+  beltGroups: number;
+  trojanGroups: number;
+  dangerTaggedGroups: number;
+  tags: string[];
 }
 
 export interface CompanionBridgeWarning {

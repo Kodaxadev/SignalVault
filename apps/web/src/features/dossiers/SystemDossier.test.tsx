@@ -29,6 +29,23 @@ vi.mock('@/features/worldApi/solarSystems/useSolarSystemQuery', () => ({
   }),
 }));
 
+vi.mock('@/features/frontierStaticData/useFrontierSystemIntelQuery', () => ({
+  useFrontierSystemIntelQuery: () => ({
+    status: 'success',
+    data: {
+      siteCount: 9,
+      beltGroups: 3,
+      trojanGroups: 2,
+      dangerTaggedGroups: 5,
+      ecosystemIds: ['12'],
+      ecosystemNames: ['Natural World - Trojan - Garden'],
+      tags: ['belt', 'trojan', 'non_zero_danger_level'],
+    },
+    isError: false,
+    error: null,
+  }),
+}));
+
 const mockEntity: ResolvedEntity = {
   entityKey: '30000001',
   entityId: '30000001',
@@ -66,5 +83,15 @@ describe('SystemDossier with World API enrichment', () => {
     renderWithQueryClient(<SystemDossier entity={mockEntity} />);
     const noSignals = screen.getAllByText('No signals logged yet for this object.');
     expect(noSignals.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('renders Frontier static site intel when compact index data is available', () => {
+    renderWithQueryClient(<SystemDossier entity={mockEntity} />);
+
+    expect(screen.getByText('STATIC SITE INTEL')).toBeTruthy();
+    expect(screen.getByText('9 sites')).toBeTruthy();
+    expect(screen.getByText('3 belts')).toBeTruthy();
+    expect(screen.getByText('2 trojans')).toBeTruthy();
+    expect(screen.getByText('5 danger groups')).toBeTruthy();
   });
 });

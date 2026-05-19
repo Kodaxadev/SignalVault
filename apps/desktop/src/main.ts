@@ -11,6 +11,8 @@ import {
 import { formatBridgeStatus } from "./bridge/bridgeStatus";
 import {
   formatBridgeSignals,
+  formatBridgeStaticDanger,
+  formatBridgeStaticIntel,
   formatBridgeSystemName,
   formatBridgeWarnings,
 } from "./bridge/bridgeStateFormatter";
@@ -60,6 +62,8 @@ app.innerHTML = `
       <p class="label">Current System</p>
       <p class="system" data-current-system>${shellProofStatus.systemName}</p>
       <p class="detail" data-bridge-status>${shellProofStatus.bridgeDetail}</p>
+      <p class="detail" data-static-intel>No static site intel</p>
+      <p class="detail" data-static-danger>Static context unavailable</p>
     </section>
 
     <section class="signal-list" aria-label="Companion signal preview">
@@ -207,6 +211,8 @@ const pairingToken = app.querySelector<HTMLElement>("[data-pairing-token]");
 const bridgeBadge = app.querySelector<HTMLElement>("[data-bridge-badge]");
 const bridgeStatus = app.querySelector<HTMLElement>("[data-bridge-status]");
 const currentSystem = app.querySelector<HTMLElement>("[data-current-system]");
+const staticIntel = app.querySelector<HTMLElement>("[data-static-intel]");
+const staticDanger = app.querySelector<HTMLElement>("[data-static-danger]");
 const warningCount = app.querySelector<HTMLElement>("[data-warning-count]");
 const signalCount = app.querySelector<HTMLElement>("[data-signal-count]");
 const bridgeSignals = app.querySelector<HTMLElement>("[data-bridge-signals]");
@@ -253,6 +259,12 @@ async function refreshBridgeState(): Promise<void> {
     if (signalCount) {
       signalCount.textContent = "0";
     }
+    if (staticIntel) {
+      staticIntel.textContent = "No static site intel";
+    }
+    if (staticDanger) {
+      staticDanger.textContent = "Static context unavailable";
+    }
     return;
   }
 
@@ -270,6 +282,12 @@ async function refreshBridgeState(): Promise<void> {
     const systemName = formatBridgeSystemName(result.state);
     currentSystem.textContent = systemName;
     latestSystemName = result.state.currentSystem?.name;
+  }
+  if (staticIntel) {
+    staticIntel.textContent = formatBridgeStaticIntel(result.state);
+  }
+  if (staticDanger) {
+    staticDanger.textContent = formatBridgeStaticDanger(result.state);
   }
   if (warningCount) {
     warningCount.textContent = String(result.state.warnings.length);

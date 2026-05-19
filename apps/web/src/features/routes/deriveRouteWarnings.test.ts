@@ -152,4 +152,42 @@ describe('deriveRouteWarnings', () => {
     const warnings = deriveRouteWarnings(signals, [SYSTEM_A]);
     expect(warnings[0]?.systemName).toBeUndefined();
   });
+
+  it('attaches static route intel as advisory context only', () => {
+    const signals = [makeSignal({ signalType: 'hostile_contact', linkedEntities: linkedToSystem(SYSTEM_A) })];
+    const staticIntel = new Map([
+      [SYSTEM_A, {
+        siteCount: 9,
+        beltGroups: 3,
+        trojanGroups: 2,
+        dangerTaggedGroups: 5,
+        tags: ['belt', 'trojan', 'non_zero_danger_level'],
+      }],
+    ]);
+
+    const warnings = deriveRouteWarnings(signals, [SYSTEM_A], undefined, staticIntel);
+
+    expect(warnings).toHaveLength(1);
+    expect(warnings[0]?.level).toBe('critical');
+    expect(warnings[0]?.staticIntel).toMatchObject({
+      siteCount: 9,
+      beltGroups: 3,
+      trojanGroups: 2,
+      dangerTaggedGroups: 5,
+    });
+  });
+
+  it('does not create route warnings from static intel alone', () => {
+    const staticIntel = new Map([
+      [SYSTEM_A, {
+        siteCount: 9,
+        beltGroups: 3,
+        trojanGroups: 2,
+        dangerTaggedGroups: 5,
+        tags: ['non_zero_danger_level'],
+      }],
+    ]);
+
+    expect(deriveRouteWarnings([], [SYSTEM_A], undefined, staticIntel)).toEqual([]);
+  });
 });
