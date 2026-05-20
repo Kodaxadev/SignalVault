@@ -8,6 +8,7 @@ The companion is an alpha feasibility artifact. It can:
 
 - show a compact always-on-top Signal Vault overlay
 - toggle visibility with `Ctrl+Shift+Space`
+- allow operator testing of another hotkey through `VITE_SIGNAL_VAULT_COMPANION_HOTKEY`
 - expose tray actions for show, hide, toggle, Open Vault, and quit
 - host a localhost bridge on `127.0.0.1:17777`
 - receive read-only browser state
@@ -99,7 +100,7 @@ Set Current System:
 | Token rejected | Browser token does not match the desktop token | Copy the current desktop token into the web app again |
 | Quick Note stays pending | Browser local save failed or browser is not polling | Open the browser app and check local storage availability |
 | Set Current System stores a number as manual | World API lookup failed or was unavailable | Confirm network/World API status; manual fallback is expected |
-| Hotkey unavailable | OS-level shortcut registration failed or conflicts | Use tray/window controls, then choose a different hotkey in a later settings slice |
+| Hotkey unavailable | OS-level shortcut registration failed or conflicts | Use tray/window controls, then test another accelerator with `VITE_SIGNAL_VAULT_COMPANION_HOTKEY` |
 | Open Vault opens the wrong URL | URL env config points to dev or stale host | Set `VITE_SIGNAL_VAULT_WEB_URL` and `SIGNAL_VAULT_WEB_URL` for the intended target |
 
 ## Packaging Notes
@@ -114,11 +115,13 @@ Before sharing desktop builds outside development, finish or explicitly disclose
 - Windows installer or signed executable packaging
 - production URL configuration
 - visual overlay QA against desktop and gameplay-like resolutions
+- in-app hotkey settings UI for players who need to avoid helper overlays such as EF Helper
 - SmartScreen and Defender behavior for browser-downloaded unsigned artifacts
 
 ## Evidence
 
 - EVE Frontier builder docs frame Frontier as a programmable builder ecosystem with dApps and Smart Assemblies: https://docs.evefrontier.com/
+- EF Helper documents a Frontier desktop companion with an in-game overlay and configurable hotkey precedent: https://ef-map.com/blog/ef-helper-desktop-companion-guide
 - dApp Kit `SmartObjectContextType` is provider context, not something the companion should emulate: https://sui-docs.evefrontier.com/interfaces/SmartObjectContextType.html
 - Tauri documents global shortcuts, tray support, opener, and desktop app configuration used by the companion: https://v2.tauri.app/plugin/global-shortcut/ / https://v2.tauri.app/learn/system-tray/ / https://v2.tauri.app/plugin/opener/
 - MDN documents browser `fetch()` and origin-local `localStorage`, matching the browser-publishes-state and token-storage model: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API / https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage

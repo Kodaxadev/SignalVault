@@ -88,20 +88,8 @@ app.innerHTML = `
 
     <section class="checks" aria-label="Authority checks">
       <div class="check-row">
-        <span>Warnings</span>
-        <strong data-warning-count>0</strong>
-      </div>
-      <div class="check-row">
-        <span>Latest Signals</span>
-        <strong data-signal-count>0</strong>
-      </div>
-      <div class="check-row">
         <span>Hotkey</span>
         <strong data-hotkey-status>${companionToggleHotkey}</strong>
-      </div>
-      <div class="check-row">
-        <span>Tray</span>
-        <strong data-tray-status>checking</strong>
       </div>
       <div class="check-row">
         <span>Bridge Host</span>
@@ -111,16 +99,6 @@ app.innerHTML = `
         <span>Pairing</span>
         <strong class="token-value" data-pairing-token>checking</strong>
       </div>
-      ${shellProofStatus.checks
-        .map(
-          (check) => `
-            <div class="check-row">
-              <span>${check.label}</span>
-              <strong>${check.value}</strong>
-            </div>
-          `,
-        )
-        .join("")}
     </section>
 
     <section class="quick-note" aria-label="Quick note capture">
@@ -205,7 +183,6 @@ app.querySelector('[data-action="set-current-system"]')?.addEventListener("click
 });
 
 const hotkeyStatus = app.querySelector<HTMLElement>("[data-hotkey-status]");
-const trayStatus = app.querySelector<HTMLElement>("[data-tray-status]");
 const bridgeHostStatus = app.querySelector<HTMLElement>("[data-bridge-host-status]");
 const pairingToken = app.querySelector<HTMLElement>("[data-pairing-token]");
 const bridgeBadge = app.querySelector<HTMLElement>("[data-bridge-badge]");
@@ -213,8 +190,6 @@ const bridgeStatus = app.querySelector<HTMLElement>("[data-bridge-status]");
 const currentSystem = app.querySelector<HTMLElement>("[data-current-system]");
 const staticIntel = app.querySelector<HTMLElement>("[data-static-intel]");
 const staticDanger = app.querySelector<HTMLElement>("[data-static-danger]");
-const warningCount = app.querySelector<HTMLElement>("[data-warning-count]");
-const signalCount = app.querySelector<HTMLElement>("[data-signal-count]");
 const bridgeSignals = app.querySelector<HTMLElement>("[data-bridge-signals]");
 let latestSystemName: string | undefined;
 
@@ -225,9 +200,7 @@ void registerCompanionHotkey((status) => {
 });
 
 registerTrayStatus((status) => {
-  if (trayStatus) {
-    trayStatus.textContent = formatTrayStatus(status);
-  }
+  void formatTrayStatus(status);
 });
 
 void getBridgePairingToken().then((result) => {
@@ -252,12 +225,6 @@ async function refreshBridgeState(): Promise<void> {
     }
     if (bridgeStatus) {
       bridgeStatus.textContent = formatBridgeStatus("disconnected");
-    }
-    if (warningCount) {
-      warningCount.textContent = "0";
-    }
-    if (signalCount) {
-      signalCount.textContent = "0";
     }
     if (staticIntel) {
       staticIntel.textContent = "No static site intel";
@@ -288,12 +255,6 @@ async function refreshBridgeState(): Promise<void> {
   }
   if (staticDanger) {
     staticDanger.textContent = formatBridgeStaticDanger(result.state);
-  }
-  if (warningCount) {
-    warningCount.textContent = String(result.state.warnings.length);
-  }
-  if (signalCount) {
-    signalCount.textContent = String(result.state.latestSignals.length);
   }
   if (bridgeSignals) {
     bridgeSignals.innerHTML = signals

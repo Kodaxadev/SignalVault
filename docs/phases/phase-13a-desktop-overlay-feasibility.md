@@ -6,14 +6,14 @@ Prove Signal Vault can provide in-play utility through a lightweight Windows ove
 
 ## Status
 
-13A.0 through 13A.10 are implemented across `apps/desktop`, `apps/web`, and docs: the companion has a standalone Tauri shell, a compact always-on-top frameless window contract, a `Ctrl+Shift+Space` global hotkey toggle, tray controls for show/hide/toggle/open/quit, a read-only bridge state contract/client, a desktop-owned localhost bridge host, local pairing-token hardening for browser publishing, Open Vault, paired Quick Note capture, paired Set Current System capture into browser-owned local Signal Vault state, and an alpha operator guide. Future in-game/dApp browser support is deferred until EVE Frontier ships and documents a current working browser surface.
+13A.0 through 13A.10 are implemented across `apps/desktop`, `apps/web`, and docs: the companion has a standalone Tauri shell, a compact always-on-top frameless window contract, a `Ctrl+Shift+Space` default global hotkey toggle with build-time accelerator override, tray controls for show/hide/toggle/open/quit, a read-only bridge state contract/client, a desktop-owned localhost bridge host, local pairing-token hardening for browser publishing, Open Vault, paired Quick Note capture, paired Set Current System capture into browser-owned local Signal Vault state, and an alpha operator guide. Future in-game/dApp browser support is deferred until EVE Frontier ships and documents a current working browser surface.
 
 ## Build
 
 - `apps/desktop/` Tauri shell
 - always-on-top overlay window
 - tray/menu
-- global hotkey show/hide
+- global hotkey show/hide with configurable accelerator
 - localhost bridge host/client
 - settings file
 - compact current-system panel

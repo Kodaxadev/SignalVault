@@ -33,17 +33,18 @@ If the command fails because the port is already in use, close the existing comp
 ## Manual Smoke
 
 1. Launch the release exe.
-2. Confirm the overlay is compact, frameless, fixed-size, and always on top.
+2. Confirm the overlay is compact, frameless, fixed-size at 420x560, and always on top.
 3. Confirm the overlay shows `Bridge Host: running`.
 4. Use the tray menu to hide and show the overlay.
 5. Press `Ctrl+Shift+Space` to toggle the overlay.
-6. Click Open Vault and confirm the browser opens the configured Signal Vault URL.
-7. Open the browser app and enter the pairing token shown in the overlay.
-8. Confirm current system, warnings, and latest Signals publish into the overlay.
-9. Capture a Quick Note from the overlay and confirm the browser creates a local-only field note.
-10. Set Current System from the overlay and confirm the browser updates local current-system state.
-11. Restart the desktop app and confirm the pairing token persists.
-12. Start a second process on `127.0.0.1:17777`, then launch the companion and confirm the overlay reports a port conflict.
+6. For a hotkey-conflict smoke test, rebuild with `VITE_SIGNAL_VAULT_COMPANION_HOTKEY=F9` and confirm the overlay reports and registers `F9`.
+7. Click Open Vault and confirm the browser opens the configured Signal Vault URL.
+8. Open the browser app and enter the pairing token shown in the overlay.
+9. Confirm current system, warnings, and latest Signals publish into the overlay.
+10. Capture a Quick Note from the overlay and confirm the browser creates a local-only field note.
+11. Set Current System from the overlay and confirm the browser updates local current-system state.
+12. Restart the desktop app and confirm the pairing token persists.
+13. Start a second process on `127.0.0.1:17777`, then launch the companion and confirm the overlay reports a port conflict.
 
 ## Defender And Signing Record
 

@@ -22,10 +22,10 @@ export interface CompanionCheck {
 }
 
 export const shellProofStatus: CompanionStatus = {
-  phase: "13A.0 Shell Proof",
+  phase: "13A Companion",
   systemName: "OQQ-0R8",
   bridgeState: "offline",
-  bridgeDetail: "Local bridge intentionally disabled for first native shell proof.",
+  bridgeDetail: "Bridge awaiting paired browser state.",
   latestSignals: [
     {
       id: "static-shell-1",

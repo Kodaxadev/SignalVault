@@ -14,8 +14,8 @@
       {
         "label": "main",
         "title": "Signal Vault Companion",
-        "width": 360,
-        "height": 460,
+        "width": 420,
+        "height": 560,
         "x": 24,
         "y": 24,
         "alwaysOnTop": true,

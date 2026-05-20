@@ -14,8 +14,8 @@ test('desktop window declares compact overlay behavior', () => {
   assert.equal(mainWindow.decorations, false);
   assert.equal(mainWindow.resizable, false);
   assert.equal(mainWindow.fullscreen, false);
-  assert.equal(mainWindow.width, 360);
-  assert.equal(mainWindow.height, 460);
+  assert.equal(mainWindow.width, 420);
+  assert.equal(mainWindow.height, 560);
 });
 
 test('desktop window starts in a gameplay-friendly corner', () => {

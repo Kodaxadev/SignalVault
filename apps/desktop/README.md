@@ -6,7 +6,7 @@ Operator guide: [`../../docs/operations/06-desktop-companion-alpha-readiness.md`
 
 Packaging guide: [`../../docs/operations/09-desktop-packaging-readiness.md`](../../docs/operations/09-desktop-packaging-readiness.md)
 
-This app is a native shell proof for a future Windows companion overlay. The current window is compact, frameless, fixed-size, always-on-top, can be toggled with `Ctrl+Shift+Space`, and has tray controls for show, hide, toggle, Open Vault, quick note capture, current-system capture, and quit. It is a companion surface only:
+This app is a native shell proof for a future Windows companion overlay. The current window is compact, frameless, fixed-size at 420x560, always-on-top, can be toggled with `Ctrl+Shift+Space`, and has tray controls for show, hide, toggle, Open Vault, quick note capture, current-system capture, and quit. Set `VITE_SIGNAL_VAULT_COMPANION_HOTKEY` at build/dev time to test a different accelerator. Avoid `F8` as the default when testing alongside EF Helper because helper overlays can already bind their own toggle key. It is a companion surface only:
 
 - no wallet signing
 - no EVE Vault impersonation
