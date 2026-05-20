@@ -15,10 +15,35 @@ const beta = {
   tribeId: `tribe-beta-${runId}`,
 };
 
+const REQUIRED_RLS_TABLES = ['signals', 'audit_log'] as const;
+const REQUIRED_POLICIES = [
+  { tableName: 'signals', policyName: 'signal_read_scope' },
+  { tableName: 'signals', policyName: 'signal_insert_auth' },
+  { tableName: 'signals', policyName: 'signal_update_auth' },
+  { tableName: 'signals', policyName: 'signal_delete_auth' },
+  { tableName: 'audit_log', policyName: 'audit_append' },
+  { tableName: 'audit_log', policyName: 'audit_read' },
+] as const;
+const REQUIRED_CONSTRAINTS = [
+  {
+    tableName: 'signals',
+    constraintName: 'signals_identity_resolved_at_required_for_character',
+  },
+  {
+    tableName: 'audit_log',
+    constraintName: 'audit_identity_source_required_for_character',
+  },
+  {
+    tableName: 'audit_log',
+    constraintName: 'audit_identity_resolved_at_required_for_character',
+  },
+] as const;
+
 try {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
+    await verifyRlsSchemaPreflight(client);
     await verifyRls(client);
     await client.query('ROLLBACK');
   } catch (error) {
@@ -76,6 +101,80 @@ async function verifyRls(client: PoolClient): Promise<void> {
   await expectAuditAllowed(client);
 
   console.log('RLS verification passed');
+}
+
+async function verifyRlsSchemaPreflight(client: PoolClient): Promise<void> {
+  const missing = [
+    ...(await missingRlsEnabledTables(client)),
+    ...(await missingPolicies(client)),
+    ...(await missingConstraints(client)),
+  ];
+
+  if (missing.length > 0) {
+    throw new Error(
+      `RLS schema preflight failed. Missing or inactive: ${missing.join(', ')}`
+    );
+  }
+
+  console.log('pass: RLS schema preflight');
+}
+
+async function missingRlsEnabledTables(client: PoolClient): Promise<string[]> {
+  const result = await client.query<{ relname: string; relrowsecurity: boolean }>(
+    `SELECT relname, relrowsecurity
+     FROM pg_class
+     WHERE relnamespace = 'public'::regnamespace
+     AND relname = ANY($1)`,
+    [REQUIRED_RLS_TABLES]
+  );
+
+  const enabled = new Set(
+    result.rows
+      .filter((row) => row.relrowsecurity)
+      .map((row) => row.relname)
+  );
+
+  return REQUIRED_RLS_TABLES
+    .filter((tableName) => !enabled.has(tableName))
+    .map((tableName) => `${tableName}.rls_enabled`);
+}
+
+async function missingPolicies(client: PoolClient): Promise<string[]> {
+  const tableNames = [...new Set(REQUIRED_POLICIES.map((policy) => policy.tableName))];
+  const result = await client.query<{ tablename: string; policyname: string }>(
+    `SELECT tablename, policyname
+     FROM pg_policies
+     WHERE schemaname = 'public'
+     AND tablename = ANY($1)`,
+    [tableNames]
+  );
+
+  const found = new Set(
+    result.rows.map((row) => `${row.tablename}.${row.policyname}`)
+  );
+
+  return REQUIRED_POLICIES
+    .filter((policy) => !found.has(`${policy.tableName}.${policy.policyName}`))
+    .map((policy) => `${policy.tableName}.policy.${policy.policyName}`);
+}
+
+async function missingConstraints(client: PoolClient): Promise<string[]> {
+  const tableNames = [...new Set(REQUIRED_CONSTRAINTS.map((item) => item.tableName))];
+  const result = await client.query<{ table_name: string; constraint_name: string }>(
+    `SELECT table_name, constraint_name
+     FROM information_schema.table_constraints
+     WHERE table_schema = 'public'
+     AND table_name = ANY($1)`,
+    [tableNames]
+  );
+
+  const found = new Set(
+    result.rows.map((row) => `${row.table_name}.${row.constraint_name}`)
+  );
+
+  return REQUIRED_CONSTRAINTS
+    .filter((item) => !found.has(`${item.tableName}.${item.constraintName}`))
+    .map((item) => `${item.tableName}.constraint.${item.constraintName}`);
 }
 
 async function setContext(

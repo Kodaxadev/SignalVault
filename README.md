@@ -2,207 +2,187 @@
 
 # Signal Vault
 
-**Your field intelligence layer for EVE Frontier.**
+![Signal Vault hero](docs/assets/readme/repo-hero.svg)
 
-Know what you're looking at. Know what others have seen. Never fly blind.
+**Field intelligence for EVE Frontier.**
+
+Know what you are looking at. Know what others have seen. Reconfirm before
+acting.
 
 [![Status](https://img.shields.io/badge/status-alpha-orange)]()
-[![Tests](https://img.shields.io/badge/tests-921_passing-brightgreen)]()
+[![Tests](https://img.shields.io/badge/tests-947_passing-brightgreen)]()
 [![License](https://img.shields.io/badge/license-MIT-blue)]()
 [![Local First](https://img.shields.io/badge/data-local--first-purple)]()
 
 </div>
 
----
+Signal Vault turns scattered observations into structured Signals: who saw it,
+what object or system it belongs to, how confident the report is, how stale it
+is, and what action a pilot should take next.
 
-Signal Vault turns your observations into structured intel — logged at the point of encounter, graded by confidence, tracked for freshness, and surfaced as dossiers when you need them. It works in your browser today, with a desktop companion overlay for in-play use.
+It is built for EVE Frontier's programmable world and Smart Assembly direction,
+but it stays practical today: browser-first, local-first, and paired with a
+Windows desktop companion overlay for in-play use.
 
-Your data stays on your machine until you choose to share it. No accounts required. No background sync. No telemetry.
+[EVE Frontier builder docs](https://docs.evefrontier.com/) describe a
+programmable world where in-game entities can be represented on-chain and
+extended by builders. The EVE Frontier dApp Kit exposes Smart Object context for
+supported dApp surfaces through `EveFrontierProvider`, `useConnection`, and
+`useSmartObject`: [dApp Kit docs](https://sui-docs.evefrontier.com/).
 
----
+## Why It Exists
 
-## What Can It Do?
+EVE Frontier creates a new kind of intel problem. Gates, storage units, systems,
+routes, tribes, markets, and field encounters all matter, but the useful context
+is often split across memory, chat, browser tabs, screenshots, and stale notes.
 
-When you encounter a gate, storage unit, system, or route, Signal Vault answers:
+Signal Vault gives that context a shape:
 
-**What is this?** — Automatically identifies entities from multiple sources, with a confidence-ranked resolution pipeline.
+- **Capture fast:** log hostile contacts, route reports, market notes, access
+  denials, storage manifests, and field notes.
+- **Resolve what you saw:** connect Signals to systems, Smart Objects, tribes,
+  routes, or unresolved objects without pretending hints are truth.
+- **Know what changed:** stale intel, contradiction warnings, confidence labels,
+  and official data enrichment make old reports safer to interpret.
+- **Stay local by default:** data lives in your browser unless you choose to
+  push a single Signal through the alpha remote path.
+- **Use it while playing:** the desktop companion shows live state, warnings,
+  quick notes, and current-system handoff without touching the game client.
 
-**What do we know?** — Shows all intel collected on the entity: signals from you and your tribe, contradiction flags when reports disagree, and overall intel health.
+## Product Surfaces
 
-**How fresh is it?** — Every signal type has a staleness threshold. Hostile contact reports expire in 24 hours. Field notes last for days. You always know how current your intel is.
+![Signal dossier screenshot](docs/assets/readme/signal-dossier.svg)
 
-**Who reported it?** — Every signal is wallet-bound. You see who reported what, and at what confidence level: *observed*, *inferred*, *rumor*, or *unverified*.
+| Surface | What it is for | Status |
+|---|---|---|
+| Browser app | Full Signal log, dossiers, route context, import/export | Alpha-ready locally |
+| In-game/object route | Smart Object context page for supported dApp surfaces | Implemented, defensive |
+| Desktop companion | Windows overlay, tray, hotkey, local bridge, quick note | Packaged alpha |
+| API backend | Optional remote push, audit log, Sui identity resolution | Alpha, production proof pending |
 
-**What can I log right now?** — One-click quick actions pre-filled with your current in-game context. Get the intel recorded and get back to flying.
+![Desktop companion overlay](docs/assets/readme/desktop-companion.svg)
 
----
+## What You Can Track
 
-## Signal Types
+| Category | Signal types |
+|---|---|
+| Movement and access | Gate Recon, Route Report, Permit Report, Access Denied |
+| Resources and trade | Storage Manifest, Market Report, Resource Report |
+| Threat | Hostile Contact, After Action Report |
+| General | Field Note, System Report, Assembly Log |
 
-### Movement & Access
-- **Gate Recon** — Gate status, access conditions, activity
-- **Route Report** — Route viability, hazards, travel time
-- **Permit Report** — Access permissions, toll status
-- **Access Denied** — Blocked entry, denial conditions
+Every Signal carries an entity snapshot, author context, confidence, visibility,
+and staleness behavior. Old records remain historical records; they are not
+silently rewritten when a wallet or character context changes.
 
-### Resources & Trade
-- **Storage Manifest** — Contents, capacity, ownership
-- **Market Report** — Prices, availability, trends
-- **Resource Report** — Resource locations and yields
+## Trust Boundaries
 
-### Threat
-- **Hostile Contact** — Enemy sightings, fleet composition, behavior
-- **After Action Report** — Engagement outcomes, losses, lessons
+Signal Vault is deliberately conservative:
 
-### General
-- **Field Note** — Freeform observations
-- **System Report** — System-level conditions and activity
-- **Assembly Log** — Assembly status and changes
+- **No background sync.** Remote push is manual and single-Signal.
+- **No fake dApp browser.** The browser app uses official EVE Vault/dApp Kit
+  paths only where supported.
+- **No game memory reads or process injection.** The desktop companion is a
+  local overlay and bridge, not a game-client automation layer.
+- **No dev auth in production.** Release checks block production dev-auth flags.
+- **No silent Smart Assembly inference.** URL params and World API data are
+  hints; verified Smart Assembly context comes from supported EVE/dApp sources.
 
----
+## Current Alpha State
 
-## Dossiers
+Latest local release gate on this branch:
 
-Every entity gets a dossier — a living intel file that aggregates all signals, shows a timeline of reports, flags contradictions, and pulls in official game data when available. Gates, storage units, markets, systems, routes, tribes, and unknown objects all have dedicated layouts.
+| Gate | Result |
+|---|---|
+| Web tests | 693 passed |
+| API tests | 239 passed / 5 skipped |
+| Script tests | 15 passed |
+| Web build | Passing |
+| Main bundle dApp Kit references | 0 |
+| File-size guardrail | All files at or under 400 lines |
 
----
+Remote production readiness is intentionally not overclaimed. The RLS verifier
+and Railway deployment notes are in place, but the live deployed-role proof must
+pass against the deployed Postgres database before public remote-write claims.
 
-## How It Works
+## Run It Locally
 
-**Browser app** — Open Signal Vault in any modern browser. Log signals, browse dossiers, export and import your data. No backend needed.
+Prerequisites:
 
-**Desktop companion** — A lightweight overlay that sits on top of EVE Frontier. Toggle it with `Ctrl+Shift+V`, log intel without leaving the game. Sits in your system tray when not in use.
-
-**Smart Object context** — When opened from within EVE Frontier, Signal Vault automatically knows what you're looking at and pre-fills context for faster logging.
-
-**Remote sync** *(optional, alpha)* — Push signals to a shared backend for tribe-level intel. Requires Sui wallet authentication — your identity is verified on-chain, no centralized accounts.
-
----
-
-## Your Data, Your Rules
-
-- Everything works offline and locally by default
-- No accounts, no sign-ups, no tracking
-- Remote sharing is always manual and opt-in
-- Signals have visibility scopes: keep them private, share with your tribe, or make them public
-- Tribe access is verified on-chain from Sui character data — no centralized auth server decides who's in your tribe
-
----
-
-## Getting Started
-
-### Browser (quickest)
+- Node `>=24`
+- pnpm
+- Rust toolchain only if running the desktop companion
 
 ```bash
 git clone https://github.com/Kodaxadev/SignalVault.git
 cd SignalVault
 pnpm install
+
+# Browser app, local-first
 pnpm dev
+
+# API backend
+pnpm dev:api
+
+# Desktop companion
+pnpm dev:desktop
+
+# Release gate
+pnpm check:release
 ```
 
-Open `http://localhost:5173` and you're in. No backend, no config, no accounts.
-
-### Desktop Companion
-
-Requires [Rust toolchain](https://rustup.rs/) in addition to Node/pnpm.
+Optional World API enrichment:
 
 ```bash
-pnpm --filter desktop tauri:dev
+# apps/web/.env.local
+VITE_WORLD_API_BASE_URL=https://world-api-stillness.live.tech.evefrontier.com
+VITE_WORLD_API_ENV=stillness
 ```
 
-### Remote Sync (optional)
-
-For tribe-level shared intel, you'll need Postgres and some environment config. See the [environment matrix](docs/alpha/07-demo-environment-matrix.md) for full setup.
-
-**Prerequisites:** Node 24+, [pnpm](https://pnpm.io/) 9+, Rust toolchain (desktop only)
-
----
-
-## Tech Stack
-
-<details>
-<summary>For the technically curious</summary>
-
-| Layer | Tech |
-|---|---|
-| Frontend | React 19, Vite, React Router, TanStack Query, Tailwind CSS |
-| Desktop | Tauri 2 (Rust + WebView2) |
-| Local storage | Dexie (IndexedDB) |
-| Validation | Zod |
-| Backend | Hono, Postgres |
-| Identity | Sui GraphQL (on-chain wallet verification) |
-| EVE integration | `@evefrontier/dapp-kit` (in-game context only) |
-| Monorepo | pnpm workspaces |
-| Testing | Vitest + Testing Library (921 tests passing) |
-
-### Architecture
-
-```
-Signal Vault
-├── apps/web          Browser app — signals, dossiers, export/import
-├── apps/desktop      Desktop companion overlay (Tauri 2)
-└── apps/api          Shared backend for tribe sync (Hono + Postgres)
-```
-
-**Entity resolution** merges claims from multiple sources by priority — on-chain verification beats URL hints. The winning claim sets entity type and label.
-
-**World API cache** keeps solar system, tribe, and game type data in IndexedDB with smart TTLs. If the network drops, you see stale data instead of a blank screen.
-
-**Chunk isolation** ensures the EVE Frontier dApp Kit only loads when needed — the main app bundle stays clean and fast.
-
-</details>
-
----
-
-## Project Status
-
-Signal Vault is in **internal alpha**. Local features are complete and stable. Remote sync works under Sui identity (dev-validated). Production wallet verification is unit-tested; live EVE Vault / zkLogin fixture validation is pending before public release.
-
-See the [alpha release readiness doc](docs/alpha/01-alpha-release-readiness.md) for the full picture.
-
----
-
-## Documentation
-
-| Guide | For |
-|---|---|
-| [Alpha Player Guide](docs/alpha/00-alpha-guide.md) | New users — what works, what doesn't, how to back up |
-| [Player FAQ](docs/alpha/05-player-facing-faq.md) | Common questions, answered plainly |
-| [Known Limitations](docs/alpha/03-known-limitations.md) | What's missing and when it's coming |
-| [Demo Checklist](docs/alpha/06-demo-operator-checklist.md) | Running a demo for others |
-| [Environment Matrix](docs/alpha/07-demo-environment-matrix.md) | Full env var reference for all modes |
-| [Frontier Static Data](docs/integration/frontier-static-game-data.md) | Game data integration guide |
-
----
-
-## Trust & Privacy Commitments
-
-These are unconditional — they don't change for demos, edge cases, or convenience:
-
-- **No background sync.** You push intel manually. No queues, no automatic retry, no silent writes.
-- **No dev-auth in production.** Development shortcuts are blocked from production builds by automated checks.
-- **Game data doesn't guess identity.** The World API tells us what *type* of thing something is — never which specific smart gate or storage unit. Only the dApp Kit has that authority.
-- **Audit trail, not audit theater.** Known dependency advisories are tracked openly, not suppressed.
-
----
-
-## Contributing
-
-Signal Vault is in early alpha. If you're interested in contributing, open an issue to discuss before submitting a PR.
+Optional remote API:
 
 ```bash
-pnpm test:run       # web tests
-pnpm test:api       # api tests
-pnpm check:release  # full release gate check
+# apps/api/.env
+DATABASE_URL=postgres://...
+ENABLE_REMOTE_SIGNAL_WRITES=false
+AUTH_DEV_MODE=false
+ENABLE_SUI_CHARACTER_RESOLUTION=false
+SIGNAL_VAULT_ALLOWED_ORIGINS=http://localhost:5173
 ```
 
----
+For Railway backend setup, see
+[`docs/operations/12-railway-backend-deployment.md`](docs/operations/12-railway-backend-deployment.md).
+
+## Repo Map
+
+```txt
+apps/web       React + Vite local-first app
+apps/desktop   Tauri Windows companion overlay
+apps/api       Hono + Postgres remote push backend
+docs/          product, architecture, alpha, backend, operations
+scripts/       release, static index, and policy checks
+```
+
+Start with:
+
+- [`docs/README.md`](docs/README.md) - docs guide
+- [`docs/alpha/00-alpha-guide.md`](docs/alpha/00-alpha-guide.md) - alpha player guide
+- [`docs/operations/08-signal-vault-action-register.md`](docs/operations/08-signal-vault-action-register.md) - current action register
+- [`docs/phases/phase-13a-desktop-overlay-feasibility.md`](docs/phases/phase-13a-desktop-overlay-feasibility.md) - desktop companion phase
+
+## Build Philosophy
+
+Signal Vault is not a generic notes app with space styling. It is a field intel
+tool for a world where object identity, tribe context, player reports, stale
+evidence, and on-chain state can disagree.
+
+The rule is simple:
+
+> Capture what was known at the time. Label the source. Reconfirm before acting.
 
 ## License
 
-MIT
-
----
+MIT. See [`LICENSE`](LICENSE).
 
 <div align="center">
 

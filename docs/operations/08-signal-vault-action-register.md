@@ -29,7 +29,7 @@
 
 | Priority | Action | Status | Next Proof |
 |---|---|---|---|
-| P0 | Verify Postgres RLS under deployed app role | Harness and RLS hardening migration implemented; live deployed-role run still pending. | Set `SIGNAL_VAULT_RLS_DATABASE_URL`, apply migration `005_harden_signal_rls.sql`, then run `pnpm verify:rls`. |
+| P0 | Verify Postgres RLS under deployed app role | Harness, schema preflight, and RLS hardening migration implemented; live deployed-role run still pending. Railway Postgres is the current target. | Set `SIGNAL_VAULT_RLS_DATABASE_URL` or `DATABASE_URL` to the Railway Postgres URL, apply migration `005_harden_signal_rls.sql`, then run `pnpm verify:rls`. |
 
 ## Recommended Next Phase
 

@@ -146,6 +146,43 @@ desktop companion displays paired read-only state
 desktop companion does not become game-data authority
 ```
 
+## Static Asset Deployment Workflow
+
+The generated compact index is ignored by git. Release operators must opt in to
+publishing it as a web static asset.
+
+Build the compact derived index from local, user-provided source files:
+
+```powershell
+pnpm build:frontier-static-index -- --ecosystem C:\Users\Justi\Downloads\ecosystem.json --landscape C:\Users\Justi\Downloads\landscape.json
+```
+
+Publish the compact derived index into the Vite static asset root:
+
+```powershell
+pnpm publish:frontier-static-index
+```
+
+Default copy path:
+
+```txt
+data/frontier/derived/frontier-static-index.json
+-> apps/web/public/frontier-static-index.json
+```
+
+The publish command validates that the source is schema version `1`, contains
+the compact `systems` and `ecosystems` maps, and does not contain raw placement
+fields such as coordinates. The published asset is also ignored by git.
+
+Remove the published optional asset:
+
+```powershell
+pnpm clean:frontier-static-index
+```
+
+If the published asset is absent, system dossiers, route warnings, and the
+desktop companion keep working with safe unavailable states.
+
 ## Authority Boundary
 
 Allowed uses:
@@ -192,5 +229,5 @@ static game data = system/site planning enrichment
 
 ## Next Slices
 
-1. **Future - Static Index Deployment Workflow**
-   Decide whether release builds copy the compact generated index into the web static asset root.
+1. **Future - Static Index Freshness UX**
+   Surface generated-at/provenance copy near static context so players understand when the data was last refreshed.

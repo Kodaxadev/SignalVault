@@ -34,6 +34,7 @@ signal-vault-docs/
 # Local Frontier mined data inputs and generated static indexes
 data/frontier/raw/
 data/frontier/derived/
+apps/web/public/frontier-static-index.json
 
 # Claude Code local settings (machine-specific, not for repo)
 .claude/

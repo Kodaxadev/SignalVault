@@ -42,6 +42,7 @@
 
 - [ ] **Verify Postgres RLS under the actual application role.**  
   Migration [`005_harden_signal_rls.sql`](../../apps/api/migrations/005_harden_signal_rls.sql) replaces the broad all-command signal policy with command-specific RLS checks and new identity snapshot constraints. Migration readiness now checks required policies and constraints as well as tables/columns. [`verify-deployed-rls.ts`](../../apps/api/scripts/verify-deployed-rls.ts) provides the deployed-role probe (`pnpm verify:rls`). This remains open until the probe passes with `SIGNAL_VAULT_RLS_DATABASE_URL` against the deployed app role. Evidence: [PostgreSQL row security policies](https://www.postgresql.org/docs/current/ddl-rowsecurity.html), [CREATE POLICY](https://www.postgresql.org/docs/current/sql-createpolicy.html).
+  The verifier now runs a schema preflight before behavior probes: row security must be enabled on `signals` and `audit_log`, required policies must exist, and identity snapshot constraints must be installed.
 
 ## P1 Hardening Before Public Production
 
