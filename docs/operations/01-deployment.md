@@ -10,8 +10,10 @@ Frontend:
 
 Backend:
 
-- Supabase
-- or Railway thin API
+- Railway thin API and Railway Postgres
+
+See [`12-railway-backend-deployment.md`](./12-railway-backend-deployment.md)
+for the current backend deployment path.
 
 ## Deployment Requirements
 
