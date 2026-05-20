@@ -1,0 +1,49 @@
+<svg width="1200" height="420" viewBox="0 0 1200 420" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Signal Vault hero banner</title>
+  <desc id="desc">A tactical EVE Frontier field intelligence banner showing local signals, dossiers, and desktop companion flow.</desc>
+  <rect width="1200" height="420" fill="#08090B"/>
+  <path d="M0 0h1200v420H0z" fill="url(#bg)"/>
+  <g opacity=".16" stroke="#D7E3EA" stroke-width="1">
+    <path d="M80 68h1040M80 118h1040M80 168h1040M80 218h1040M80 268h1040M80 318h1040"/>
+    <path d="M118 48v320M218 48v320M318 48v320M418 48v320M518 48v320M618 48v320M718 48v320M818 48v320M918 48v320M1018 48v320"/>
+  </g>
+  <g transform="translate(760 62)">
+    <rect x="0" y="0" width="342" height="270" rx="12" fill="#111318" stroke="#3B4650"/>
+    <rect x="18" y="18" width="306" height="36" fill="#171A20" stroke="#39434C"/>
+    <text x="34" y="42" fill="#D8E2E7" font-family="Consolas, monospace" font-size="17" font-weight="700">LIVE DOSSIER</text>
+    <rect x="18" y="74" width="306" height="42" fill="#0E1115" stroke="#27323A"/>
+    <text x="34" y="101" fill="#FF6B2B" font-family="Consolas, monospace" font-size="16" font-weight="700">HOSTILE CONTACT</text>
+    <text x="226" y="101" fill="#B6C7CF" font-family="Consolas, monospace" font-size="14">41m ago</text>
+    <rect x="18" y="128" width="306" height="42" fill="#0E1115" stroke="#27323A"/>
+    <text x="34" y="155" fill="#5FE1C0" font-family="Consolas, monospace" font-size="16" font-weight="700">ROUTE WARNING</text>
+    <text x="226" y="155" fill="#B6C7CF" font-family="Consolas, monospace" font-size="14">fresh</text>
+    <rect x="18" y="182" width="306" height="58" fill="#0B0D10" stroke="#27323A"/>
+    <text x="34" y="208" fill="#D8E2E7" font-family="Consolas, monospace" font-size="14">Signal health</text>
+    <rect x="34" y="220" width="210" height="8" fill="#252B32"/>
+    <rect x="34" y="220" width="148" height="8" fill="#FF6B2B"/>
+  </g>
+  <g transform="translate(78 86)">
+    <text x="0" y="0" fill="#F4F7F8" font-family="Consolas, monospace" font-size="62" font-weight="800">Signal Vault</text>
+    <text x="2" y="45" fill="#BFD0D8" font-family="Inter, Arial, sans-serif" font-size="24">Field intelligence for EVE Frontier</text>
+    <text x="2" y="92" fill="#F4F7F8" font-family="Inter, Arial, sans-serif" font-size="20">Capture. Resolve. Reconfirm.</text>
+    <g transform="translate(2 128)">
+      <rect width="190" height="42" rx="6" fill="#FF4F17"/>
+      <text x="22" y="28" fill="#08090B" font-family="Consolas, monospace" font-size="16" font-weight="800">LOCAL-FIRST</text>
+      <rect x="206" width="210" height="42" rx="6" fill="#121A1F" stroke="#5FE1C0"/>
+      <text x="228" y="28" fill="#5FE1C0" font-family="Consolas, monospace" font-size="16" font-weight="800">DESKTOP OVERLAY</text>
+      <rect x="432" width="178" height="42" rx="6" fill="#121A1F" stroke="#8EA3AE"/>
+      <text x="454" y="28" fill="#D8E2E7" font-family="Consolas, monospace" font-size="16" font-weight="800">SUI IDENTITY</text>
+    </g>
+  </g>
+  <g transform="translate(88 330)" fill="#8EA3AE" font-family="Consolas, monospace" font-size="15">
+    <text x="0" y="0">Signals -> Dossiers -> Warnings -> Companion Overlay</text>
+    <text x="0" y="28">No background sync. No game process access. Source-labeled intel.</text>
+  </g>
+  <defs>
+    <radialGradient id="bg" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1030 50) rotate(147) scale(910 550)">
+      <stop stop-color="#163A42"/>
+      <stop offset=".45" stop-color="#12151E"/>
+      <stop offset="1" stop-color="#08090B"/>
+    </radialGradient>
+  </defs>
+</svg>

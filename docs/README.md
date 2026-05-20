@@ -1,59 +1,77 @@
-# Signal Vault Documentation Pack
+# Signal Vault Docs
 
-Signal Vault is a field-first intelligence and field-memory dApp for **EVE Frontier**.  
-It expands the basic note concept into a structured system of Signals, dossiers, entity-linked records, quick field capture, confidence/staleness, and tribe-scoped operational memory.
+This is the operating library for Signal Vault: product decisions, architecture,
+alpha status, backend hardening, desktop companion work, and EVE Frontier
+integration notes.
 
-This documentation pack is intended to keep development on course across AI-assisted coding, audits, and future phases.
+Signal Vault is a field-first intelligence layer for EVE Frontier. It is not a
+generic notes clone. The core product rule is:
 
-## Core Rule
+> Capture what was known at the time. Label the source. Reconfirm before acting.
 
-Signal Vault is **not** a generic Notion/Obsidian clone.
+## Start Here
 
-It is:
+| Need | Read |
+|---|---|
+| What the alpha can and cannot claim | [`alpha/01-alpha-release-readiness.md`](alpha/01-alpha-release-readiness.md) |
+| How a tester should use it | [`alpha/00-alpha-guide.md`](alpha/00-alpha-guide.md) |
+| Current risks and follow-ups | [`operations/08-signal-vault-action-register.md`](operations/08-signal-vault-action-register.md) |
+| Product thesis | [`product/01-product-thesis.md`](product/01-product-thesis.md) |
+| Architecture overview | [`architecture/00-system-overview.md`](architecture/00-system-overview.md) |
+| Desktop companion status | [`phases/phase-13a-desktop-overlay-feasibility.md`](phases/phase-13a-desktop-overlay-feasibility.md) |
+| Railway backend setup | [`operations/12-railway-backend-deployment.md`](operations/12-railway-backend-deployment.md) |
 
-> A field-first EVE Frontier intelligence layer that resolves viewer and object context defensively, supports browser-based local intel today, and moves in-play use toward a desktop companion overlay until a current EVE Frontier dApp browser exists and is verified.
+## Product And UX
 
-## Documentation Map
-
-
-
-### App Specification
-
-- [`app-spec/00-complete-app-function-inventory.md`](app-spec/00-complete-app-function-inventory.md)
-- [`app-spec/01-ingame-interaction-flow-catalog.md`](app-spec/01-ingame-interaction-flow-catalog.md)
-- [`app-spec/02-object-specific-function-matrix.md`](app-spec/02-object-specific-function-matrix.md)
-- [`app-spec/03-quick-action-catalog.md`](app-spec/03-quick-action-catalog.md)
-- [`app-spec/04-ability-and-permission-matrix.md`](app-spec/04-ability-and-permission-matrix.md)
-- [`app-spec/05-signal-lifecycle.md`](app-spec/05-signal-lifecycle.md)
-- [`app-spec/06-user-journey-scenarios.md`](app-spec/06-user-journey-scenarios.md)
-- [`app-spec/07-mvp-vs-later-feature-boundaries.md`](app-spec/07-mvp-vs-later-feature-boundaries.md)
-- [`app-spec/08-ingame-ui-state-machine.md`](app-spec/08-ingame-ui-state-machine.md)
-
-### Policy
-
-- [`policy/00-privacy-and-data-ownership.md`](policy/00-privacy-and-data-ownership.md)
-- [`policy/01-object-classification-and-dispute-workflow.md`](policy/01-object-classification-and-dispute-workflow.md)
-- [`policy/02-attachments-and-screenshots-spec.md`](policy/02-attachments-and-screenshots-spec.md)
-
-### Product
 - [`product/00-prd.md`](product/00-prd.md)
 - [`product/01-product-thesis.md`](product/01-product-thesis.md)
 - [`product/02-feature-to-gameplay-map.md`](product/02-feature-to-gameplay-map.md)
 - [`product/03-naming-language-and-lore.md`](product/03-naming-language-and-lore.md)
 - [`product/04-success-metrics.md`](product/04-success-metrics.md)
+- [`app-spec/00-complete-app-function-inventory.md`](app-spec/00-complete-app-function-inventory.md)
+- [`app-spec/06-user-journey-scenarios.md`](app-spec/06-user-journey-scenarios.md)
+- [`app-spec/08-ingame-ui-state-machine.md`](app-spec/08-ingame-ui-state-machine.md)
 
-### Architecture
+## Architecture
+
 - [`architecture/00-system-overview.md`](architecture/00-system-overview.md)
 - [`architecture/01-frontend-architecture.md`](architecture/01-frontend-architecture.md)
 - [`architecture/02-backend-architecture.md`](architecture/02-backend-architecture.md)
-- [`architecture/03-viewer-context.md`](architecture/03-viewer-context.md)
 - [`architecture/04-entity-resolution.md`](architecture/04-entity-resolution.md)
 - [`architecture/05-signal-domain-model.md`](architecture/05-signal-domain-model.md)
-- [`architecture/06-ingame-mode.md`](architecture/06-ingame-mode.md)
 - [`architecture/07-data-sources.md`](architecture/07-data-sources.md)
 - [`architecture/08-security-and-permissions.md`](architecture/08-security-and-permissions.md)
 
-### ADRs
+## EVE Frontier Integration
+
+- [`integration/eve-dapp-kit-compatibility-audit.md`](integration/eve-dapp-kit-compatibility-audit.md)
+- [`integration/world-api-enrichment-audit.md`](integration/world-api-enrichment-audit.md)
+- [`integration/frontier-static-game-data.md`](integration/frontier-static-game-data.md)
+- [`integration/sui-character-resolution-research.md`](integration/sui-character-resolution-research.md)
+- [`backend/23-biomassing-identity-continuity.md`](backend/23-biomassing-identity-continuity.md)
+
+## Backend And Remote Sync
+
+- [`backend/00-shared-persistence-contract.md`](backend/00-shared-persistence-contract.md)
+- [`backend/01-api-contracts.md`](backend/01-api-contracts.md)
+- [`backend/16-character-token-contract.md`](backend/16-character-token-contract.md)
+- [`backend/18-production-identity-mode.md`](backend/18-production-identity-mode.md)
+- [`backend/20-sui-identity-live-validation-runbook.md`](backend/20-sui-identity-live-validation-runbook.md)
+- [`operations/11-deployed-rls-verification.md`](operations/11-deployed-rls-verification.md)
+
+## Alpha And Operations
+
+- [`alpha/00-alpha-guide.md`](alpha/00-alpha-guide.md)
+- [`alpha/03-known-limitations.md`](alpha/03-known-limitations.md)
+- [`alpha/05-player-facing-faq.md`](alpha/05-player-facing-faq.md)
+- [`alpha/06-demo-operator-checklist.md`](alpha/06-demo-operator-checklist.md)
+- [`operations/04-release-checklist.md`](operations/04-release-checklist.md)
+- [`operations/05-production-readiness-checklist.md`](operations/05-production-readiness-checklist.md)
+- [`operations/06-desktop-companion-alpha-readiness.md`](operations/06-desktop-companion-alpha-readiness.md)
+- [`operations/10-desktop-packaged-smoke-test.md`](operations/10-desktop-packaged-smoke-test.md)
+
+## Design Decisions
+
 - [`decisions/ADR-001-stack-choice.md`](decisions/ADR-001-stack-choice.md)
 - [`decisions/ADR-002-ingame-first.md`](decisions/ADR-002-ingame-first.md)
 - [`decisions/ADR-003-viewer-context.md`](decisions/ADR-003-viewer-context.md)
@@ -62,62 +80,15 @@ It is:
 - [`decisions/ADR-006-no-graph-first.md`](decisions/ADR-006-no-graph-first.md)
 - [`decisions/ADR-007-eve-dapp-kit-anchor.md`](decisions/ADR-007-eve-dapp-kit-anchor.md)
 
-### Development Phases
-- [`phases/phase-00-scaffold.md`](phases/phase-00-scaffold.md)
-- [`phases/phase-01-ingame-shell.md`](phases/phase-01-ingame-shell.md)
-- [`phases/phase-02-viewer-context.md`](phases/phase-02-viewer-context.md)
-- [`phases/phase-03-entity-resolution.md`](phases/phase-03-entity-resolution.md)
-- [`phases/phase-04-signals-mvp.md`](phases/phase-04-signals-mvp.md)
-- [`phases/phase-05-dossiers.md`](phases/phase-05-dossiers.md)
-- [`phases/phase-06-local-first-sync.md`](phases/phase-06-local-first-sync.md)
-- [`phases/phase-07-eve-frontier-integration.md`](phases/phase-07-eve-frontier-integration.md)
-- [`phases/phase-08-tribe-vault.md`](phases/phase-08-tribe-vault.md) — **08A/08B closed: local-first + staleness/contradiction hardening. 08C: alpha polish in progress.**
-- [`phases/phase-09-indexer-events.md`](phases/phase-09-indexer-events.md)
-- [`phases/phase-10-map-and-bridge.md`](phases/phase-10-map-and-bridge.md)
-- [`phases/phase-11-frontierwarden-integration.md`](phases/phase-11-frontierwarden-integration.md)
-- [`phases/phase-13a-desktop-overlay-feasibility.md`](phases/phase-13a-desktop-overlay-feasibility.md)
-- [`phases/phase-completion-audit.md`](phases/phase-completion-audit.md)
-
-### Implementation
-- [`implementation/00-repo-structure.md`](implementation/00-repo-structure.md)
-- [`implementation/01-dependency-policy.md`](implementation/01-dependency-policy.md)
-- [`implementation/02-package-json-baseline.md`](implementation/02-package-json-baseline.md)
-- [`implementation/03-routes.md`](implementation/03-routes.md)
-- [`implementation/04-api-contracts.md`](implementation/04-api-contracts.md)
-- [`implementation/05-database-schema.md`](implementation/05-database-schema.md)
-- [`implementation/06-typescript-contracts.md`](implementation/06-typescript-contracts.md)
-- [`implementation/07-ui-components.md`](implementation/07-ui-components.md)
-- [`implementation/08-testing-strategy.md`](implementation/08-testing-strategy.md)
-- [`implementation/09-ai-coding-guardrails.md`](implementation/09-ai-coding-guardrails.md)
-
-### Support
-
-- [`alpha/00-alpha-guide.md`](alpha/00-alpha-guide.md) — **Alpha player guide: local data, backups, limitations**
-- [`support/00-player-faq.md`](support/00-player-faq.md)
-- [`support/01-ingame-auth-troubleshooting.md`](support/01-ingame-auth-troubleshooting.md)
-- [`support/02-browser-compatibility-requirements.md`](support/02-browser-compatibility-requirements.md)
-- [`support/10k-question-simulation-report.md`](support/10k-question-simulation-report.md)
-- [`support/documentation-gap-backlog.md`](support/documentation-gap-backlog.md)
-
-### Operations
-- [`operations/00-env-vars.md`](operations/00-env-vars.md)
-- [`operations/01-deployment.md`](operations/01-deployment.md)
-- [`operations/02-qa-checklist.md`](operations/02-qa-checklist.md)
-- [`operations/03-risk-register.md`](operations/03-risk-register.md)
-- [`operations/04-release-checklist.md`](operations/04-release-checklist.md)
-- [`operations/06-desktop-companion-alpha-readiness.md`](operations/06-desktop-companion-alpha-readiness.md)
-- [`operations/07-signal-vault-question-battery.md`](operations/07-signal-vault-question-battery.md)
-- [`operations/08-signal-vault-action-register.md`](operations/08-signal-vault-action-register.md)
-
 ## Non-Negotiable Development Rules
 
-1. Opening Signal Vault from EVE Frontier proves **context**, not identity.
+1. Opening Signal Vault from EVE Frontier proves context, not identity.
 2. URL params are hints, not truth.
 3. Every object page must work when unresolved.
 4. Every Signal stores author context and entity-resolution snapshot.
 5. Manual intel is valid but visibly labeled.
-6. Indexed/on-chain data can promote confidence, not erase history.
-7. In-game mode prioritizes one-click capture over editor power.
-8. External mode handles admin, templates, graph, and tribe management.
-9. Signal Vault complements map tools before trying to replace them.
-10. No shared/tribe write without resolved viewer context.
+6. Indexed or on-chain data can promote confidence, not erase history.
+7. In-game mode prioritizes fast capture over editor power.
+8. Signal Vault complements map tools before trying to replace them.
+9. No shared or tribe write without resolved viewer context.
+10. Remote production claims require live verification, not just local tests.

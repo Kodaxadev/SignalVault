@@ -1,135 +1,123 @@
 # Signal Vault
 
+![Signal Vault hero](docs/assets/readme/repo-hero.svg)
+
 **Field intelligence for EVE Frontier.**
 
-Signal Vault is a field-first intel layer that turns observations into structured, entity-linked field Signals — logged at the point of encounter, graded by confidence, tracked for staleness, and surfaced as object dossiers when you need them.
+Signal Vault turns scattered observations into structured Signals: who saw it,
+what object or system it belongs to, how confident the report is, how stale it
+is, and what action a pilot should take next.
 
-It runs as a standalone browser tool today, with Smart Object context available through URL/object parameters and EVE Frontier dApp Kit paths where a supported provider exists. The in-play direction is a lightweight desktop companion overlay, not a replacement dApp browser. Everything is local-first: your data stays in your browser until you choose to relay it.
+It is built for EVE Frontier's programmable world and Smart Assembly direction,
+but it stays practical today: browser-first, local-first, and paired with a
+Windows desktop companion overlay for in-play use.
 
----
+[EVE Frontier builder docs](https://docs.evefrontier.com/) describe a
+programmable world where in-game entities can be represented on-chain and
+extended by builders. The EVE Frontier dApp Kit exposes Smart Object context for
+supported dApp surfaces through `EveFrontierProvider`, `useConnection`, and
+`useSmartObject`: [dApp Kit docs](https://sui-docs.evefrontier.com/).
 
-## What It Does
+## Why It Exists
 
-When you interact with a gate, storage unit, system, or route, Signal Vault answers:
+EVE Frontier creates a new kind of intel problem. Gates, storage units, systems,
+routes, tribes, markets, and field encounters all matter, but the useful context
+is often split across memory, chat, browser tabs, screenshots, and stale notes.
 
-- **What is this?** — entity classification from multiple sources (dApp Kit, World API, manual)
-- **What do we know?** — aggregated Signals, intel health, contradiction flags
-- **How fresh is it?** — per-type staleness thresholds (hostile contact goes stale in 24h; field notes last days)
-- **Who reported it?** — wallet-bound authorship, confidence levels (observed / inferred / rumor / unverified)
-- **What can I log right now?** — 12 signal types, quick-action buttons, in-game context pre-filled
+Signal Vault gives that context a shape:
 
-### Signal Types
+- **Capture fast:** log hostile contacts, route reports, market notes, access
+  denials, storage manifests, and field notes.
+- **Resolve what you saw:** connect Signals to systems, Smart Objects, tribes,
+  routes, or unresolved objects without pretending hints are truth.
+- **Know what changed:** stale intel, contradiction warnings, confidence labels,
+  and official data enrichment make old reports safer to interpret.
+- **Stay local by default:** data lives in your browser unless you choose to
+  push a single Signal through the alpha remote path.
+- **Use it while playing:** the desktop companion shows live state, warnings,
+  quick notes, and current-system handoff without touching the game client.
 
-| Category | Types |
+## Product Surfaces
+
+![Signal dossier screenshot](docs/assets/readme/signal-dossier.svg)
+
+| Surface | What it is for | Status |
+|---|---|---|
+| Browser app | Full Signal log, dossiers, route context, import/export | Alpha-ready locally |
+| In-game/object route | Smart Object context page for supported dApp surfaces | Implemented, defensive |
+| Desktop companion | Windows overlay, tray, hotkey, local bridge, quick note | Packaged alpha |
+| API backend | Optional remote push, audit log, Sui identity resolution | Alpha, production proof pending |
+
+![Desktop companion overlay](docs/assets/readme/desktop-companion.svg)
+
+## What You Can Track
+
+| Category | Signal types |
 |---|---|
-| Movement & Access | Gate Recon, Route Report, Permit Report, Access Denied |
-| Resources & Trade | Storage Manifest, Market Report, Resource Report |
+| Movement and access | Gate Recon, Route Report, Permit Report, Access Denied |
+| Resources and trade | Storage Manifest, Market Report, Resource Report |
 | Threat | Hostile Contact, After Action Report |
 | General | Field Note, System Report, Assembly Log |
 
-### Dossiers
+Every Signal carries an entity snapshot, author context, confidence, visibility,
+and staleness behavior. Old records remain historical records; they are not
+silently rewritten when a wallet or character context changes.
 
-Each entity has a dossier — aggregated intel panel with signal timeline, staleness summary, contradiction badges, and official World API enrichment. Gate, Storage, Market, System, Route, Tribe, Object, and Unknown types all have dedicated dossier layouts.
+## Trust Boundaries
 
-### Visibility & Scope
+Signal Vault is deliberately conservative:
 
-Signals are scoped: `local_private` / `private` / `public` / `tribe` / `officer`. Tribe-scoped signals route through the policy engine — membership verified server-side from on-chain Sui character data, no CCP JWT required.
+- **No background sync.** Remote push is manual and single-Signal.
+- **No fake dApp browser.** The browser app uses official EVE Vault/dApp Kit
+  paths only where supported.
+- **No game memory reads or process injection.** The desktop companion is a
+  local overlay and bridge, not a game-client automation layer.
+- **No dev auth in production.** Release checks block production dev-auth flags.
+- **No silent Smart Assembly inference.** URL params and World API data are
+  hints; verified Smart Assembly context comes from supported EVE/dApp sources.
 
----
+## Current Alpha State
 
-## Architecture
-
-```
-Signal Vault
-├── apps/web          React + Vite + Tailwind — local-first frontend
-│   ├── Object shell  Smart Object context route for field dossiers
-│   ├── Browser app   Standalone browser — signal log, dossiers, export/import
-│   └── /compat       Browser diagnostics page
-│
-├── apps/desktop      Tauri 2 — desktop companion overlay
-│   ├── Overlay       Frameless always-on-top window for in-play intel
-│   ├── Hotkey        Global toggle shortcut (Ctrl+Shift+V)
-│   ├── Tray          System tray icon + menu
-│   └── Bridge        HTTP bridge for web ↔ companion communication
-│
-└── apps/api          Hono + Postgres — remote push backend
-    ├── Auth          Sui wallet challenge/response + character resolution
-    ├── Signals       Policy-gated write with audit log
-    └── Identity      sui_player_profile → characterId + tribeId (on-chain)
-```
-
-**Local-first by default.** Every feature works without the backend. Remote push is manual, single-signal, and labeled alpha.
-
-**Chunk isolation.** The EVE Frontier dApp Kit (`@evefrontier/dapp-kit`) loads only in the InGame route chunk. The main app bundle has zero dApp Kit references — verified on every build.
-
-**Entity resolution pipeline.** Claims from multiple sources are merged by priority: `onchain_verified` (100) › `dappkit_current_object` (80) › `world_api` (75) › `user_manual` (30) › `url_hint` (10). The winning claim sets entity type and label.
-
-**World API cache.** Solar system, tribe, and game type data is cached in IndexedDB (30-min TTL for systems and tribes; 24h for types). Dossier enrichment degrades to stale cache on network failure rather than going blank.
-
----
-
-## Stack
-
-| Layer | Tech |
-|---|---|
-| Frontend | React 19, Vite, React Router, TanStack Query, Tailwind CSS |
-| Desktop | Tauri 2 (Rust + WebView2), tauri-plugin-global-shortcut |
-| Local storage | Dexie (IndexedDB) |
-| Validation | Zod |
-| Backend | Hono, Postgres, `pg` |
-| Identity | Sui GraphQL — wallet → PlayerProfile → Character (on-chain) |
-| EVE integration | `@evefrontier/dapp-kit` (InGame only) |
-| Monorepo | pnpm workspaces |
-| Testing | Vitest + Testing Library |
-
----
-
-## Status
-
-**Internal alpha.** Local-first features are complete. Remote sync is functional under Sui identity mode (dev-validated) and dev-auth mode. Production wallet signature verification is unit-tested for Sui personal messages; live EVE Vault / zkLogin fixture validation remains before public production.
+Latest local release gate on this branch:
 
 | Gate | Result |
 |---|---|
-| TypeScript | 0 errors |
-| Web tests | 683 passed |
-| API tests | 238 passed / 5 skipped |
-| Main bundle dApp Kit refs | 0 |
-| All files | ≤ 400 lines |
-| Dependency audit | 2 moderate dev-tool advisories tracked as follow-up |
+| Web tests | 693 passed |
+| API tests | 239 passed / 5 skipped |
+| Script tests | 15 passed |
+| Web build | Passing |
+| Main bundle dApp Kit references | 0 |
+| File-size guardrail | All files at or under 400 lines |
 
----
+Remote production readiness is intentionally not overclaimed. The RLS verifier
+and Railway deployment notes are in place, but the live deployed-role proof must
+pass against the deployed Postgres database before public remote-write claims.
 
-## Getting Started
+## Run It Locally
 
-**Prerequisites:** Node >=24, pnpm 9+, Rust toolchain (for desktop companion only — `rustup` + `cargo`)
+Prerequisites:
+
+- Node `>=24`
+- pnpm
+- Rust toolchain only if running the desktop companion
 
 ```bash
-# Install
 pnpm install
 
-# Web app (local-first, no backend needed)
+# Browser app, local-first
 pnpm dev
 
 # API backend
 pnpm dev:api
 
-# Desktop companion (requires Rust toolchain + Tauri CLI)
-pnpm --filter desktop tauri:dev
+# Desktop companion
+pnpm dev:desktop
 
-# Type check
-pnpm --filter web tsc --noEmit
-pnpm typecheck:api
-pnpm --filter desktop typecheck
-
-# Tests
-pnpm test:run      # web
-pnpm test:api      # api
-
-# Release gates (typecheck, tests, build, then release guardrails)
+# Release gate
 pnpm check:release
 ```
 
-**World API** (optional enrichment — solar systems, tribes, types):
+Optional World API enrichment:
 
 ```bash
 # apps/web/.env.local
@@ -137,44 +125,43 @@ VITE_WORLD_API_BASE_URL=https://world-api-stillness.live.tech.evefrontier.com
 VITE_WORLD_API_ENV=stillness
 ```
 
-**Remote push** (optional — requires backend + Postgres):
+Optional remote API:
 
 ```bash
 # apps/api/.env
 DATABASE_URL=postgres://...
-ENABLE_REMOTE_SIGNAL_WRITES=true
-AUTH_DEV_MODE=true               # dev only — never production
+ENABLE_REMOTE_SIGNAL_WRITES=false
+AUTH_DEV_MODE=false
+ENABLE_SUI_CHARACTER_RESOLUTION=false
+SIGNAL_VAULT_ALLOWED_ORIGINS=http://localhost:5173
 ```
 
-See [`docs/alpha/07-demo-environment-matrix.md`](docs/alpha/07-demo-environment-matrix.md) for the full environment reference.
+For Railway backend setup, see
+[`docs/operations/12-railway-backend-deployment.md`](docs/operations/12-railway-backend-deployment.md).
 
----
+## Repo Map
 
-## Docs
+```txt
+apps/web       React + Vite local-first app
+apps/desktop   Tauri Windows companion overlay
+apps/api       Hono + Postgres remote push backend
+docs/          product, architecture, alpha, backend, operations
+scripts/       release, static index, and policy checks
+```
 
-| Document | What it covers |
-|---|---|
-| [`docs/alpha/01-alpha-release-readiness.md`](docs/alpha/01-alpha-release-readiness.md) | What is ready, what is not, what must not ship |
-| [`docs/alpha/03-known-limitations.md`](docs/alpha/03-known-limitations.md) | Current limitations and paths to resolution |
-| [`docs/alpha/05-player-facing-faq.md`](docs/alpha/05-player-facing-faq.md) | Player-facing questions, answered plainly |
-| [`docs/alpha/06-demo-operator-checklist.md`](docs/alpha/06-demo-operator-checklist.md) | Pre-demo checklist, path A and B |
-| [`docs/backend/16-character-token-contract.md`](docs/backend/16-character-token-contract.md) | Identity contract and Sui resolution status |
-| [`docs/backend/18-production-identity-mode.md`](docs/backend/18-production-identity-mode.md) | Production Sui auth — no Bearer header, wallet-sig only |
-| [`docs/backend/22-sui-identity-validation-results.md`](docs/backend/22-sui-identity-validation-results.md) | Validation run results (dev-validated 2026-05-11) |
+Start with:
 
----
+- [`docs/README.md`](docs/README.md) - docs guide
+- [`docs/alpha/00-alpha-guide.md`](docs/alpha/00-alpha-guide.md) - alpha player guide
+- [`docs/operations/08-signal-vault-action-register.md`](docs/operations/08-signal-vault-action-register.md) - current action register
+- [`docs/phases/phase-13a-desktop-overlay-feasibility.md`](docs/phases/phase-13a-desktop-overlay-feasibility.md) - desktop companion phase
 
-## Hard Invariants
+## Build Philosophy
 
-These are unconditional. They do not change for demos, edge cases, or convenience:
+Signal Vault is not a generic notes app with space styling. It is a field intel
+tool for a world where object identity, tribe context, player reports, stale
+evidence, and on-chain state can disagree.
 
-- **No background sync.** Manual push only. No queue, no automatic retry, no silent writes.
-- **No dev-auth in production.** `AUTH_DEV_MODE=true` and `VITE_REMOTE_DEV_AUTH=true` are blocked by `pnpm check:prod-auth`.
-- **Chunk isolation.** dApp Kit must not appear in the main bundle. Enforced by `check:bundle-clean`.
-- **World API does not infer Smart Assembly identity.** Type data from the World API claims `item` only — never `smart_gate`, `smart_storage_unit`, `market`, or `smart_turret`. The dApp Kit is the authority for Smart Assembly classification.
-- **Lint is not a release gate yet.** The current lint script is a placeholder until a real lint configuration is added.
-- **Audit advisories are tracked, not hidden.** Current moderate Vite/esbuild dev-tool advisories require a separate dependency maintenance pass.
+The rule is simple:
 
----
-
-*Signal stale. Reconfirm before acting.*
+> Capture what was known at the time. Label the source. Reconfirm before acting.
