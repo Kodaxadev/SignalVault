@@ -28,4 +28,9 @@ describe('005_harden_signal_rls migration', () => {
     expect(migration).toContain('audit_identity_source_required_for_character');
     expect(migration).toContain('audit_identity_resolved_at_required_for_character');
   });
+
+  it('enables row security on deployed-role protected tables', () => {
+    expect(migration).toContain('ALTER TABLE signals ENABLE ROW LEVEL SECURITY');
+    expect(migration).toContain('ALTER TABLE audit_log ENABLE ROW LEVEL SECURITY');
+  });
 });

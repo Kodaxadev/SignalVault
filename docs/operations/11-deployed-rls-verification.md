@@ -52,6 +52,9 @@ pnpm verify:rls
 
 The probe uses one transaction and rolls back at the end. It inserts unique probe rows and verifies:
 
+- `signals` and `audit_log` have row-level security enabled
+- required `signals` and `audit_log` policies are installed
+- required identity snapshot constraints are installed
 - same-tribe read succeeds
 - cross-tribe read returns zero rows
 - forged `author_tribe_id` insert is denied
@@ -63,7 +66,9 @@ The probe uses one transaction and rolls back at the end. It inserts unique prob
 
 Harness status: implemented.
 
-Live deployed-role result: **not run in this environment** because no `SIGNAL_VAULT_RLS_DATABASE_URL` or `DATABASE_URL` is configured.
+Schema preflight status: implemented. The verifier now fails before behavioral probes if migration `005_harden_signal_rls` has not installed required RLS policies, row-security enablement, or identity snapshot constraints.
+
+Live deployed-role result: **not run in this environment** because no `SIGNAL_VAULT_RLS_DATABASE_URL`, `DATABASE_URL`, or component `SIGNAL_VAULT_RLS_DATABASE_*` env vars are configured.
 
 This means the production checklist can move from "no harness" to "harness ready, live credential needed", but the P0 item remains open until the command passes against the deployed app role.
 
